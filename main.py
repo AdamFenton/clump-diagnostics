@@ -56,7 +56,7 @@ def calculate_gravitational_energy(subSnap,r_clump_centred):
 def collect_clump_positions(snapshot,density_to_load=1e-3):
     parent_path = Path(snapshot).parent
     clump_info_file = glob.glob('%s/*.dat' % str(parent_path))[0]
-    clump_info = pd.read_csv(clump_info_file,engine='python',names=['density','x','y','z','vx','vy','vz'])
+    clump_info = pd.read_csv(clump_info_file,engine='python',names=['time','density','x','y','z','vx','vy','vz'],delim_whitespace=True)
     # index = np.where(clump_info['density'] == np.int(np.abs(np.log10(density_to_load)) * 10))[0][0]
     index = 6
 
@@ -66,10 +66,11 @@ def collect_clump_positions(snapshot,density_to_load=1e-3):
     vx = clump_info['vx'][index]
     vy = clump_info['vy'][index]
     vz = clump_info['vz'][index]
+
     return x,y,z,vx,vy,vz
 
 
-def prepare_snapshots(snapshot):
+def prepare_snapshots(snapshot,x,y,z):
 
     snap = plonk.load_snap(snapshot)
     sinks = snap.sinks
@@ -107,9 +108,10 @@ elif sys.argv[1] == 'density'  and len(sys.argv) == 3:
 
 for file in tqdm(complete_file_list):
     x,y,z,vx,vy,vz = collect_clump_positions(file,density_to_load)
-    subSnap = prepare_snapshots(file)[0]
 
-    fullSnap = prepare_snapshots(file)[1]
+    subSnap = prepare_snapshots(file,x,y,z)[0]
+
+    fullSnap = prepare_snapshots(file,x,y,z)[1]
 
     r_clump_centred = np.sqrt((subSnap['x']-(x*au))**2 +(subSnap['y']-(y * au))**2 + (subSnap['z']-(z* au))**2)
     r_clump_centred_midplane = np.hypot(subSnap['x']-(x*au),subSnap['y']-(y*au))
