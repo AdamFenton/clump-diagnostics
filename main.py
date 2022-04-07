@@ -14,21 +14,27 @@ from tqdm.auto import tqdm, trange
 import warnings
 from scipy.ndimage import gaussian_filter
 
-cwd = os.getcwd()
-kms =  plonk.units('km/s')
-mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50.0),120)
-au = plonk.units('au')
-density_to_load = None
-fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
+# Author: Adam Fenton
 
+cwd = os.getcwd()
+# Load units for use later, useful for derived quantities.
+kms =  plonk.units('km/s')
+au = plonk.units('au')
+
+
+density_to_load = None
+mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50.0),120)
+
+# Initalise the figure and output file which is written to later on
+fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
 clump_results = open('clump-results.dat', 'w')
 
+# Ignore pesky warnings when stripping unit off of pint quantity when downcasting to array
 if hasattr(pint, 'UnitStrippedWarning'):
     warnings.simplefilter('ignore', category=pint.UnitStrippedWarning)
 
 def calculate_sum(binned_quantity,summed_quantity,bins):
     return stats.binned_statistic(binned_quantity, summed_quantity, 'sum', bins=bins)
-
 
 def calculate_mean(binned_quantity,mean_quantity,bins):
     return stats.binned_statistic(binned_quantity, mean_quantity, 'mean', bins=bins)
@@ -54,6 +60,12 @@ def calculate_gravitational_energy(subSnap,r_clump_centred):
 
 
 def collect_clump_positions(snapshot,density_to_load=1e-3):
+    ''' Read the relevant clump dat file (containing the positions of the clump
+        when it reaches the distinct output densities) and extract the position
+        and velocity of the clump centre.
+    '''
+    # TODO: Fix hardcoded index, need to edit specific_output.f90 to write 90,80...etc
+    #       to file as well as rho
     parent_path = Path(snapshot).parent
     clump_info_file = glob.glob('%s/*.dat' % str(parent_path))[0]
     clump_info = pd.read_csv(clump_info_file,engine='python',names=['time','density','x','y','z','vx','vy','vz'],delim_whitespace=True)
@@ -71,6 +83,10 @@ def collect_clump_positions(snapshot,density_to_load=1e-3):
 
 
 def prepare_snapshots(snapshot,x,y,z):
+    ''' Load full snapshot as plonk object and initialise subsnap centred on clump.
+        Also apply filter to exclude dead and accreted particles with `accreted_mask`
+        and load units
+    '''
 
     snap = plonk.load_snap(snapshot)
     sinks = snap.sinks
@@ -89,22 +105,31 @@ def prepare_snapshots(snapshot,x,y,z):
 
 
 
+# Catch case where user does not supply mode argument when running script from the command line
+try:
+    print('Running script in',sys.argv[1], 'mode')
 
-if sys.argv[1] == 'clump':
-    print("Loading all clump files from current directory")
-    check = input("This should only be used if there is one clump present, proceed? [y/n] ")
-    complete_file_list = glob.glob("run*")
+    if sys.argv[1] == 'clump':
+        print("Loading all clump files from current directory")
+        check = input("This should only be used if there is one clump present, proceed? [y/n] ")
+        complete_file_list = glob.glob("run*")
 
-elif sys.argv[1] == 'density' and len(sys.argv) == 2:
-    print('No density provided, using a default value of 1E-3 g/cm')
-    density_to_load = 1E-3
-    pattern = str(int(np.abs(np.log10(density_to_load)) * 10)).zfill(3)
-    complete_file_list = glob.glob("**/*%s.h5" % pattern)
+    elif sys.argv[1] == 'density' and len(sys.argv) == 2:
+        print('No density provided, using a default value of 1E-3 g/cm')
+        density_to_load = 1E-3
+        pattern = str(int(np.abs(np.log10(density_to_load)) * 10)).zfill(3)
+        complete_file_list = glob.glob("**/*%s.h5" % pattern)
 
-elif sys.argv[1] == 'density'  and len(sys.argv) == 3:
-    density_to_load = float(sys.argv[2])
-    pattern = str(int(np.abs(np.log10(density_to_load)) * 10)).zfill(3)
-    complete_file_list = glob.glob("**/*%s.h5" % pattern)
+    elif sys.argv[1] == 'density'  and len(sys.argv) == 3:
+        density_to_load = float(sys.argv[2])
+        pattern = str(int(np.abs(np.log10(density_to_load)) * 10)).zfill(3)
+        complete_file_list = glob.glob("**/*%s.h5" % pattern)
+
+except IndexError:
+    print("Plotting mode not provided...exiting")
+    sys.exit(1)
+
+
 
 for file in tqdm(complete_file_list):
     x,y,z,vx,vy,vz = collect_clump_positions(file,density_to_load)
@@ -148,13 +173,17 @@ for file in tqdm(complete_file_list):
     with np.errstate(invalid='ignore'):
         beta = cumsum_erot / cumsum_egrav
 
-    smoothed_infall = gaussian_filter(averaged_infall_radial[0], sigma=1.75)
 
+    # Run infall velocity through a gaussian filter to smooth out noise - make
+    # peak finding a bit easier
+    smoothed_infall = gaussian_filter(averaged_infall_radial[0], sigma=1.75)
     peaks, _ = find_peaks(smoothed_infall,prominence=0.1,distance= 30)
 
     smoothed_rotational = gaussian_filter(averaged_rotational_velocity[0], sigma=1.75)
     smoothed_temperature = gaussian_filter(averaged_temperature_radial[0], sigma=1.75)
 
+
+    # Tidily set axes limits and scale types
     for i in range(0,3):
         for j in range(0,2):
             f_radial_axs[i,j].set_xscale('log')
@@ -218,7 +247,7 @@ for file in tqdm(complete_file_list):
     weak_fc = 0.000000
 
 
-
+    # Write core information to the clump_results file for plotting later on. 
     if len(peaks) == 1:
         first_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][:-1][peaks[0]]))
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
