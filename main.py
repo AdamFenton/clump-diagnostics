@@ -67,8 +67,8 @@ def collect_clump_positions(snapshot,density_to_load=1e-3):
     # TODO: Fix hardcoded index, need to edit specific_output.f90 to write 90,80...etc
     #       to file as well as rho
     parent_path = Path(snapshot).parent
-    clump_info_file = glob.glob('%s/*.dat' % str(parent_path))[0]
-    clump_info = pd.read_csv(clump_info_file,engine='python',names=['time','density','x','y','z','vx','vy','vz'],delim_whitespace=True)
+    clump_info_file = glob.glob('%s/0*.dat' % str(parent_path))[0]
+    clump_info = pd.read_csv(clump_info_file,engine='python',names=['density','x','y','z','vx','vy','vz'])
     # index = np.where(clump_info['density'] == np.int(np.abs(np.log10(density_to_load)) * 10))[0][0]
     index = 6
 
@@ -132,6 +132,8 @@ except IndexError:
 
 
 for file in tqdm(complete_file_list):
+
+
     x,y,z,vx,vy,vz = collect_clump_positions(file,density_to_load)
 
     subSnap = prepare_snapshots(file,x,y,z)[0]
@@ -247,7 +249,7 @@ for file in tqdm(complete_file_list):
     weak_fc = 0.000000
 
 
-    # Write core information to the clump_results file for plotting later on. 
+    # Write core information to the clump_results file for plotting later on.
     if len(peaks) == 1:
         first_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][:-1][peaks[0]]))
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
