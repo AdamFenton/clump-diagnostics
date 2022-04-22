@@ -12,8 +12,9 @@ from scipy import stats
 import pint
 from tqdm.auto import tqdm, trange
 import warnings
+from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
-
+from scipy.interpolate import make_interp_spline, BSpline
 # Author: Adam Fenton
 
 cwd = os.getcwd()
@@ -23,7 +24,10 @@ au = plonk.units('au')
 
 
 density_to_load = None
-mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50.0),120)
+# A = np.logspace(np.log10(0.001),np.log10(1),100)
+# B = np.logspace(np.log10(2),np.log10(50),100)
+# mean_bins_radial = np.concatenate((A,B))
+mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),100)
 
 # Initalise the figure and output file which is written to later on
 fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
@@ -148,15 +152,37 @@ for file in tqdm(complete_file_list):
     vel_ORIGIN = (vx,vy,vz) * kms # The velocity of the clump centre
 
 
-    count = calculate_number_in_bin(r_clump_centred,subSnap['density'],100)
+    count = calculate_number_in_bin(r_clump_centred,subSnap['density'],200)
     mass_in_bin = np.cumsum(count[0]) * subSnap['mass'][0].to('jupiter_mass')
     mid_plane_radius = plonk.analysis.particles.mid_plane_radius(subSnap,ORIGIN,ignore_accreted=True)
     rotational_velocity_radial = plonk.analysis.particles.rotational_velocity(subSnap,vel_ORIGIN,ignore_accreted=True)
     infall_velocity_radial = plonk.analysis.particles.velocity_radial_spherical_altered(subSnap,ORIGIN,vel_ORIGIN,ignore_accreted=True)
+
+
+
     averaged_infall_radial = calculate_mean(r_clump_centred,infall_velocity_radial,mean_bins_radial)
     averaged_rotational_velocity = calculate_mean(r_clump_centred_midplane,rotational_velocity_radial,mean_bins_radial)
     averaged_density_radial = calculate_mean(r_clump_centred,subSnap['density'],mean_bins_radial)
     averaged_temperature_radial = calculate_mean(r_clump_centred,subSnap['my_temp'],mean_bins_radial)
+
+
+
+    averaged_infall_radial_interp = np.interp(np.arange(len(averaged_infall_radial[0])),
+                                    np.arange(len(averaged_infall_radial[0]))[np.isnan(averaged_infall_radial[0]) == False],
+                                    averaged_infall_radial[0][np.isnan(averaged_infall_radial[0]) == False])
+
+    averaged_rotational_velocity_interp = np.interp(np.arange(len(averaged_rotational_velocity[0])),
+                                    np.arange(len(averaged_rotational_velocity[0]))[np.isnan(averaged_rotational_velocity[0]) == False],
+                                    averaged_rotational_velocity[0][np.isnan(averaged_rotational_velocity[0]) == False])
+
+    averaged_density_radial_interp = np.interp(np.arange(len(averaged_density_radial[0])),
+                                    np.arange(len(averaged_density_radial[0]))[np.isnan(averaged_density_radial[0]) == False],
+                                    averaged_density_radial[0][np.isnan(averaged_density_radial[0]) == False])
+
+    averaged_temperature_radial_interp = np.interp(np.arange(len(averaged_temperature_radial[0])),
+                                    np.arange(len(averaged_temperature_radial[0]))[np.isnan(averaged_temperature_radial[0]) == False],
+                                    averaged_temperature_radial[0][np.isnan(averaged_temperature_radial[0]) == False])
+
 
     rotational_energy = 0.5 * subSnap['m'][0].to('g') * rotational_velocity_radial.to('cm/s') **2
     rotational_energy_binned = calculate_sum(r_clump_centred_midplane,rotational_energy,mean_bins_radial)
@@ -178,29 +204,47 @@ for file in tqdm(complete_file_list):
 
     # Run infall velocity through a gaussian filter to smooth out noise - make
     # peak finding a bit easier
-    smoothed_infall = gaussian_filter(averaged_infall_radial[0], sigma=1.75)
+
+
+
+
+    smoothed_rotational     = savgol_filter(averaged_rotational_velocity_interp,11,3)
+    smoothed_temperature    = savgol_filter(averaged_temperature_radial_interp,11,3)
+    smoothed_density        = savgol_filter(averaged_density_radial_interp,11,3)
+    smoothed_infall         = savgol_filter(averaged_infall_radial_interp,11,3)
     peaks, _ = find_peaks(smoothed_infall,prominence=0.1,distance= 30)
-
-    smoothed_rotational = gaussian_filter(averaged_rotational_velocity[0], sigma=1.75)
-    smoothed_temperature = gaussian_filter(averaged_temperature_radial[0], sigma=1.75)
-
-
     # Tidily set axes limits and scale types
     for i in range(0,3):
         for j in range(0,2):
             f_radial_axs[i,j].set_xscale('log')
             f_radial_axs[i,j].set_xlim(1E-3,50)
+            for x in mean_bins_radial:
+                f_radial_axs[i,j].axvline(x=x,c='black',linestyle='-',linewidth=0.1)
+
 
     for i in [0,2]:
         for j in [0,1]:
             f_radial_axs[i,j].set_yscale('log')
 
 
-    f_radial_axs[0,0].plot(averaged_density_radial[1][:-1],averaged_density_radial[0],linewidth=0.75)
+    f_radial_axs[0,0].plot(averaged_density_radial[1][:-1],smoothed_density,linewidth=0.75)
     f_radial_axs[0,1].plot(averaged_temperature_radial[1][:-1],smoothed_temperature,linewidth=0.75)
     f_radial_axs[1,0].plot(averaged_rotational_velocity[1][:-1],smoothed_rotational,linewidth=0.75)
-    f_radial_axs[1,1].plot(averaged_infall_radial[1][:-1],smoothed_infall,linewidth=0.75)
-    f_radial_axs[1,1].plot(averaged_infall_radial[1][:-1][peaks],smoothed_infall[peaks],'+',c='red')
+    # f_radial_axs[1,1].plot(averaged_infall_radial[1][:-1],averaged_infall_radial[0],linewidth=1.5)
+    # f_radial_axs[1,1].plot(averaged_infall_radial[1][:-1],test_interp,linewidth=0.75)
+    f_radial_axs[1,1].plot(averaged_infall_radial[1][:-1],smoothed_infall)
+
+
+    # f_in_axs.plot(averaged_infall_radial[1][:-1],smoothed_infall,linewidth=0.75)
+    # f_in_axs.plot(averaged_infall_radial[1][:-1][peaks],smoothed_infall[peaks],'+',c='k')
+    # f_in_axs.set_xscale('log')
+    # f_in_axs.set_xlabel('R (AU)')
+    # f_in_axs.set_ylabel('Infall Velocity (km/s)')
+    # f_in_axs.set_ylim(0,7)
+    # f_in_axs.set_xlim(1e-3,50)
+    # f_radial_axs[1,1].plot(averaged_infall_radial[1][:-1],smoothed_infall,linewidth=0.75,c='r')
+
+    f_radial_axs[1,1].plot(averaged_infall_radial[1][:-1][peaks],smoothed_infall[peaks],'+',c='k')
 
     f_radial_axs[2,0].plot(count[1][1:],mass_in_bin,linewidth=0.75)
     f_radial_axs[2,0].set_yscale('linear')
@@ -216,7 +260,7 @@ for file in tqdm(complete_file_list):
 
     f_radial_axs[0,0].set_ylim(1E-13,1E-1)
     f_radial_axs[0,1].set_ylim(10,8000)
-    f_radial_axs[1,1].set_ylim(0,10)
+    f_radial_axs[1,1].set_ylim(-5,10)
     f_radial_axs[2,0].set_ylim(0.1,40)
 
 
@@ -247,6 +291,7 @@ for file in tqdm(complete_file_list):
     first_core_count   = 0.0000000
     first_core_mass    = 0.0000000
     weak_fc = 0.000000
+    rhocritID = 4
 
 
     # Write core information to the clump_results file for plotting later on.
@@ -269,7 +314,7 @@ for file in tqdm(complete_file_list):
         second_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(second_core_radius))[0]
         second_core_mass =   float('{0:.5e}'.format(np.cumsum(second_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
         #
-    clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
+    clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
                        (file.split("/")[-1],\
                        clump_density,\
                        second_core_radius,\
@@ -277,5 +322,8 @@ for file in tqdm(complete_file_list):
                        first_core_radius,\
                        first_core_mass,
                        radius_clump,
-                       weak_fc))
+                       weak_fc,
+                       rhocritID))
+
+
 plt.savefig("%s/clump_profiles.png" % cwd,dpi = 500)
