@@ -1,4 +1,5 @@
 import plonk
+from cycler import cycler
 from scipy.signal import find_peaks
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,11 +28,12 @@ density_to_load = None
 # A = np.logspace(np.log10(0.001),np.log10(1),100)
 # B = np.logspace(np.log10(2),np.log10(50),100)
 # mean_bins_radial = np.concatenate((A,B))
-mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),100)
+mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),120)
 
 # Initalise the figure and output file which is written to later on
 fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
 fig, axs = plt.subplots(figsize=(7,8))
+
 clump_results = open('clump-results.dat', 'w')
 
 # Ignore pesky warnings when stripping unit off of pint quantity when downcasting to array
@@ -45,7 +47,7 @@ def calculate_mean(binned_quantity,mean_quantity,bins):
     return stats.binned_statistic(binned_quantity, mean_quantity, 'mean', bins=bins)
 
 def calculate_number_in_bin(binned_quantity,mean_quantity,width):
-    bins=np.logspace(np.log10(0.001),np.log10(width),100)
+    bins=np.logspace(np.log10(0.001),np.log10(width),120)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'count', bins=bins)
 
 def calculate_thermal_energy(subSnap):
@@ -142,6 +144,7 @@ for file in tqdm(complete_file_list):
 
     x,y,z,vx,vy,vz = collect_clump_positions(file,density_to_load)
 
+
     subSnap = prepare_snapshots(file,x,y,z)[0]
 
     fullSnap = prepare_snapshots(file,x,y,z)[1]
@@ -154,11 +157,9 @@ for file in tqdm(complete_file_list):
 
     radius_clump = np.sqrt(x**2 + y**2 + z**2)
     vel_ORIGIN = ((vx,vy,vz) * kms) # The velocity of the clump centre
-    # vel_ORIGIN = (-1.4176151271402069,-1.9352289439976602,0.002) * kms
 
 
-
-    count = calculate_number_in_bin(r_clump_centred,subSnap['density'],50)
+    count = calculate_number_in_bin(r_clump_centred,subSnap['m'],50)
     mass_in_bin = np.cumsum(count[0]) * subSnap['mass'][0].to('jupiter_mass')
     mid_plane_radius = plonk.analysis.particles.mid_plane_radius(subSnap,ORIGIN,ignore_accreted=True)
     rotational_velocity_radial = plonk.analysis.particles.rotational_velocity(subSnap,vel_ORIGIN,ignore_accreted=True)
@@ -171,8 +172,30 @@ for file in tqdm(complete_file_list):
     averaged_density_radial = calculate_mean(r_clump_centred,subSnap['density'],mean_bins_radial)
     averaged_temperature_radial = calculate_mean(r_clump_centred,subSnap['my_temp'],mean_bins_radial)
 
+    test_1 = averaged_infall_radial[0].copy()
+    test_2 = averaged_infall_radial[1][1:].copy()
+    elems = [i for i, a in enumerate(count[0]) if a <= 50]
+    for elem in elems:
+        test_1[elem] = np.nan
+        test_2[elem] = np.nan
+    # var_1= np.delete(averaged_infall_radial[0],elems)
+    # var_2 = np.delete(averaged_infall_radial[1][1:],elems)
 
+    custom_cycler = (cycler(color=['c', 'c']) +
+                 cycler(lw=[2, 2]))
+    test_var = averaged_infall_radial[0][count[0]>50]
+    test_var_1 = averaged_infall_radial[1][1:][count[0]>50]
+    axs.set_prop_cycle(custom_cycler)
+    axs.plot(averaged_infall_radial[1][1:],averaged_infall_radial[0],linestyle='--')
+    axs.plot(test_2,test_1)
 
+    # axs.scatter(r_clump_centred,infall_velocity_radial,s=0.1)
+    for x in mean_bins_radial:
+        axs.axvline(x=x,c='black',linestyle='-',linewidth=0.1)
+
+    axs.set_xscale('log')
+    plt.show()
+    stop
     averaged_infall_radial_interp = np.interp(np.arange(len(averaged_infall_radial[0])),
                                     np.arange(len(averaged_infall_radial[0]))[np.isnan(averaged_infall_radial[0]) == False],
                                     averaged_infall_radial[0][np.isnan(averaged_infall_radial[0]) == False])
@@ -224,10 +247,10 @@ for file in tqdm(complete_file_list):
     #     a = np.delete(a,index)
 
 
-    smoothed_rotational     = savgol_filter(averaged_rotational_velocity_interp,11,5)
-    smoothed_temperature    = savgol_filter(averaged_temperature_radial_interp,11,5)
-    smoothed_density        = savgol_filter(averaged_density_radial_interp,11,5)
-    smoothed_infall         = savgol_filter(averaged_infall_radial_interp,11,5)
+    smoothed_rotational     = savgol_filter(averaged_rotational_velocity[0],11,5)
+    smoothed_temperature    = savgol_filter(averaged_temperature_radial[0],11,5)
+    smoothed_density        = savgol_filter(averaged_density_radial[0],11,5)
+    smoothed_infall         = savgol_filter(averaged_infall_radial[0],11,5)
     peaks, _ = find_peaks(smoothed_infall,width=3,distance=25,prominence=0.5)
 
     # Tidily set axes limits and scale types
@@ -336,7 +359,7 @@ for file in tqdm(complete_file_list):
         second_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(second_core_radius))[0]
         second_core_mass =   float('{0:.5e}'.format(np.cumsum(second_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
         #
-    print(second_core_radius)
+
     clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
                        (file.split("/")[-1],\
                        clump_density,\
@@ -348,5 +371,4 @@ for file in tqdm(complete_file_list):
                        weak_fc,
                        rhocritID))
 
-plt.show()
 plt.savefig("%s/clump_profiles.png" % cwd,dpi = 500)
