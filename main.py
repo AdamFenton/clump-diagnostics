@@ -31,6 +31,7 @@ mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),100)
 
 # Initalise the figure and output file which is written to later on
 fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
+fig, axs = plt.subplots(figsize=(7,8))
 clump_results = open('clump-results.dat', 'w')
 
 # Ignore pesky warnings when stripping unit off of pint quantity when downcasting to array
@@ -44,7 +45,7 @@ def calculate_mean(binned_quantity,mean_quantity,bins):
     return stats.binned_statistic(binned_quantity, mean_quantity, 'mean', bins=bins)
 
 def calculate_number_in_bin(binned_quantity,mean_quantity,width):
-    bins=np.logspace(np.log10(0.001),np.log10(width), 120)
+    bins=np.logspace(np.log10(0.001),np.log10(width),100)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'count', bins=bins)
 
 def calculate_thermal_energy(subSnap):
@@ -79,10 +80,11 @@ def collect_clump_positions(snapshot,density_to_load=1e-3):
     x = clump_info['x'][index]
     y = clump_info['y'][index]
     z = clump_info['z'][index]
-    vx = clump_info['vx'][index]
-    vy = clump_info['vy'][index]
-    vz = clump_info['vz'][index]
+    vx = clump_info['vx'][index] * 2.978E6/1e5
+    vy = clump_info['vy'][index] * 2.978E6/1e5
+    vz = clump_info['vz'][index] * 2.978E6/1e5
 
+    print(x,y,z)
     return x,y,z,vx,vy,vz
 
 
@@ -145,14 +147,18 @@ for file in tqdm(complete_file_list):
     fullSnap = prepare_snapshots(file,x,y,z)[1]
 
     r_clump_centred = np.sqrt((subSnap['x']-(x*au))**2 +(subSnap['y']-(y * au))**2 + (subSnap['z']-(z* au))**2)
+
     r_clump_centred_midplane = np.hypot(subSnap['x']-(x*au),subSnap['y']-(y*au))
 
-    ORIGIN = (x,y,z)  * au # The position of the clump centre
+    ORIGIN = (x,y,z) * au # The position of the clump centre
+
     radius_clump = np.sqrt(x**2 + y**2 + z**2)
-    vel_ORIGIN = (vx,vy,vz) * kms # The velocity of the clump centre
+    vel_ORIGIN = ((vx,vy,vz) * kms) # The velocity of the clump centre
+    # vel_ORIGIN = (-1.4176151271402069,-1.9352289439976602,0.002) * kms
 
 
-    count = calculate_number_in_bin(r_clump_centred,subSnap['density'],200)
+
+    count = calculate_number_in_bin(r_clump_centred,subSnap['density'],50)
     mass_in_bin = np.cumsum(count[0]) * subSnap['mass'][0].to('jupiter_mass')
     mid_plane_radius = plonk.analysis.particles.mid_plane_radius(subSnap,ORIGIN,ignore_accreted=True)
     rotational_velocity_radial = plonk.analysis.particles.rotational_velocity(subSnap,vel_ORIGIN,ignore_accreted=True)
@@ -184,42 +190,53 @@ for file in tqdm(complete_file_list):
                                     averaged_temperature_radial[0][np.isnan(averaged_temperature_radial[0]) == False])
 
 
-    rotational_energy = 0.5 * subSnap['m'][0].to('g') * rotational_velocity_radial.to('cm/s') **2
-    rotational_energy_binned = calculate_sum(r_clump_centred_midplane,rotational_energy,mean_bins_radial)
-    cumsum_erot = np.cumsum(rotational_energy_binned[0])
-
-    thermal_energy = calculate_thermal_energy(subSnap)
-    thermal_energy_binned = calculate_sum(r_clump_centred_midplane,thermal_energy,mean_bins_radial)
-    cumsum_etherm = np.cumsum(thermal_energy_binned[0])
-
-    gravitational_energy = calculate_gravitational_energy(subSnap,r_clump_centred)
-    gravitational_energy_binned = calculate_sum(r_clump_centred_midplane,gravitational_energy,mean_bins_radial)
-    cumsum_egrav = np.cumsum(gravitational_energy_binned[0])
-
-    with np.errstate(invalid='ignore'):
-        alpha = cumsum_etherm / cumsum_egrav
-    with np.errstate(invalid='ignore'):
-        beta = cumsum_erot / cumsum_egrav
+    # rotational_energy = 0.5 * subSnap['m'][0].to('g') * rotational_velocity_radial.to('cm/s') **2
+    # rotational_energy_binned = calculate_sum(r_clump_centred_midplane,rotational_energy,mean_bins_radial)
+    # cumsum_erot = np.cumsum(rotational_energy_binned[0])
+    #
+    # thermal_energy = calculate_thermal_energy(subSnap)
+    # thermal_energy_binned = calculate_sum(r_clump_centred_midplane,thermal_energy,mean_bins_radial)
+    # cumsum_etherm = np.cumsum(thermal_energy_binned[0])
+    #
+    # gravitational_energy = calculate_gravitational_energy(subSnap,r_clump_centred)
+    # gravitational_energy_binned = calculate_sum(r_clump_centred_midplane,gravitational_energy,mean_bins_radial)
+    # cumsum_egrav = np.cumsum(gravitational_energy_binned[0])
+    #
+    # with np.errstate(invalid='ignore'):
+    #     alpha = cumsum_etherm / cumsum_egrav
+    # with np.errstate(invalid='ignore'):
+    #     beta = cumsum_erot / cumsum_egrav
 
 
     # Run infall velocity through a gaussian filter to smooth out noise - make
     # peak finding a bit easier
 
+    # averaged_infall_radial_interp  =  averaged_infall_radial_interp[count[0]>100]
+    # res = []
+    # for idx in range(0, len(count[0])) :
+    #     if count[0][idx] > 100:
+    #         res.append(idx)
+    #
+    # a = [averaged_infall_radial[1][index] for index in res]
+    #
+    # a = averaged_infall_radial[1]
+    # for index in res:
+    #     a = np.delete(a,index)
 
 
+    smoothed_rotational     = savgol_filter(averaged_rotational_velocity_interp,11,5)
+    smoothed_temperature    = savgol_filter(averaged_temperature_radial_interp,11,5)
+    smoothed_density        = savgol_filter(averaged_density_radial_interp,11,5)
+    smoothed_infall         = savgol_filter(averaged_infall_radial_interp,11,5)
+    peaks, _ = find_peaks(smoothed_infall,width=3,distance=25,prominence=0.5)
 
-    smoothed_rotational     = savgol_filter(averaged_rotational_velocity_interp,11,3)
-    smoothed_temperature    = savgol_filter(averaged_temperature_radial_interp,11,3)
-    smoothed_density        = savgol_filter(averaged_density_radial_interp,11,3)
-    smoothed_infall         = savgol_filter(averaged_infall_radial_interp,11,3)
-    peaks, _ = find_peaks(smoothed_infall,prominence=0.1,distance= 30)
     # Tidily set axes limits and scale types
     for i in range(0,3):
         for j in range(0,2):
             f_radial_axs[i,j].set_xscale('log')
             f_radial_axs[i,j].set_xlim(1E-3,50)
-            for x in mean_bins_radial:
-                f_radial_axs[i,j].axvline(x=x,c='black',linestyle='-',linewidth=0.1)
+            # for x in mean_bins_radial:
+            #     f_radial_axs[i,j].axvline(x=x,c='black',linestyle='-',linewidth=0.1)
 
 
     for i in [0,2]:
@@ -228,11 +245,16 @@ for file in tqdm(complete_file_list):
 
 
     f_radial_axs[0,0].plot(averaged_density_radial[1][:-1],smoothed_density,linewidth=0.75)
+    f_radial_axs[0,0].scatter(r_clump_centred,subSnap['density'],s=0.01)
     f_radial_axs[0,1].plot(averaged_temperature_radial[1][:-1],smoothed_temperature,linewidth=0.75)
+    f_radial_axs[0,1].scatter(r_clump_centred,subSnap['my_temp'],s=0.01)
     f_radial_axs[1,0].plot(averaged_rotational_velocity[1][:-1],smoothed_rotational,linewidth=0.75)
-    # f_radial_axs[1,1].plot(averaged_infall_radial[1][:-1],averaged_infall_radial[0],linewidth=1.5)
+    f_radial_axs[1,0].scatter(r_clump_centred,rotational_velocity_radial,s=0.01)
+
     # f_radial_axs[1,1].plot(averaged_infall_radial[1][:-1],test_interp,linewidth=0.75)
-    f_radial_axs[1,1].plot(averaged_infall_radial[1][:-1],smoothed_infall)
+    f_radial_axs[1,1].plot(averaged_infall_radial[1][:-1],smoothed_infall,linewidth=0.75)
+    f_radial_axs[1,1].scatter(r_clump_centred,infall_velocity_radial,s=0.01)
+
 
 
     # f_in_axs.plot(averaged_infall_radial[1][:-1],smoothed_infall,linewidth=0.75)
@@ -249,13 +271,13 @@ for file in tqdm(complete_file_list):
     f_radial_axs[2,0].plot(count[1][1:],mass_in_bin,linewidth=0.75)
     f_radial_axs[2,0].set_yscale('linear')
 
-    f_radial_axs[2,1].plot(gravitational_energy_binned[1][1:],alpha,linewidth=0.75)
-    f_radial_axs[2,1].plot(gravitational_energy_binned[1][1:],beta,linewidth=0.75)
-    f_radial_axs[2,1].axhline(y=1,c='black',linestyle='--',linewidth=1.5)
-    f_radial_axs[2,1].set_xscale('log')
-    f_radial_axs[2,1].set_yscale('log')
-    f_radial_axs[2,1].set_xlim(1E-3,50)
-    f_radial_axs[2,1].set_ylim(1E-2,1E2)
+    # f_radial_axs[2,1].plot(gravitational_energy_binned[1][1:],alpha,linewidth=0.75)
+    # f_radial_axs[2,1].plot(gravitational_energy_binned[1][1:],beta,linewidth=0.75)
+    # f_radial_axs[2,1].axhline(y=1,c='black',linestyle='--',linewidth=1.5)
+    # f_radial_axs[2,1].set_xscale('log')
+    # f_radial_axs[2,1].set_yscale('log')
+    # f_radial_axs[2,1].set_xlim(1E-3,50)
+    # f_radial_axs[2,1].set_ylim(1E-2,1E2)
 
 
     f_radial_axs[0,0].set_ylim(1E-13,1E-1)
@@ -291,7 +313,7 @@ for file in tqdm(complete_file_list):
     first_core_count   = 0.0000000
     first_core_mass    = 0.0000000
     weak_fc = 0.000000
-    rhocritID = 4
+    rhocritID = 1
 
 
     # Write core information to the clump_results file for plotting later on.
@@ -302,7 +324,7 @@ for file in tqdm(complete_file_list):
 
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
-    if len(peaks) == 2:
+    if len(peaks) >= 2:
         first_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][:-1][peaks][1]))
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
@@ -314,6 +336,7 @@ for file in tqdm(complete_file_list):
         second_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(second_core_radius))[0]
         second_core_mass =   float('{0:.5e}'.format(np.cumsum(second_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
         #
+    print(second_core_radius)
     clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
                        (file.split("/")[-1],\
                        clump_density,\
@@ -325,5 +348,5 @@ for file in tqdm(complete_file_list):
                        weak_fc,
                        rhocritID))
 
-
+plt.show()
 plt.savefig("%s/clump_profiles.png" % cwd,dpi = 500)
