@@ -32,7 +32,7 @@ mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),120)
 
 # Initalise the figure and output file which is written to later on
 fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
-fig, axs = plt.subplots(figsize=(7,8))
+fig, axs = plt.subplots(nrows=2,ncols=2,figsize=(7,8))
 
 clump_results = open('clump-results.dat', 'w')
 
@@ -172,28 +172,63 @@ for file in tqdm(complete_file_list):
     averaged_density_radial = calculate_mean(r_clump_centred,subSnap['density'],mean_bins_radial)
     averaged_temperature_radial = calculate_mean(r_clump_centred,subSnap['my_temp'],mean_bins_radial)
 
-    test_1 = averaged_infall_radial[0].copy()
-    test_2 = averaged_infall_radial[1][1:].copy()
+
     elems = [i for i, a in enumerate(count[0]) if a <= 50]
-    for elem in elems:
-        test_1[elem] = np.nan
-        test_2[elem] = np.nan
-    # var_1= np.delete(averaged_infall_radial[0],elems)
-    # var_2 = np.delete(averaged_infall_radial[1][1:],elems)
 
-    custom_cycler = (cycler(color=['c', 'c']) +
-                 cycler(lw=[2, 2]))
-    test_var = averaged_infall_radial[0][count[0]>50]
-    test_var_1 = averaged_infall_radial[1][1:][count[0]>50]
-    axs.set_prop_cycle(custom_cycler)
-    axs.plot(averaged_infall_radial[1][1:],averaged_infall_radial[0],linestyle='--')
-    axs.plot(test_2,test_1)
+    def highlight_low_confidence_bins(quantity,elems):
+        ''' A function that, when provided with an input quantity in the form of
+            a binned_statistic and an array of elements, returns two arrays that
+            are copies of the input array but with bins with fewer than 50 particles
+            in changed to nan values. We copy the arrays so the originals remain
+            unaltered.
+        '''
+        R_y = quantity[0].copy()     # Resulting arrays are initally copies of the input arrays.
+        R_x = quantity[1][1:].copy()
 
-    # axs.scatter(r_clump_centred,infall_velocity_radial,s=0.1)
-    for x in mean_bins_radial:
-        axs.axvline(x=x,c='black',linestyle='-',linewidth=0.1)
+        for elem in elems:
+            R_x[elem] = np.nan
+            R_y[elem] = np.nan
 
-    axs.set_xscale('log')
+        return R_x, R_y
+
+
+
+    binned_r_clump_with_nans = highlight_low_confidence_bins(averaged_infall_radial,elems)[0]
+    average_temp_with_nans = highlight_low_confidence_bins(averaged_temperature_radial,elems)[1]
+    averaged_density_with_nans = highlight_low_confidence_bins(averaged_density_radial,elems)[1]
+    average_infall_with_nans = highlight_low_confidence_bins(averaged_infall_radial,elems)[1]
+    average_rotational_with_nans = highlight_low_confidence_bins(averaged_rotational_velocity,elems)[1]
+
+    custom_cycler = (cycler(color=['c', 'c','k']) +
+                 cycler(lw=[1, 1,1]))
+
+    axs[0,0].plot(averaged_density_radial[1][1:],averaged_density_radial[0],linestyle=':')
+    axs[0,0].plot(binned_r_clump_with_nans,averaged_density_with_nans)
+    axs[1,0].plot(averaged_temperature_radial[1][1:],averaged_temperature_radial[0],linestyle=':')
+    axs[1,0].plot(binned_r_clump_with_nans,average_temp_with_nans)
+    axs[0,1].plot(averaged_infall_radial[1][1:],averaged_infall_radial[0],linestyle=':')
+    axs[0,1].plot(binned_r_clump_with_nans,average_infall_with_nans)
+    axs[1,1].plot(averaged_rotational_velocity[1][1:],averaged_rotational_velocity[0],linestyle=':')
+    axs[1,1].plot(binned_r_clump_with_nans,average_rotational_with_nans)
+
+    # test_var = averaged_infall_radial[0][count[0]>50]
+    # test_var_1 = averaged_infall_radial[1][1:][count[0]>50]
+    # axs.set_prop_cycle(custom_cycler)
+    # axs.plot(averaged_infall_radial[1][1:],averaged_infall_radial[0],linestyle='--')
+    # axs.plot(test_2,test_1)
+    #
+    # # axs.scatter(r_clump_centred,infall_velocity_radial,s=0.1)
+    # # for x in mean_bins_radial:
+    # #     axs.axvline(x=x,c='black',linestyle='-',linewidth=0.1)
+    # axs.set_xlabel('R [AU]')
+    # axs.set_ylabel('Infall Velocity km/s')
+    axs[0,0].set_yscale('log')
+    axs[1,0].set_yscale('log')
+
+    axs[0,0].set_xscale('log')
+    axs[0,1].set_xscale('log')
+    axs[1,0].set_xscale('log')
+    axs[1,1].set_xscale('log')
     plt.show()
     stop
     averaged_infall_radial_interp = np.interp(np.arange(len(averaged_infall_radial[0])),
