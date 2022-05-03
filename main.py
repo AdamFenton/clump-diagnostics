@@ -372,19 +372,18 @@ for file in tqdm(complete_file_list):
             f_radial_axs[i,j].set_yscale('log')
 
 
-    f_radial_axs[0,0].plot(averaged_density_radial[1][1:],averaged_density_radial[0],c = 'r',linestyle="--",linewidth = 1)
+    f_radial_axs[0,0].plot(averaged_density_radial[1][1:],averaged_density_radial[0],c = line_colour,linestyle="--",linewidth = 1)
     f_radial_axs[0,0].plot(binned_r_clump_with_nans,average_density_with_nans,c = line_colour)
     # f_radial_axs[0,0].scatter(r_clump_centred,subSnap['density'],s=0.01,c='k')
-    f_radial_axs[0,1].plot(averaged_temperature_radial[1][1:],averaged_temperature_radial[0],c = 'r',linestyle="--",linewidth =1)
+    f_radial_axs[0,1].plot(averaged_temperature_radial[1][1:],averaged_temperature_radial[0],c = line_colour,linestyle="--",linewidth =1)
     f_radial_axs[0,1].plot(binned_r_clump_with_nans,average_temp_with_nans,c = line_colour)
     # f_radial_axs[0,1].scatter(r_clump_centred,subSnap['my_temp'],s=0.01,c='k')
-    f_radial_axs[1,0].plot(averaged_rotational_velocity[1][1:],averaged_rotational_velocity[0],c = 'r',linestyle="--",linewidth = 1)
+    f_radial_axs[1,0].plot(averaged_rotational_velocity[1][1:],averaged_rotational_velocity[0],c = line_colour,linestyle="--",linewidth = 1)
     f_radial_axs[1,0].plot(binned_r_clump_with_nans,average_rotational_with_nans,c = line_colour)
     # f_radial_axs[1,0].scatter(r_clump_centred,rotational_velocity_radial,s=0.01,c='k')
 
-    f_radial_axs[1,1].plot(averaged_infall_radial[1][1:],averaged_infall_radial[0],c = 'r',linestyle="--",linewidth = 1)
+    f_radial_axs[1,1].plot(averaged_infall_radial[1][1:],averaged_infall_radial[0],c = line_colour,linestyle="--",linewidth = 1)
     f_radial_axs[1,1].plot(binned_r_clump_with_nans,average_infall_with_nans,c = line_colour)
-    f_radial_axs[1,1].scatter(r_clump_centred,infall_velocity_radial,s=0.01,c='blue')
 
 
 
@@ -402,7 +401,7 @@ for file in tqdm(complete_file_list):
     f_radial_axs[2,0].plot(count[1][1:],mass_in_bin,linewidth=0.75)
     f_radial_axs[2,0].set_yscale('linear')
 
-    f_radial_axs[2,1].scatter(r_clump_centred,spec_ang_mom,s =0.01)
+    # f_radial_axs[2,1].scatter(r_clump_centred,spec_ang_mom,s =0.01)
     # f_radial_axs[2,1].plot(gravitational_energy_binned[1][1:],beta,linewidth=0.75)
     # f_radial_axs[2,1].axhline(y=1,c='black',linestyle='--',linewidth=1.5)
     f_radial_axs[2,1].set_xscale('log')
