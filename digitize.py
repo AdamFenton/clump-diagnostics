@@ -2,24 +2,28 @@ import numpy as np
 from scipy import stats
 import time
 start_time = time.time()
-# x = np.array([0.2,0.4,0.5,0.2,0.4, 6.4,5.2,4,9,2,6,3, 3.0,6,4,7,3.4,5, 1.6])
 x = np.linspace(1,14,75000)
-
 bins =  np.array([1,5,10,15])
-# inds = np.digitize(x, bins)
 
 
 
 def solution(A,bins):
-    constant = 6.67E-8 * 1E-6
-    array_1 = (np.true_divide(A,constant)) ** -1
-
+    ''' Our philosophy here is to reduce execution time for gravitational energy
+        calculation where the number of particle interior to each particle needs
+        to be considered. Doing this with a loop through every particle is expensive
+        so instead we construct a histogram and then, for every particle, find the
+        number of particles up to the last bin edge (np.cumsum). This process is only
+        done once outside the for loop. Then we count the number of particles with radii
+        less than that of the particle under inspection but only down to the last bin edge.
+    '''
+    constant = 6.67E-8 * 1E-6 # Define the constant, for gravitational energy this is G * particle mass
+    array_1 = (np.true_divide(A,constant)) ** -1 # Do array division for the 'radii' array and then raise to power of -1 to flip
     R = []
     result = []
     count = np.histogram(A,bins)
     cumulative = np.cumsum(count[0])
-    bin = np.digitize(A, bins)
-    LE = count[1][bin-1]
+    bin = np.digitize(A, bins) # Which bin to elements fall into
+    LE = count[1][bin-1]       # Create arrays for left and right edges for each particle. Doing this outside the loop cuts down comp time
     RE = count[1][bin]
 
 
@@ -46,29 +50,9 @@ def solution(A,bins):
             result.append(total_upto_element)
 
 
-    return np.multiply(result,array_1)
+    return np.multiply(result,array_1) # Return the resulting array (interior masses) multiplied by the array_1 we defined earlier to give E_grav
 
 
-    # for i in range(len(A)):
-    #     if bin[i] - 1 == 0:
-    #         continue
-    #     else:
-    #         n_upto_edge = cumulative[bin[i]-1] - count[0][bin[i]-1]
-    #         LE = count[1][[bin[i]-1]]
-    #         RE = count[1][[bin[i]]]
-    #
-    #         B = A[A>LE]
-    #         R = B[B<RE]
-    #
-    #         total_upto_element = n_upto_edge + (R < A[i]).sum()
-    #         print(total_upto_element,A[i])
-
-
-    # # Find bin a value is in:
-    #
-    # for particle in A:
-    #     bin_id = np.digitize(A, bins)-1
-    #     print(cumulative[bin_id-1])
 
 
 print(solution(x,bins))
