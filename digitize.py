@@ -2,12 +2,12 @@ import numpy as np
 from scipy import stats
 import time
 start_time = time.time()
-x = np.linspace(1,14,75000)
-bins =  np.array([1,5,10,15])
+# x = np.linspace(1,14,75000)
+# bins =  np.array([1,5,10,15])
 
 
 
-def solution(A,bins):
+def solution(A,bins,particle_mass):
     ''' Our philosophy here is to reduce execution time for gravitational energy
         calculation where the number of particle interior to each particle needs
         to be considered. Doing this with a loop through every particle is expensive
@@ -16,15 +16,20 @@ def solution(A,bins):
         done once outside the for loop. Then we count the number of particles with radii
         less than that of the particle under inspection but only down to the last bin edge.
     '''
-    constant = 6.67E-8 * 1E-6 # Define the constant, for gravitational energy this is G * particle mass
-    array_1 = (np.true_divide(A,constant)) ** -1 # Do array division for the 'radii' array and then raise to power of -1 to flip
+
     R = []
     result = []
     count = np.histogram(A,bins)
     cumulative = np.cumsum(count[0])
     bin = np.digitize(A, bins) # Which bin to elements fall into
+
     LE = count[1][bin-1]       # Create arrays for left and right edges for each particle. Doing this outside the loop cuts down comp time
     RE = count[1][bin]
+    A = np.multiply(A,1.496E13)
+
+    constant = 6.67E-8 * particle_mass # Define the constant, for gravitational energy this is G * particle mass
+
+    array_1 = (np.true_divide(A,constant)) ** -1 # Do array division for the 'radii' array and then raise to power of -1 to flip
 
 
 
@@ -46,7 +51,7 @@ def solution(A,bins):
         else:
             n_upto_edge = R[bin[i]-1]
 
-            total_upto_element = (n_upto_edge + (C < A[i]).sum())
+            total_upto_element = (n_upto_edge + (C < A[i]).sum()) * particle_mass
             result.append(total_upto_element)
 
 
@@ -55,5 +60,5 @@ def solution(A,bins):
 
 
 
-print(solution(x,bins))
-print("--- %s seconds ---" % (time.time() - start_time))
+# print(solution(x,bins))
+# print("--- %s seconds ---" % (time.time() - start_time))

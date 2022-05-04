@@ -316,6 +316,17 @@ for file in tqdm(complete_file_list):
                                     averaged_temperature_radial[0][np.isnan(averaged_temperature_radial[0]) == False])
 
 
+
+
+
+
+
+    T = subSnap['my_temp'].magnitude.copy()
+    T.sort()
+    np.argmax(T>2000)
+
+    stop
+
     rotational_energy = 0.5 * subSnap['m'][0].to('g') * rotational_velocity_radial.to('cm/s') **2
     rotational_energy_binned = calculate_sum(r_clump_centred_midplane,rotational_energy,mean_bins_radial)
     cumsum_erot = np.cumsum(rotational_energy_binned[0])
