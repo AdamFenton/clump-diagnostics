@@ -16,6 +16,7 @@ import warnings
 from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
 from scipy.interpolate import make_interp_spline, BSpline
+from digitize import solution
 # Author: Adam Fenton
 
 cwd = os.getcwd()
@@ -187,7 +188,6 @@ for file in tqdm(complete_file_list):
     r_clump_centred = np.sqrt((subSnap['x']-(x))**2 +(subSnap['y']-(y))**2 + (subSnap['z']-(z))**2)
     r_clump_centred_midplane = np.hypot(subSnap['x']-(x),subSnap['y']-(y))
 
-
     radius_clump = np.sqrt((x)**2 + (y)**2 + (z)**2)
 
 
@@ -316,10 +316,29 @@ for file in tqdm(complete_file_list):
                                     averaged_temperature_radial[0][np.isnan(averaged_temperature_radial[0]) == False])
 
 
-    # rotational_energy = 0.5 * subSnap['m'][0].to('g') * rotational_velocity_radial.to('cm/s') **2
-    # rotational_energy_binned = calculate_sum(r_clump_centred_midplane,rotational_energy,mean_bins_radial)
-    # cumsum_erot = np.cumsum(rotational_energy_binned[0])
+    rotational_energy = 0.5 * subSnap['m'][0].to('g') * rotational_velocity_radial.to('cm/s') **2
+    rotational_energy_binned = calculate_sum(r_clump_centred_midplane,rotational_energy,mean_bins_radial)
+    cumsum_erot = np.cumsum(rotational_energy_binned[0])
+    grav_rad = r_clump_centred.magnitude
+
+    gravitational_energy = solution(grav_rad,mean_bins_radial,subSnap['m'][0].to('g'))
+    gravitational_energy_binned = calculate_sum(r_clump_centred_midplane,gravitational_energy,mean_bins_radial)
+    cumsum_egrav = np.cumsum(gravitational_energy_binned[0])
+
+    with np.errstate(invalid='ignore'):
+        beta = cumsum_erot / cumsum_egrav
+
+    # axs.plot(rotational_energy_binned[1][1:],beta)
+    # axs.set_yscale('log')
+    # axs.set_xlim(1e-4,50)
+    # axs.set_xscale('log')
+    # axs.set_ylim(1E-2,1E2)
+    # axs.axhline(y=1,c='black',linestyle='--',linewidth=1.5)
     #
+    #
+    #
+    # plt.show()
+    # stop
     # thermal_energy = calculate_thermal_energy(subSnap)
     # thermal_energy_binned = calculate_sum(r_clump_centred_midplane,thermal_energy,mean_bins_radial)
     # cumsum_etherm = np.cumsum(thermal_energy_binned[0])
