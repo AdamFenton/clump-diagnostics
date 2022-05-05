@@ -41,7 +41,6 @@ zb = np.logspace(np.log10(0.001),np.log10(50),120)
 
 # Initalise the figure and output file which is written to later on
 fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
-fig, axs = plt.subplots(figsize=(7,8))
 
 
 clump_results = open('clump-results.dat', 'w')
