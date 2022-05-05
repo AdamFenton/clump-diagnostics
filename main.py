@@ -17,6 +17,7 @@ from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
 from scipy.interpolate import make_interp_spline, BSpline
 from digitize import solution
+from temperature_prototype import solution_temp
 # Author: Adam Fenton
 
 cwd = os.getcwd()
@@ -48,6 +49,7 @@ clump_results = open('clump-results.dat', 'w')
 # Ignore pesky warnings when stripping unit off of pint quantity when downcasting to array
 if hasattr(pint, 'UnitStrippedWarning'):
     warnings.simplefilter('ignore', category=pint.UnitStrippedWarning)
+np.seterr(divide='ignore', invalid='ignore')
 
 def calculate_sum(binned_quantity,summed_quantity,bins):
     return stats.binned_statistic(binned_quantity, summed_quantity, 'sum', bins=bins)
@@ -65,8 +67,10 @@ def calculate_number_in_bin(binned_quantity,mean_quantity,width):
 
 def calculate_thermal_energy(subSnap):
     U = 3/2 * 1.38E-16 * subSnap['my_temp'] * ((subSnap['m'][0].to('g'))/(1.67E-24))
+
     U = U.magnitude
-    U *= ((U>2000)*(1/1.2)+(U<2000)*(1/2.381))
+
+    U *= ((subSnap['my_temp'].magnitude>2000)*(1/1.2)+(subSnap['my_temp'].magnitude<2000)*(1/2.381))
     return U
 
 def calculate_gravitational_energy(subSnap,r_clump_centred):
@@ -321,11 +325,18 @@ for file in tqdm(complete_file_list):
 
 
 
-    T = subSnap['my_temp'].magnitude.copy()
-    T.sort()
-    np.argmax(T>2000)
+    # thermal_energy = solution_temp(subSnap['my_temp'].magnitude,r_clump_centred.magnitude)
+    # x,y, = zip(*thermal_energy)
+    # plt.scatter(x,y,s=0.1)
+    # plt.yscale('log')
+    # plt.xscale('log')
+    # plt.xlim(1e-4,50)
+    # plt.show()
+    #
+    # stop
+    # gravitational_energy_binned = calculate_sum(r_clump_centred_midplane,gravitational_energy,mean_bins_radial)
+    # cumsum_egrav = np.cumsum(gravitational_energy_binned[0])
 
-    stop
 
     rotational_energy = 0.5 * subSnap['m'][0].to('g') * rotational_velocity_radial.to('cm/s') **2
     rotational_energy_binned = calculate_sum(r_clump_centred_midplane,rotational_energy,mean_bins_radial)
@@ -336,20 +347,18 @@ for file in tqdm(complete_file_list):
     gravitational_energy_binned = calculate_sum(r_clump_centred_midplane,gravitational_energy,mean_bins_radial)
     cumsum_egrav = np.cumsum(gravitational_energy_binned[0])
 
+    thermal_energy = calculate_thermal_energy(subSnap)
+    thermal_energy_binned = calculate_sum(r_clump_centred_midplane,thermal_energy,mean_bins_radial)
+    cumsum_etherm = np.cumsum(thermal_energy_binned[0])
+
+    with np.errstate(invalid='ignore'):
+        alpha = cumsum_etherm / cumsum_egrav
+
     with np.errstate(invalid='ignore'):
         beta = cumsum_erot / cumsum_egrav
 
-    # axs.plot(rotational_energy_binned[1][1:],beta)
-    # axs.set_yscale('log')
-    # axs.set_xlim(1e-4,50)
-    # axs.set_xscale('log')
-    # axs.set_ylim(1E-2,1E2)
-    # axs.axhline(y=1,c='black',linestyle='--',linewidth=1.5)
-    #
-    #
-    #
-    # plt.show()
-    # stop
+
+
     # thermal_energy = calculate_thermal_energy(subSnap)
     # thermal_energy_binned = calculate_sum(r_clump_centred_midplane,thermal_energy,mean_bins_radial)
     # cumsum_etherm = np.cumsum(thermal_energy_binned[0])
@@ -426,18 +435,18 @@ for file in tqdm(complete_file_list):
     # f_in_axs.set_xlim(1e-3,50)
     # f_radial_axs[1,1].plot(averaged_infall_radial[1][:-1],smoothed_infall,linewidth=0.75,c='r')
 
-    f_radial_axs[1,1].plot(averaged_infall_radial[1][1:][peaks],smoothed_infall[peaks],'+',c='k')
+    f_radial_axs[1,1].plot(averaged_infall_radial[1][1:][peaks],smoothed_infall[peaks],'+',c='red')
 
-    f_radial_axs[2,0].plot(count[1][1:],mass_in_bin,linewidth=0.75)
+    f_radial_axs[2,0].plot(count[1][1:],mass_in_bin,linewidth=1)
     f_radial_axs[2,0].set_yscale('linear')
 
-    # f_radial_axs[2,1].scatter(r_clump_centred,spec_ang_mom,s =0.01)
-    # f_radial_axs[2,1].plot(gravitational_energy_binned[1][1:],beta,linewidth=0.75)
-    # f_radial_axs[2,1].axhline(y=1,c='black',linestyle='--',linewidth=1.5)
+    f_radial_axs[2,1].plot(gravitational_energy_binned[1][1:],alpha,linewidth=1,c=line_colour)
+    f_radial_axs[2,1].plot(gravitational_energy_binned[1][1:],beta,linewidth=1,c=line_colour)
+    f_radial_axs[2,1].axhline(y=1,c='black',linestyle='--',linewidth=1.5)
     f_radial_axs[2,1].set_xscale('log')
-    # f_radial_axs[2,1].set_yscale('log')
+    f_radial_axs[2,1].set_yscale('log')
     f_radial_axs[2,1].set_xlim(1E-4,50)
-    # f_radial_axs[2,1].set_ylim(1E-2,1E2)
+    f_radial_axs[2,1].set_ylim(1E-2,1E2)
 
 
     f_radial_axs[0,0].set_ylim(1E-13,1E-1)
