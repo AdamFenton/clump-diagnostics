@@ -1,26 +1,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-A = [16,12,10,5]
+A = [16,12,5,10]
 B = [2, 3, 1, 4]
 
 
 def solution(T,R):
-    zipped_arrays = zip(T,R) # sorting a zipped object by the first list.
-    sorted_pairs  = sorted(zipped_arrays)
-    print(np.argmax(np.asarray(T.sort())>2))
+    thermal_energy = np.zeros(len(T))
+    perm = np.asarray(T).argsort() # Permuation of array that sorts T array
+    T_sorted = np.sort(T)
+    index = np.argmax(T_sorted > 10) # Index of array where element is greater than threshold
+    thermal_energy[:index] = 1 # Calculate thermal energy in first regime
+    thermal_energy[index:] = 10 # Calculate thermal energy in second regime
 
-    energy_below = T[:threshold] * 1
-    energy_above = T[threshold:] * 10
+    # We need to create an array for the radii that has the same permutation of
+    # the sorted temperature array so that the energies are correct at the correct R
 
-    x,y = zip(*sorted_pairs)
-    plt.plot(x,y)
-    plt.show()
-    # tuples = zip(*sorted_pairs)
-    #
-    # for tuple in tuples:
-    #     print(tuple)
+    radii = np.asarray(R)[perm]
+
+    result = zip(radii,thermal_energy)
+    return list(result)
 
 
 
-solution(A,B)
+print(solution(A,B))
