@@ -1,0 +1,690 @@
+2022-03-30 10:40:43,099 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:40:43,099 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:40:46,704 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:40:46,704 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:41:04,166 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:41:04,166 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:45:42,186 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:45:42,189 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:49:04,889 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:49:04,891 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:56:55,829 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:56:55,831 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:57:13,985 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:57:13,985 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:57:26,902 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:57:26,902 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:57:48,435 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:57:48,435 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:58:02,380 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:58:02,381 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:58:15,754 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:58:15,754 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:58:26,112 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:58:26,112 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:59:08,399 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:59:08,399 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 10:59:19,254 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 10:59:19,254 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:00:39,598 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:00:39,599 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:00:49,132 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:00:49,132 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:01:26,588 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:01:26,588 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:01:51,105 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:01:51,107 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:02:04,769 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:02:04,769 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:02:20,787 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:02:20,787 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:02:27,181 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:02:27,181 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:05:25,678 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:05:25,679 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:05:42,867 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:05:42,867 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:05:53,302 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:05:53,302 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:07:06,046 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:07:06,047 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:07:39,972 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:07:39,972 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:07:55,122 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:07:55,122 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:08:01,359 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:08:01,359 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:09:08,058 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:09:08,059 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:09:12,225 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:09:12,226 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:10:17,935 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:10:17,935 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:10:30,374 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:10:30,374 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:34:22,014 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:34:22,016 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:35:04,006 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:35:04,006 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:35:17,099 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:35:17,099 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:35:31,009 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:35:31,009 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:37:01,432 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:37:01,433 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:37:09,973 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:37:09,973 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:37:17,928 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:37:17,928 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:37:24,956 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:37:24,957 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:38:04,692 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:38:04,693 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:38:15,731 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:38:15,732 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:41:01,660 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:41:01,660 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:41:12,176 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:41:12,178 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:41:30,229 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:41:30,229 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:43:00,773 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:43:00,773 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:43:36,693 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:43:36,693 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:43:45,213 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:43:45,213 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 11:44:11,340 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 11:44:11,340 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:19:22,425 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:19:22,427 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:20:16,562 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:20:16,562 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:20:29,268 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:20:29,269 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:21:13,529 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:21:13,529 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:21:20,815 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:21:20,816 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:22:04,113 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:22:04,113 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:22:26,788 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:22:26,788 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:22:35,279 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:22:35,279 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:22:43,223 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:22:43,223 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:23:01,885 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:23:01,885 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:23:41,080 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:23:41,080 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:24:23,736 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:24:23,736 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:24:39,155 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:24:39,155 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:25:20,837 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:25:20,837 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:25:28,398 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:25:28,399 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:25:42,114 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:25:42,114 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:29:27,006 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:29:27,007 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:29:35,169 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:29:35,170 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:31:08,257 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:31:08,257 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:31:25,578 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:31:25,578 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:31:53,738 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:31:53,738 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:33:00,729 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:33:00,729 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:33:42,850 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:33:42,864 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:34:33,407 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:34:33,407 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:35:07,349 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:35:07,350 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:35:27,983 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:35:27,983 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:37:13,936 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:37:13,936 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:37:27,993 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:37:27,994 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:38:13,167 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:38:13,168 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:38:49,801 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:38:49,802 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:38:55,389 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:38:55,389 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:39:09,526 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:39:09,526 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:39:28,482 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:39:28,482 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:39:38,645 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:39:38,645 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:39:55,378 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:39:55,378 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:40:02,245 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:40:02,245 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:40:46,274 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:40:46,274 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:40:56,335 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:40:56,335 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:41:03,368 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:41:03,368 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:41:12,598 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:41:12,598 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:41:19,570 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:41:19,570 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:41:27,189 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:41:27,189 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:41:37,047 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:41:37,048 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:41:42,515 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:41:42,515 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:43:46,179 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:43:46,179 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:44:03,558 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:44:03,558 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:44:39,685 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:44:39,685 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:45:52,138 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:45:52,138 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:46:05,456 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:46:05,456 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:46:21,252 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:46:21,252 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:46:49,874 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:46:49,874 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:47:04,053 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:47:04,053 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:47:13,868 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:47:13,868 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:47:34,014 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:47:34,014 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:47:46,943 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:47:46,943 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:49:40,052 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:49:40,053 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:49:47,920 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:49:47,920 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:49:54,932 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:49:54,933 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:50:00,262 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:50:00,263 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:51:09,846 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:51:09,847 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:51:16,803 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:51:16,803 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:51:30,361 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:51:30,361 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:52:12,840 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:52:12,840 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:53:33,188 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:53:33,188 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:53:39,188 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:53:39,188 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:53:47,491 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:53:47,491 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:54:11,505 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:54:11,505 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:58:32,544 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:58:32,544 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:58:46,615 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:58:46,615 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:59:00,119 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:59:00,119 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:59:42,965 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:59:42,966 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:59:52,746 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:59:52,747 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 13:59:58,527 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 13:59:58,527 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:00:53,092 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:00:53,093 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:01:01,432 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:01:01,432 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:02:40,652 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:02:40,652 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:03:03,974 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:03:03,974 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:03:15,702 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:03:15,703 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:03:30,971 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:03:30,972 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:03:42,439 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:03:42,439 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:04:05,574 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:04:05,574 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:04:13,207 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:04:13,207 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:05:59,796 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:05:59,796 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:08:53,054 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:08:53,054 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:09:22,053 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:09:22,053 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:09:41,640 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:09:41,640 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:09:57,858 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:09:57,858 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:10:11,003 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:10:11,003 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:10:44,336 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:10:44,336 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:11:29,778 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:11:29,778 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:12:32,981 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:12:32,981 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:12:43,198 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:12:43,198 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:12:56,796 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:12:56,796 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:13:32,397 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:13:32,397 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:14:29,250 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:14:29,250 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:14:58,120 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:14:58,120 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:15:07,887 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:15:07,888 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:16:37,482 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:16:37,482 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:16:49,878 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:16:49,878 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:17:07,691 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:17:07,692 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:17:14,820 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:17:14,820 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:18:30,041 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:18:30,041 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:18:48,125 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:18:48,125 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:18:54,818 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:18:54,818 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:19:22,395 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:19:22,395 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:19:46,354 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:19:46,355 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:20:17,935 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:20:17,936 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:20:57,287 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:20:57,288 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:21:10,305 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:21:10,305 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:21:26,984 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:21:26,984 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:21:34,334 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:21:34,334 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:21:39,461 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:21:39,461 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:21:58,283 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:21:58,283 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:22:04,436 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:22:04,436 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:26:30,260 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:26:30,260 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:26:33,518 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:26:33,518 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:26:37,470 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:26:37,470 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:44:32,175 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:44:32,175 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:44:46,584 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:44:46,584 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:44:58,586 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:44:58,586 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:45:17,571 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:45:17,571 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:46:49,353 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:46:49,354 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:46:49,369 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:46:49,527 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:46:49,677 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:46:49,832 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:47:22,379 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:47:22,380 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:47:22,398 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:47:22,565 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:47:22,749 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:47:22,932 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:49:16,951 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:49:16,951 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:49:16,968 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:49:17,453 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:49:17,923 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:49:18,414 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:49:54,610 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:49:54,610 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:49:54,625 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:50:15,083 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:50:15,083 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:50:15,097 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:50:15,728 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:50:16,346 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:50:16,960 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:50:53,034 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:50:53,035 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:50:53,058 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:50:53,890 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:51:02,493 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:51:02,493 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:51:02,507 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:51:03,437 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:51:49,595 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:51:49,595 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:51:49,995 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:51:50,816 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:53:01,368 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:53:01,368 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:53:01,574 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:53:16,095 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:53:16,096 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:53:16,305 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:53:28,162 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:53:28,162 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:53:28,367 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:53:41,309 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:53:41,309 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:53:41,514 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:53:42,791 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:54:00,551 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:54:00,551 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:54:00,777 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:54:02,061 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:54:17,145 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:54:17,145 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:54:17,356 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:54:18,616 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:54:49,715 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:54:49,715 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:54:49,922 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:55:22,891 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:55:22,891 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:55:23,096 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:55:24,649 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 14:55:57,095 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:55:57,096 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:55:57,305 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:56:05,192 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:56:05,192 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:56:05,398 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:56:30,474 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 14:56:30,474 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 14:56:30,682 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 14:56:37,633 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 15:01:30,093 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:01:30,093 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:01:30,304 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 15:01:31,869 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 15:03:05,923 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:03:05,924 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:03:06,277 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 15:03:31,392 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 15:04:22,145 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:04:22,146 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:04:22,499 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0160116.090.h5
+2022-03-30 15:04:36,467 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0160116.090.h5
+2022-03-30 15:04:51,747 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:04:51,748 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:04:52,098 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:05:07,134 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.040.h5
+2022-03-30 15:05:25,903 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:05:25,903 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:05:26,256 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:05:27,915 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.040.h5
+2022-03-30 15:05:50,421 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:05:50,426 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:05:50,816 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:05:52,414 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.040.h5
+2022-03-30 15:07:22,275 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:07:22,275 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:07:22,712 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:07:24,397 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.040.h5
+2022-03-30 15:07:35,007 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:07:35,008 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:07:35,401 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:07:37,043 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.040.h5
+2022-03-30 15:08:08,192 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:08:08,192 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:08:08,546 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:08:16,969 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:08:16,969 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:08:17,345 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:08:19,011 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.040.h5
+2022-03-30 15:08:55,854 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:08:55,857 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:08:56,263 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:08:58,023 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.040.h5
+2022-03-30 15:09:58,678 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:09:58,679 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:09:59,068 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:10:00,748 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.040.h5
+2022-03-30 15:11:21,749 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:11:21,751 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:11:22,160 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:11:23,778 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.040.h5
+2022-03-30 15:11:43,795 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:11:43,795 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:11:44,154 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:11:45,763 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.040.h5
+2022-03-30 15:12:49,197 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:12:49,198 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:12:49,567 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:13:35,320 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:13:35,320 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:13:35,731 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:13:44,261 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:13:44,261 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:13:44,641 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.040.h5
+2022-03-30 15:13:46,274 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.040.h5
+2022-03-30 15:13:58,294 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:13:58,294 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:13:58,683 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-03-30 15:14:00,365 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-03-30 15:15:41,320 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:15:41,320 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:15:41,677 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-03-30 15:15:43,258 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-03-30 15:16:02,417 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:16:02,417 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:16:02,774 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-03-30 15:16:04,377 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-03-30 15:18:08,881 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:18:08,881 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:18:09,236 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-03-30 15:18:10,808 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-03-30 15:18:28,298 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:18:28,298 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:18:28,649 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-03-30 15:18:30,223 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-03-30 15:19:43,911 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:19:43,911 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:19:44,281 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-03-30 15:19:45,895 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-03-30 15:20:00,948 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:20:00,948 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:20:01,316 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-03-30 15:20:03,181 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-03-30 15:20:37,011 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:20:37,012 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:20:37,368 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-03-30 15:20:38,952 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-03-30 15:21:47,368 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:21:47,368 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:21:47,724 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-03-30 15:21:49,384 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-03-30 15:22:10,249 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-03-30 15:22:10,249 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-03-30 15:22:10,603 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-03-30 15:22:13,285 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-04-06 11:21:46,617 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-06 11:21:46,617 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-06 11:21:54,012 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-06 11:21:54,012 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-06 11:21:54,413 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-06 11:21:55,063 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-06 11:21:57,972 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-04-06 11:21:58,630 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-04-06 15:00:47,852 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-06 15:00:47,853 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-06 15:00:53,588 - DEBUG - load_snap - Loading Phantom snapshot: run1.1.0160116.090.h5
+2022-04-06 15:00:54,235 - DEBUG - load_snap - Loading Phantom snapshot: run1.1.0160116.090.h5
+2022-04-06 15:01:14,855 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-06 15:01:14,855 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-06 15:01:15,266 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-06 15:01:15,931 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-06 15:01:50,849 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-06 15:01:50,849 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-06 15:01:51,236 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-06 15:01:51,876 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-06 15:01:59,525 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-06 15:01:59,526 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-06 15:01:59,907 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-06 15:02:00,539 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-06 15:02:19,892 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-06 15:02:19,892 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-06 15:02:20,272 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-06 15:02:20,902 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 10:25:39,959 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 10:25:39,960 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 10:25:49,826 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 10:25:49,826 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 10:25:50,218 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 10:25:50,892 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:13:41,943 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:13:41,944 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:13:42,510 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:13:43,208 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:14:54,294 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:14:54,295 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:14:54,861 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:14:55,589 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:15:25,838 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:15:25,838 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:15:26,223 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:15:37,222 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:15:37,224 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:15:37,646 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:15:49,960 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:15:49,960 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:15:50,348 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:16:06,602 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:16:06,602 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:16:06,978 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:16:45,329 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:16:45,331 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:16:45,771 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:17:05,540 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:17:05,540 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:17:05,920 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:18:00,889 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:18:00,889 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:18:01,271 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:18:01,921 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:18:19,404 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:18:19,405 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:18:19,793 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:18:20,435 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:18:54,468 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:18:54,468 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:19:03,641 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:19:03,641 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:19:25,737 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:19:25,738 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:20:08,061 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:20:08,061 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:20:42,273 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:20:42,273 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:20:54,299 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:20:54,299 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:20:54,683 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:20:55,367 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:21:13,740 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-04-07 15:21:14,449 - DEBUG - load_snap - Loading Phantom snapshot: clump1/run1.1.0101473.030.h5
+2022-04-07 15:47:58,206 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:47:58,207 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:48:45,814 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:48:45,815 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:48:55,155 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:48:55,155 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:51:09,120 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:51:09,121 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:52:51,603 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:52:51,603 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:53:01,442 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:53:01,443 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:53:47,219 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:53:47,220 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:54:48,159 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:54:48,160 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:55:01,535 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:55:01,535 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:55:01,953 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-07 15:55:02,634 - DEBUG - load_snap - Loading Phantom snapshot: clump2/run1.1.0101473.030.h5
+2022-04-12 10:52:13,904 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:52:13,904 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:52:30,557 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:52:30,557 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:53:02,170 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:53:02,170 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:53:17,543 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:53:17,543 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:53:56,904 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:53:56,904 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:54:03,714 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:54:03,715 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:54:07,869 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:54:07,869 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:54:54,638 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:54:54,638 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:55:15,656 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:55:15,656 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:56:16,882 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:56:16,882 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:56:23,809 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:56:23,820 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:57:09,355 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:57:09,356 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:57:18,062 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:57:18,063 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 10:57:49,627 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 10:57:49,627 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:02:03,108 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:02:03,109 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:02:24,316 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:02:24,317 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:02:49,296 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:02:49,296 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:03:47,800 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:03:47,801 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:04:06,063 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:04:06,063 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:04:19,010 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:04:19,010 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:14:43,771 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:14:43,771 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:15:25,087 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:15:25,087 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:15:39,994 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:15:39,994 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:15:51,482 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:15:51,482 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:16:05,476 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:16:05,476 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:16:14,907 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:16:14,907 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:16:24,864 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:16:24,864 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:16:42,851 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:16:42,852 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:16:56,232 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:16:56,232 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:18:19,870 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:18:19,870 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:18:27,610 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:18:27,610 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-12 11:18:39,289 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-12 11:18:39,289 - DEBUG - logger_init - macOS version: 19.6.0, x86_64

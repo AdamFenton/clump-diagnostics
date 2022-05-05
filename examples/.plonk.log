@@ -1,0 +1,10 @@
+2022-04-07 15:09:08,490 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:09:08,490 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:09:15,326 - DEBUG - logger_init - Plonk v0.7.3 on Python 3.8.13
+2022-04-07 15:09:15,327 - DEBUG - logger_init - macOS version: 19.6.0, x86_64
+2022-04-07 15:09:15,882 - DEBUG - load_snap - Loading Phantom snapshot: clump002/run1.002.0055865.030.h5
+2022-04-07 15:09:16,315 - DEBUG - load_snap - Loading Phantom snapshot: clump002/run1.002.0055865.030.h5
+2022-04-07 15:09:19,457 - DEBUG - load_snap - Loading Phantom snapshot: clump003/run1.003.0080953.030.h5
+2022-04-07 15:09:19,883 - DEBUG - load_snap - Loading Phantom snapshot: clump003/run1.003.0080953.030.h5
+2022-04-07 15:09:24,789 - DEBUG - load_snap - Loading Phantom snapshot: clump001/run1.001.0086450.030.h5
+2022-04-07 15:09:25,203 - DEBUG - load_snap - Loading Phantom snapshot: clump001/run1.001.0086450.030.h5
