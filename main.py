@@ -18,8 +18,9 @@ from scipy.ndimage import gaussian_filter
 from scipy.interpolate import make_interp_spline, BSpline
 from digitize import solution
 from temperature_prototype import solution_temp
+import time
 # Author: Adam Fenton
-
+start_time = time.time()
 cwd = os.getcwd()
 # Load units for use later, useful for derived quantities.
 kms =  plonk.units('km/s')
@@ -177,16 +178,16 @@ for file in tqdm(complete_file_list):
     # h = snap['smoothing_length']
     # max_elem = np.amax(snap['density'][h>0])
     # id = np.where(snap['density']== max_elem)
-
+    prepared_snapshots = prepare_snapshots(file)
     # x,y,z,vx,vy,vz = collect_clump_positions(file,density_to_load)
-    ORIGIN = prepare_snapshots(file)[2][0] # The position of the clump centre
+    ORIGIN = prepared_snapshots[2][0] # The position of the clump centre
     x,y,z = ORIGIN[0],ORIGIN[1],ORIGIN[2]
-    vel_ORIGIN = prepare_snapshots(file)[3][0]# The velocity of the clump centre
+    vel_ORIGIN = prepared_snapshots[3][0]# The velocity of the clump centre
     vx,vy,vz = vel_ORIGIN[0],vel_ORIGIN[1],vel_ORIGIN[2]
 
-    subSnap = prepare_snapshots(file)[0]
+    subSnap = prepared_snapshots[0]
 
-    fullSnap = prepare_snapshots(file)[1]
+    fullSnap = prepared_snapshots[1]
 
     r_clump_centred = np.sqrt((subSnap['x']-(x))**2 +(subSnap['y']-(y))**2 + (subSnap['z']-(z))**2)
     r_clump_centred_midplane = np.hypot(subSnap['x']-(x),subSnap['y']-(y))
@@ -515,5 +516,6 @@ for file in tqdm(complete_file_list):
                        radius_clump,
                        weak_fc,
                        rhocritID))
-plt.show()
+
+print(time.time()-start_time)
 plt.savefig("%s/clump_profiles.png" % cwd,dpi = 500)
