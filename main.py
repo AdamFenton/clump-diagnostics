@@ -153,11 +153,11 @@ for file in tqdm(complete_file_list):
 
     spec_mom_binned_2 = calculate_sum(r_clump_centred,total_L,mean_bins_radial)
     spec_mom_sum_2= np.cumsum(spec_mom_binned_2[0])
-    axs.plot(spec_mom_binned_2[1][1:],spec_mom_binned_2[0],label="Total Magnitude")
+    axs.plot(spec_mom_binned_2[1][1:],spec_mom_binned_2[0],label="Total Magnitude",c=line_colour)
 
     spec_mom_binned_1 = calculate_sum(r_clump_centred,specific_angular_momentum[:,2],mean_bins_radial)
     spec_mom_sum_1= np.cumsum(spec_mom_binned_1[0])
-    axs.plot(spec_mom_binned_1[1][1:],spec_mom_binned_1[0],label="Z Componant")
+    axs.plot(spec_mom_binned_1[1][1:],spec_mom_binned_1[0],label="Z Componant",c=line_colour,linestyle='--')
 
     axs.set_xscale('log')
     axs.set_xlabel('R (AU)')
@@ -165,7 +165,6 @@ for file in tqdm(complete_file_list):
     axs.set_xlim(1e-4,50)
     axs.set_yscale('log')
     plt.legend()
-    plt.show()
     infall_velocity_radial = plonk.analysis.particles.velocity_radial_spherical_altered(subSnap,ORIGIN,vel_ORIGIN,ignore_accreted=True)
 
     averaged_infall_radial = calculate_mean(r_clump_centred,infall_velocity_radial)
@@ -270,7 +269,7 @@ for file in tqdm(complete_file_list):
     f_radial_axs[0,0].plot(binned_r_clump_with_nans,average_density_with_nans,c = line_colour)
     f_radial_axs[0,1].plot(averaged_temperature_radial[1][1:],averaged_temperature_radial[0],c = line_colour,linestyle="--",linewidth =1)
     f_radial_axs[0,1].plot(binned_r_clump_with_nans,average_temp_with_nans,c = line_colour)
-    f_radial_axs[1,0].scatter(r_clump_centred_midplane_rotvel,rotational_velocity_radial_cyl,s=0.1,c='k')
+    # f_radial_axs[1,0].scatter(r_clump_centred_midplane_rotvel,rotational_velocity_radial_cyl,s=0.1,c='k')
 
     f_radial_axs[1,0].plot(averaged_rotational_velocity[1][1:],averaged_rotational_velocity[0],c = line_colour,linestyle="--",linewidth = 1)
     f_radial_axs[1,0].plot(binned_r_clump_with_nans,average_rotational_with_nans,c = line_colour)
