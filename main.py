@@ -28,6 +28,7 @@ mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),120)
 
 # Initalise the figure and output file which is written to later on
 fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
+fig,axs = plt.subplots(figsize=(7,8))
 
 
 clump_results = open('clump-results.dat', 'w')
@@ -78,14 +79,17 @@ def prepare_snapshots(snapshot):
     max_elem = np.amax(snap['density'][h>0])
     id = np.where(snap['density']== max_elem)
     clump_centre = snap['position'][id]
+    x,y,z = clump_centre[0][0].magnitude,clump_centre[0][1].magnitude,clump_centre[0][2].magnitude
+    print(x,y,z)
     clump_velocity = snap['velocity'][id]
     accreted_mask = snap['smoothing_length'] > 0
     snap_active = snap[accreted_mask]
     subSnap=plonk.analysis.filters.sphere(snap=snap_active,radius = (50*au),center=clump_centre)
+    subSnap_rotvel=plonk.analysis.filters.cylinder(snap=snap_active,radius = (50*au),height=(0.01*au),center=(x,y,z) * au)
 
     subSnap.set_units(position='au', density='g/cm^3',smoothing_length='au',velocity='km/s')
 
-    return subSnap,snap_active,clump_centre,clump_velocity
+    return subSnap,snap_active,clump_centre,clump_velocity,subSnap_rotvel
 
 
 
@@ -128,6 +132,8 @@ for file in tqdm(complete_file_list):
     vel_ORIGIN = prepared_snapshots[3][0]# The velocity of the clump centre
 
     subSnap = prepared_snapshots[0]
+    rot_vel_snap = prepared_snapshots[4]
+    r_clump_centred_midplane_rotvel = np.hypot(rot_vel_snap['x']-(x),rot_vel_snap['y']-(y))
 
 
     r_clump_centred = np.sqrt((subSnap['x']-(x))**2 +(subSnap['y']-(y))**2 + (subSnap['z']-(z))**2)
@@ -140,10 +146,30 @@ for file in tqdm(complete_file_list):
     mass_in_bin = np.cumsum(count[0]) * subSnap['mass'][0].to('jupiter_mass')
     mid_plane_radius = plonk.analysis.particles.mid_plane_radius(subSnap,ORIGIN,ignore_accreted=True)
     rotational_velocity_radial = plonk.analysis.particles.rotational_velocity(subSnap,vel_ORIGIN,ignore_accreted=True)
+    rotational_velocity_radial_cyl = plonk.analysis.particles.rotational_velocity(rot_vel_snap,vel_ORIGIN,ignore_accreted=True)
+    specific_angular_momentum = plonk.analysis.particles.specific_angular_momentum(subSnap,ORIGIN,vel_ORIGIN,ignore_accreted=True).to('km**2/s')
+    total_L = np.sqrt(specific_angular_momentum[:,0]**2 + specific_angular_momentum[:,1]**2 +specific_angular_momentum[:,2]**2)
+
+
+    spec_mom_binned_2 = calculate_sum(r_clump_centred,total_L,mean_bins_radial)
+    spec_mom_sum_2= np.cumsum(spec_mom_binned_2[0])
+    axs.plot(spec_mom_binned_2[1][1:],spec_mom_binned_2[0],label="Total Magnitude")
+
+    spec_mom_binned_1 = calculate_sum(r_clump_centred,specific_angular_momentum[:,2],mean_bins_radial)
+    spec_mom_sum_1= np.cumsum(spec_mom_binned_1[0])
+    axs.plot(spec_mom_binned_1[1][1:],spec_mom_binned_1[0],label="Z Componant")
+
+    axs.set_xscale('log')
+    axs.set_xlabel('R (AU)')
+    axs.set_ylabel('L (km^2/s)')
+    axs.set_xlim(1e-4,50)
+    axs.set_yscale('log')
+    plt.legend()
+    plt.show()
     infall_velocity_radial = plonk.analysis.particles.velocity_radial_spherical_altered(subSnap,ORIGIN,vel_ORIGIN,ignore_accreted=True)
 
     averaged_infall_radial = calculate_mean(r_clump_centred,infall_velocity_radial)
-    averaged_rotational_velocity = calculate_mean(r_clump_centred_midplane,rotational_velocity_radial)
+    averaged_rotational_velocity = calculate_mean(r_clump_centred_midplane_rotvel,rotational_velocity_radial_cyl)
     averaged_density_radial = calculate_mean(r_clump_centred,subSnap['density'])
     averaged_temperature_radial = calculate_mean(r_clump_centred,subSnap['my_temp'])
 
@@ -199,8 +225,8 @@ for file in tqdm(complete_file_list):
 
 
 
-    rotational_energy = 0.5 * subSnap['m'][0].to('g') * rotational_velocity_radial.to('cm/s') **2
-    rotational_energy_binned = calculate_sum(r_clump_centred_midplane,rotational_energy,mean_bins_radial)
+    rotational_energy = 0.5 * subSnap['m'][0].to('g') * rotational_velocity_radial_cyl.to('cm/s') **2
+    rotational_energy_binned = calculate_sum(r_clump_centred_midplane_rotvel,rotational_energy,mean_bins_radial)
     cumsum_erot = np.cumsum(rotational_energy_binned[0])
     grav_rad = r_clump_centred.magnitude
 
@@ -244,6 +270,8 @@ for file in tqdm(complete_file_list):
     f_radial_axs[0,0].plot(binned_r_clump_with_nans,average_density_with_nans,c = line_colour)
     f_radial_axs[0,1].plot(averaged_temperature_radial[1][1:],averaged_temperature_radial[0],c = line_colour,linestyle="--",linewidth =1)
     f_radial_axs[0,1].plot(binned_r_clump_with_nans,average_temp_with_nans,c = line_colour)
+    f_radial_axs[1,0].scatter(r_clump_centred_midplane_rotvel,rotational_velocity_radial_cyl,s=0.1,c='k')
+
     f_radial_axs[1,0].plot(averaged_rotational_velocity[1][1:],averaged_rotational_velocity[0],c = line_colour,linestyle="--",linewidth = 1)
     f_radial_axs[1,0].plot(binned_r_clump_with_nans,average_rotational_with_nans,c = line_colour)
 
