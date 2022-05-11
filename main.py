@@ -28,7 +28,7 @@ mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),120)
 
 # Initalise the figure and output file which is written to later on
 fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
-fig,axs = plt.subplots(figsize=(7,8))
+fig_ang_mom, axs_ang_mom = plt.subplots(figsize=(7,8))
 
 
 clump_results = open('clump-results.dat', 'w')
@@ -80,7 +80,7 @@ def prepare_snapshots(snapshot):
     id = np.where(snap['density']== max_elem)
     clump_centre = snap['position'][id]
     x,y,z = clump_centre[0][0].magnitude,clump_centre[0][1].magnitude,clump_centre[0][2].magnitude
-    print(x,y,z)
+
     clump_velocity = snap['velocity'][id]
     accreted_mask = snap['smoothing_length'] > 0
     snap_active = snap[accreted_mask]
@@ -147,23 +147,23 @@ for file in tqdm(complete_file_list):
     mid_plane_radius = plonk.analysis.particles.mid_plane_radius(subSnap,ORIGIN,ignore_accreted=True)
     rotational_velocity_radial = plonk.analysis.particles.rotational_velocity(subSnap,vel_ORIGIN,ignore_accreted=True)
     rotational_velocity_radial_cyl = plonk.analysis.particles.rotational_velocity(rot_vel_snap,vel_ORIGIN,ignore_accreted=True)
-    specific_angular_momentum = plonk.analysis.particles.specific_angular_momentum(subSnap,ORIGIN,vel_ORIGIN,ignore_accreted=True).to('km**2/s')
+    specific_angular_momentum = plonk.analysis.particles.specific_angular_momentum(subSnap,ORIGIN,vel_ORIGIN,ignore_accreted=True).to('cm**2/s')
     total_L = np.sqrt(specific_angular_momentum[:,0]**2 + specific_angular_momentum[:,1]**2 +specific_angular_momentum[:,2]**2)
 
 
     spec_mom_binned_2 = calculate_sum(r_clump_centred,total_L,mean_bins_radial)
     spec_mom_sum_2= np.cumsum(spec_mom_binned_2[0])
-    axs.plot(spec_mom_binned_2[1][1:],spec_mom_binned_2[0],label="Total Magnitude",c=line_colour)
+    axs_ang_mom.plot(spec_mom_binned_2[1][1:],spec_mom_binned_2[0],label="Total Magnitude",c=line_colour)
 
     spec_mom_binned_1 = calculate_sum(r_clump_centred,specific_angular_momentum[:,2],mean_bins_radial)
     spec_mom_sum_1= np.cumsum(spec_mom_binned_1[0])
-    axs.plot(spec_mom_binned_1[1][1:],spec_mom_binned_1[0],label="Z Componant",c=line_colour,linestyle='--')
+    axs_ang_mom.plot(spec_mom_binned_1[1][1:],spec_mom_binned_1[0],label="Z Componant",c=line_colour,linestyle='--')
 
-    axs.set_xscale('log')
-    axs.set_xlabel('R (AU)')
-    axs.set_ylabel('L (km^2/s)')
-    axs.set_xlim(1e-4,50)
-    axs.set_yscale('log')
+    axs_ang_mom.set_xscale('log')
+    axs_ang_mom.set_xlabel('R (AU)')
+    axs_ang_mom.set_ylabel('L (cm^2/s)')
+    axs_ang_mom.set_xlim(1e-4,50)
+    axs_ang_mom.set_yscale('log')
     plt.legend()
     infall_velocity_radial = plonk.analysis.particles.velocity_radial_spherical_altered(subSnap,ORIGIN,vel_ORIGIN,ignore_accreted=True)
 
@@ -247,9 +247,9 @@ for file in tqdm(complete_file_list):
 
 
 
-    # smoothed_rotational     = savgol_filter(averaged_rotational_velocity[0],11,5)
-    # smoothed_temperature    = savgol_filter(averaged_temperature_radial[0],11,5)
-    # smoothed_density        = savgol_filter(averaged_density_radial[0],11,5)
+    smoothed_rotational     = savgol_filter(averaged_rotational_velocity[0],15,3)
+    smoothed_temperature    = savgol_filter(averaged_temperature_radial[0],15,3)
+    smoothed_density        = savgol_filter(averaged_density_radial[0],15,3)
     smoothed_infall              = savgol_filter(averaged_infall_radial[0],15,3)
     smoothed_infall_nans         = savgol_filter(average_infall_with_nans ,15,3)
     peaks, _ = find_peaks(smoothed_infall,width=3,distance=25,prominence=0.5)
@@ -258,7 +258,7 @@ for file in tqdm(complete_file_list):
     for i in range(0,3):
         for j in range(0,2):
             f_radial_axs[i,j].set_xscale('log')
-            f_radial_axs[i,j].set_xlim(1E-4,50)
+            f_radial_axs[i,j].set_xlim(1E-3,50)
 
     for i in [0,2]:
         for j in [0,1]:
@@ -269,7 +269,7 @@ for file in tqdm(complete_file_list):
     f_radial_axs[0,0].plot(binned_r_clump_with_nans,average_density_with_nans,c = line_colour)
     f_radial_axs[0,1].plot(averaged_temperature_radial[1][1:],averaged_temperature_radial[0],c = line_colour,linestyle="--",linewidth =1)
     f_radial_axs[0,1].plot(binned_r_clump_with_nans,average_temp_with_nans,c = line_colour)
-    # f_radial_axs[1,0].scatter(r_clump_centred_midplane_rotvel,rotational_velocity_radial_cyl,s=0.1,c='k')
+    f_radial_axs[1,0].scatter(r_clump_centred_midplane_rotvel,rotational_velocity_radial_cyl,s=0.1,c='k')
 
     f_radial_axs[1,0].plot(averaged_rotational_velocity[1][1:],averaged_rotational_velocity[0],c = line_colour,linestyle="--",linewidth = 1)
     f_radial_axs[1,0].plot(binned_r_clump_with_nans,average_rotational_with_nans,c = line_colour)
@@ -290,8 +290,8 @@ for file in tqdm(complete_file_list):
     f_radial_axs[2,1].axhline(y=1,c='black',linestyle='--',linewidth=1.5)
     f_radial_axs[2,1].set_xscale('log')
     f_radial_axs[2,1].set_yscale('log')
-    f_radial_axs[2,1].set_xlim(1E-4,50)
-    f_radial_axs[2,1].set_ylim(1E-2,1E2)
+    f_radial_axs[2,1].set_xlim(1E-3,50)
+    f_radial_axs[2,1].set_ylim(1E-2,20)
 
 
     f_radial_axs[0,0].set_ylim(1E-13,1E-1)
@@ -362,6 +362,6 @@ for file in tqdm(complete_file_list):
                        weak_fc,
                        rhocritID))
 
-print(time.time()-start_time)
-plt.show()
-# plt.savefig("%s/clump_profiles.png" % cwd,dpi = 500)
+
+fig_radial.savefig("%s/clump_profiles.png" % cwd,dpi = 500)
+fig_ang_mom.savefig("%s/specific_angular_momentum.png" % cwd,dpi = 500)
