@@ -117,6 +117,21 @@ except IndexError:
     print("Plotting mode not provided...exiting")
     sys.exit(1)
 
+def highlight_low_confidence_bins(quantity,elems):
+    ''' A function that, when provided with an input quantity in the form of
+        a binned_statistic and an array of elements, returns two arrays that
+        are copies of the input array but with bins with fewer than 50 particles
+        in changed to nan values. We copy the arrays so the originals remain
+        unaltered.
+    '''
+    R_y = quantity[0].copy()     # Resulting arrays are initally copies of the input arrays.
+    R_x = quantity[1][1:].copy()
+
+    for elem in elems:
+        R_x[elem] = np.nan
+        R_y[elem] = np.nan
+
+    return R_x, R_y
 
 
 
@@ -175,21 +190,6 @@ for file in tqdm(complete_file_list):
 
     elems = [i for i, a in enumerate(count[0]) if a <= 50]
 
-    def highlight_low_confidence_bins(quantity,elems):
-        ''' A function that, when provided with an input quantity in the form of
-            a binned_statistic and an array of elements, returns two arrays that
-            are copies of the input array but with bins with fewer than 50 particles
-            in changed to nan values. We copy the arrays so the originals remain
-            unaltered.
-        '''
-        R_y = quantity[0].copy()     # Resulting arrays are initally copies of the input arrays.
-        R_x = quantity[1][1:].copy()
-
-        for elem in elems:
-            R_x[elem] = np.nan
-            R_y[elem] = np.nan
-
-        return R_x, R_y
 
 
 
@@ -215,14 +215,6 @@ for file in tqdm(complete_file_list):
     averaged_temperature_radial_interp = np.interp(np.arange(len(averaged_temperature_radial[0])),
                                     np.arange(len(averaged_temperature_radial[0]))[np.isnan(averaged_temperature_radial[0]) == False],
                                     averaged_temperature_radial[0][np.isnan(averaged_temperature_radial[0]) == False])
-
-
-
-
-
-
-
-
 
     rotational_energy = 0.5 * subSnap['m'][0].to('g') * rotational_velocity_radial_cyl.to('cm/s') **2
     rotational_energy_binned = calculate_sum(r_clump_centred_midplane_rotvel,rotational_energy,mean_bins_radial)
@@ -250,8 +242,8 @@ for file in tqdm(complete_file_list):
     smoothed_rotational     = savgol_filter(averaged_rotational_velocity[0],15,3)
     smoothed_temperature    = savgol_filter(averaged_temperature_radial[0],15,3)
     smoothed_density        = savgol_filter(averaged_density_radial[0],15,3)
-    smoothed_infall              = savgol_filter(averaged_infall_radial[0],15,3)
-    smoothed_infall_nans         = savgol_filter(average_infall_with_nans ,15,3)
+    smoothed_infall         = savgol_filter(averaged_infall_radial[0],15,3)
+    smoothed_infall_nans    = savgol_filter(average_infall_with_nans ,15,3)
     peaks, _ = find_peaks(smoothed_infall,width=3,distance=25,prominence=0.5)
 
     # Tidily set axes limits and scale types
@@ -259,27 +251,32 @@ for file in tqdm(complete_file_list):
         for j in range(0,2):
             f_radial_axs[i,j].set_xscale('log')
             f_radial_axs[i,j].set_xlim(1E-3,50)
+            f_radial_axs[i,j].set_xlabel('R (AU)')
 
     for i in [0,2]:
         for j in [0,1]:
             f_radial_axs[i,j].set_yscale('log')
 
+    figure_indexes = [(0,0),(0,1),(1,0),(1,1),(2,0),(2,1)]
+    figure_ylimits = [(1E-13,1E-1),(10,8000),(0,7),(0,10),(0.1,40),(1E-5,10000)]
+    figure_ylabels = ['Density (g/cm^3)','Temperature (K)','Rotational Velocity (km/s)',
+                      'Infall Velocity (km/s)','Mass [Jupiter Masses]','Energy ratio']
+
+    for index,label,limit in zip(figure_indexes,figure_ylabels,figure_ylimits):
+        f_radial_axs[index].set_ylabel(label)
+        f_radial_axs[index].set_ylim(limit)
 
     f_radial_axs[0,0].plot(averaged_density_radial[1][1:],averaged_density_radial[0],c = line_colour,linestyle="--",linewidth = 1)
     f_radial_axs[0,0].plot(binned_r_clump_with_nans,average_density_with_nans,c = line_colour)
+
     f_radial_axs[0,1].plot(averaged_temperature_radial[1][1:],averaged_temperature_radial[0],c = line_colour,linestyle="--",linewidth =1)
     f_radial_axs[0,1].plot(binned_r_clump_with_nans,average_temp_with_nans,c = line_colour)
-    f_radial_axs[1,0].scatter(r_clump_centred_midplane_rotvel,rotational_velocity_radial_cyl,s=0.1,c='k')
 
     f_radial_axs[1,0].plot(averaged_rotational_velocity[1][1:],averaged_rotational_velocity[0],c = line_colour,linestyle="--",linewidth = 1)
     f_radial_axs[1,0].plot(binned_r_clump_with_nans,average_rotational_with_nans,c = line_colour)
 
     f_radial_axs[1,1].plot(averaged_infall_radial[1][1:],smoothed_infall,c = line_colour,linestyle="--",linewidth = 1)
     f_radial_axs[1,1].plot(binned_r_clump_with_nans,smoothed_infall_nans ,c = line_colour)
-
-
-
-
     f_radial_axs[1,1].plot(averaged_infall_radial[1][1:][peaks],smoothed_infall[peaks],'+',c='red')
 
     f_radial_axs[2,0].plot(count[1][1:],mass_in_bin,linewidth=1)
@@ -290,36 +287,15 @@ for file in tqdm(complete_file_list):
     f_radial_axs[2,1].axhline(y=1,c='black',linestyle='--',linewidth=1.5)
     f_radial_axs[2,1].set_xscale('log')
     f_radial_axs[2,1].set_yscale('log')
-    f_radial_axs[2,1].set_xlim(1E-3,50)
-    f_radial_axs[2,1].set_ylim(1E-2,20)
 
-
-    f_radial_axs[0,0].set_ylim(1E-13,1E-1)
-    f_radial_axs[0,1].set_ylim(10,8000)
-    f_radial_axs[1,1].set_ylim(-5,10)
-    f_radial_axs[2,0].set_ylim(0.1,40)
-
-
-    f_radial_axs[0,0].set_ylabel('Density (g/cm^3)')
-    f_radial_axs[1,0].set_ylabel('Rotational Velocity (km/s)')
-    f_radial_axs[2,0].set_ylabel('Mass [Jupiter Masses]')
-    f_radial_axs[0,1].set_ylabel('Temperature (K)')
-    f_radial_axs[1,1].set_ylabel('Infall Velocity (km/s)')
-    f_radial_axs[2,1].set_ylabel('Energy ratio')
-
-    f_radial_axs[0,0].set_xlabel('R (AU)')
-    f_radial_axs[1,0].set_xlabel('R (AU)')
-    f_radial_axs[2,0].set_xlabel('R (AU)')
-    f_radial_axs[0,1].set_xlabel('R (AU)')
-    f_radial_axs[1,1].set_xlabel('R (AU)')
-    f_radial_axs[2,1].set_xlabel('R (AU)')
     fig_radial.align_ylabels()
-    fig_radial.tight_layout(pad=0.35)
+    fig_radial.tight_layout(pad=0.40)
 
     if sys.argv[1] == 'density':
         clump_density = '{0:.2e}'.format(density_to_load)
     else:
         clump_density = 'clump'
+
     second_core_radius = 0.0000000
     second_core_count  = 0.0000000
     second_core_mass   = 0.0000000
@@ -332,21 +308,27 @@ for file in tqdm(complete_file_list):
 
     # Write core information to the clump_results file for plotting later on.
     if len(peaks) == 1:
-        first_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][:-1][peaks[0]]))
+        first_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][1:][peaks[0]]))
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
 
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
+        first_core_L = r_clump_centred[np.abs(r_clump_centred-first_core_radius).argmin()]
+        print(first_core_L,r_clump_centred[first_core_L],first_core_radius)
+
     if len(peaks) >= 2:
-        first_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][:-1][peaks][1]))
+        first_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][1:][peaks][1]))
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
+
+        first_core_L = r_clump_centred[np.abs(r_clump_centred-first_core_radius*au).argmin()]
+        print(first_core_radius)
 
         if smoothed_infall[peaks][1] < 0.5:
             weak_fc = 1
         #
-        second_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][:-1][peaks][0]))
+        second_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][1:][peaks][0]))
         second_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(second_core_radius))[0]
         second_core_mass =   float('{0:.5e}'.format(np.cumsum(second_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
         #
