@@ -1,13 +1,9 @@
 import numpy as np
 from scipy import stats
-import time
-start_time = time.time()
-# x = np.linspace(1,14,75000)
-# bins =  np.array([1,5,10,15])
 
 
 
-def solution(A,bins,particle_mass):
+def calculate_gravitational_energy(A,bins,particle_mass):
     ''' Our philosophy here is to reduce execution time for gravitational energy
         calculation where the number of particle interior to each particle needs
         to be considered. Doing this with a loop through every particle is expensive
@@ -56,9 +52,3 @@ def solution(A,bins,particle_mass):
 
 
     return np.multiply(result,array_1) # Return the resulting array (interior masses) multiplied by the array_1 we defined earlier to give E_grav
-
-
-
-
-# print(solution(x,bins))
-# print("--- %s seconds ---" % (time.time() - start_time))

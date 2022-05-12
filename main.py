@@ -10,21 +10,22 @@ import pint
 from tqdm.auto import tqdm
 import warnings
 from scipy.signal import savgol_filter
-from digitize import solution
+from digitize import calculate_gravitational_energy
 
 import time
 # Author: Adam Fenton
-start_time = time.time()
+
 cwd = os.getcwd()
+
 # Load units for use later, useful for derived quantities.
 au = plonk.units('au')
 
 
 
 
-density_to_load = None
+density_to_load = None #
 mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),120)
-
+mpl_colour_defaults=plt.rcParams['axes.prop_cycle'].by_key()['color'] # MLP default colours
 
 # Initalise the figure and output file which is written to later on
 fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
@@ -45,22 +46,15 @@ def calculate_mean(binned_quantity,mean_quantity):
     bins = np.logspace(np.log10(0.001),np.log10(50),120)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'mean', bins=bins)
 
-
 def calculate_number_in_bin(binned_quantity,mean_quantity,width):
     bins=np.logspace(np.log10(0.001),np.log10(width),120)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'count', bins=bins)
 
 def calculate_thermal_energy(subSnap):
     U = 3/2 * 1.38E-16 * subSnap['my_temp'] * ((subSnap['m'][0].to('g'))/(1.67E-24))
-
     U = U.magnitude
-
     U *= ((subSnap['my_temp'].magnitude>2000)*(1/1.2)+(subSnap['my_temp'].magnitude<2000)*(1/2.381))
     return U
-
-
-
-
 
 def prepare_snapshots(snapshot):
     ''' Load full snapshot as plonk object and initialise subsnap centred on clump.
@@ -128,8 +122,8 @@ def highlight_low_confidence_bins(quantity,elems):
     R_x = quantity[1][1:].copy()
 
     for elem in elems:
-        R_x[elem] = np.nan
-        R_y[elem] = np.nan
+        R_x[elem] = np.nan       # We exclude the elements where the bins contain less than
+        R_y[elem] = np.nan       # the threshold number of particles
 
     return R_x, R_y
 
@@ -137,7 +131,7 @@ def highlight_low_confidence_bins(quantity,elems):
 
 
 
-mpl_colour_defaults=plt.rcParams['axes.prop_cycle'].by_key()['color']
+
 for file in tqdm(complete_file_list):
     index = complete_file_list.index(file)
     line_colour = mpl_colour_defaults[index]
@@ -188,16 +182,18 @@ for file in tqdm(complete_file_list):
     averaged_temperature_radial = calculate_mean(r_clump_centred,subSnap['my_temp'])
 
 
-    elems = [i for i, a in enumerate(count[0]) if a <= 50]
+    # We can find the indexes of the bins that hold fewer than 50 partcles. We
+    # use this to define an area of confidence which will show in the plots.
+    low_confidence_values = [i for i, a in enumerate(count[0]) if a <= 50]
 
 
 
 
-    binned_r_clump_with_nans = highlight_low_confidence_bins(averaged_infall_radial,elems)[0]
-    average_temp_with_nans = highlight_low_confidence_bins(averaged_temperature_radial,elems)[1]
-    average_density_with_nans = highlight_low_confidence_bins(averaged_density_radial,elems)[1]
-    average_infall_with_nans = highlight_low_confidence_bins(averaged_infall_radial,elems)[1]
-    average_rotational_with_nans = highlight_low_confidence_bins(averaged_rotational_velocity,elems)[1]
+    binned_r_clump_with_nans = highlight_low_confidence_bins(averaged_infall_radial,low_confidence_values)[0]
+    average_temp_with_nans = highlight_low_confidence_bins(averaged_temperature_radial,low_confidence_values)[1]
+    average_density_with_nans = highlight_low_confidence_bins(averaged_density_radial,low_confidence_values)[1]
+    average_infall_with_nans = highlight_low_confidence_bins(averaged_infall_radial,low_confidence_values)[1]
+    average_rotational_with_nans = highlight_low_confidence_bins(averaged_rotational_velocity,low_confidence_values)[1]
 
 
     averaged_infall_radial_interp = np.interp(np.arange(len(averaged_infall_radial[0])),
@@ -221,7 +217,7 @@ for file in tqdm(complete_file_list):
     cumsum_erot = np.cumsum(rotational_energy_binned[0])
     grav_rad = r_clump_centred.magnitude
 
-    gravitational_energy = solution(grav_rad,mean_bins_radial,subSnap['m'][0].to('g'))
+    gravitational_energy = calculate_gravitational_energy(grav_rad,mean_bins_radial,subSnap['m'][0].to('g'))
     gravitational_energy_binned = calculate_sum(r_clump_centred_midplane,gravitational_energy,mean_bins_radial)
     cumsum_egrav = np.cumsum(gravitational_energy_binned[0])
 
