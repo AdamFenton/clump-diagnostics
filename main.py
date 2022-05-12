@@ -11,17 +11,14 @@ from tqdm.auto import tqdm
 import warnings
 from scipy.signal import savgol_filter
 from digitize import calculate_gravitational_energy
-
 import time
+
 # Author: Adam Fenton
 
 cwd = os.getcwd()
 
 # Load units for use later, useful for derived quantities.
 au = plonk.units('au')
-
-
-
 
 density_to_load = None #
 mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),120)
@@ -30,7 +27,6 @@ mpl_colour_defaults=plt.rcParams['axes.prop_cycle'].by_key()['color'] # MLP defa
 # Initalise the figure and output file which is written to later on
 fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
 fig_ang_mom, axs_ang_mom = plt.subplots(figsize=(7,8))
-
 
 clump_results = open('clump-results.dat', 'w')
 
@@ -85,8 +81,6 @@ def prepare_snapshots(snapshot):
 
     return subSnap,snap_active,clump_centre,clump_velocity,subSnap_rotvel
 
-
-
 # Catch case where user does not supply mode argument when running script from the command line
 try:
     print('Running script in',sys.argv[1], 'mode')
@@ -127,11 +121,6 @@ def highlight_low_confidence_bins(quantity,elems):
 
     return R_x, R_y
 
-
-
-
-
-
 for file in tqdm(complete_file_list):
     index = complete_file_list.index(file)
     line_colour = mpl_colour_defaults[index]
@@ -161,7 +150,7 @@ for file in tqdm(complete_file_list):
 
 
     spec_mom_binned_2 = calculate_sum(r_clump_centred,total_L,mean_bins_radial)
-    spec_mom_sum_2= np.cumsum(spec_mom_binned_2[0])
+    spec_mom_sum_2 = np.cumsum(spec_mom_binned_2[0])
     axs_ang_mom.plot(spec_mom_binned_2[1][1:],spec_mom_binned_2[0],label="Total Magnitude",c=line_colour)
 
     spec_mom_binned_1 = calculate_sum(r_clump_centred,specific_angular_momentum[:,2],mean_bins_radial)
@@ -311,23 +300,30 @@ for file in tqdm(complete_file_list):
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
         first_core_L = r_clump_centred[np.abs(r_clump_centred-first_core_radius).argmin()]
-        print(first_core_L,r_clump_centred[first_core_L],first_core_radius)
 
     if len(peaks) >= 2:
-        first_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][1:][peaks][1]))
+        first_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][1:][peaks[1]]))
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
 
-        first_core_L = r_clump_centred[np.abs(r_clump_centred-first_core_radius*au).argmin()]
-        print(first_core_radius)
+
+        print(spec_mom_binned_2[0][peaks[1]])
 
         if smoothed_infall[peaks][1] < 0.5:
             weak_fc = 1
         #
-        second_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][1:][peaks][0]))
+        second_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][1:][peaks[0]]))
         second_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(second_core_radius))[0]
         second_core_mass =   float('{0:.5e}'.format(np.cumsum(second_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
-        #
+
+        second_core_L_R = r_clump_centred[np.abs(spec_mom_binned_2[1]-second_core_radius).argmin()]
+        second_core_L = np.where(r_clump_centred == second_core_L_R)
+
+
+        print(averaged_infall_radial[1][1:][peaks[0]],averaged_infall_radial[1][1:][peaks[1]])
+        print(second_core_radius,first_core_radius)
+        print(second_core_mass,first_core_mass)
+
 
     clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
                        (file.split("/")[-1],\
@@ -339,7 +335,6 @@ for file in tqdm(complete_file_list):
                        radius_clump,
                        weak_fc,
                        rhocritID))
-
 
 fig_radial.savefig("%s/clump_profiles.png" % cwd,dpi = 500)
 fig_ang_mom.savefig("%s/specific_angular_momentum.png" % cwd,dpi = 500)
