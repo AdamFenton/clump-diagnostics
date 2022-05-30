@@ -284,8 +284,10 @@ for file in tqdm(complete_file_list):
     second_core_radius = 0.0000000
     second_core_count  = 0.0000000
     second_core_mass   = 0.0000000
+    L_sc               = 0.0000000
     first_core_radius  = 0.0000000
     first_core_count   = 0.0000000
+    L_fc               = 0.0000000
     first_core_mass    = 0.0000000
     weak_fc = 0.000000
     rhocritID = 1
@@ -299,15 +301,14 @@ for file in tqdm(complete_file_list):
 
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
-        first_core_L = r_clump_centred[np.abs(r_clump_centred-first_core_radius).argmin()]
+        first_core_bin = np.digitize(first_core_radius,mean_bins_radial)-1
+        L_fc = spec_mom_sum_2[first_core_bin]
+
 
     if len(peaks) >= 2:
         first_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][1:][peaks[1]]))
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
-
-
-
 
         if smoothed_infall[peaks][1] < 0.5:
             weak_fc = 1
@@ -322,16 +323,18 @@ for file in tqdm(complete_file_list):
 
         first_core_bin = np.digitize(first_core_radius,mean_bins_radial)-1
         second_core_bin = np.digitize(second_core_radius,mean_bins_radial)-1
-        print(spec_mom_sum_2[first_core_bin])
-        print(spec_mom_sum_2[second_core_bin])
+        L_fc = spec_mom_sum_2[first_core_bin]
+        L_sc = spec_mom_sum_2[second_core_bin]
 
 
-    clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
+    clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
                        (file.split("/")[-1],\
                        clump_density,\
                        second_core_radius,\
+                       L_sc,\
                        second_core_mass,\
                        first_core_radius,\
+                       L_fc,\
                        first_core_mass,
                        radius_clump,
                        weak_fc,
