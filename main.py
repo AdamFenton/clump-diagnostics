@@ -151,11 +151,11 @@ for file in tqdm(complete_file_list):
 
     spec_mom_binned_2 = calculate_sum(r_clump_centred,total_L,mean_bins_radial)
     spec_mom_sum_2 = np.cumsum(spec_mom_binned_2[0])
-    axs_ang_mom.plot(spec_mom_binned_2[1][1:],spec_mom_binned_2[0],label="Total Magnitude",c=line_colour)
+    axs_ang_mom.plot(spec_mom_binned_2[1][1:],spec_mom_sum_2,label="Total Magnitude",c=line_colour)
 
     spec_mom_binned_1 = calculate_sum(r_clump_centred,specific_angular_momentum[:,2],mean_bins_radial)
     spec_mom_sum_1= np.cumsum(spec_mom_binned_1[0])
-    axs_ang_mom.plot(spec_mom_binned_1[1][1:],spec_mom_binned_1[0],label="Z Componant",c=line_colour,linestyle='--')
+    axs_ang_mom.plot(spec_mom_binned_1[1][1:],spec_mom_sum_1,label="Z Componant",c=line_colour,linestyle='--')
 
     axs_ang_mom.set_xscale('log')
     axs_ang_mom.set_xlabel('R (AU)')
@@ -307,7 +307,7 @@ for file in tqdm(complete_file_list):
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
 
 
-        print(spec_mom_binned_2[0][peaks[1]])
+
 
         if smoothed_infall[peaks][1] < 0.5:
             weak_fc = 1
@@ -320,9 +320,10 @@ for file in tqdm(complete_file_list):
         second_core_L = np.where(r_clump_centred == second_core_L_R)
 
 
-        print(averaged_infall_radial[1][1:][peaks[0]],averaged_infall_radial[1][1:][peaks[1]])
-        print(second_core_radius,first_core_radius)
-        print(second_core_mass,first_core_mass)
+        first_core_bin = np.digitize(first_core_radius,mean_bins_radial)-1
+        second_core_bin = np.digitize(second_core_radius,mean_bins_radial)-1
+        print(spec_mom_sum_2[first_core_bin])
+        print(spec_mom_sum_2[second_core_bin])
 
 
     clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
@@ -338,3 +339,4 @@ for file in tqdm(complete_file_list):
 
 fig_radial.savefig("%s/clump_profiles.png" % cwd,dpi = 500)
 fig_ang_mom.savefig("%s/specific_angular_momentum.png" % cwd,dpi = 500)
+plt.show()
