@@ -6,6 +6,7 @@ import glob
 import os
 import sys
 from scipy import stats
+from scipy.interpolate import splev, splrep
 import pint
 from tqdm.auto import tqdm
 import warnings
@@ -75,7 +76,7 @@ def prepare_snapshots(snapshot):
     accreted_mask = snap['smoothing_length'] > 0
     snap_active = snap[accreted_mask]
     subSnap=plonk.analysis.filters.sphere(snap=snap_active,radius = (50*au),center=clump_centre)
-    subSnap_rotvel=plonk.analysis.filters.cylinder(snap=snap_active,radius = (50*au),height=(0.01*au),center=(x,y,z) * au)
+    subSnap_rotvel=plonk.analysis.filters.cylinder(snap=snap_active,radius = (50*au),height=(0.025*au),center=(x,y,z) * au)
 
     subSnap.set_units(position='au', density='g/cm^3',smoothing_length='au',velocity='km/s')
 
@@ -223,13 +224,27 @@ for file in tqdm(complete_file_list):
 
 
 
-
     smoothed_rotational     = savgol_filter(averaged_rotational_velocity[0],15,3)
     smoothed_temperature    = savgol_filter(averaged_temperature_radial[0],15,3)
     smoothed_density        = savgol_filter(averaged_density_radial[0],15,3)
     smoothed_infall         = savgol_filter(averaged_infall_radial[0],15,3)
     smoothed_infall_nans    = savgol_filter(average_infall_with_nans ,15,3)
-    peaks, _ = find_peaks(smoothed_infall,width=3,distance=25,prominence=0.5)
+
+
+
+
+
+
+
+    y = smoothed_infall
+    x = averaged_infall_radial[1]
+    x_smooth = np.logspace(np.log10(min(averaged_infall_radial[1])), np.log10(max(averaged_infall_radial[1])), 1000)
+    bspl = splrep(x,y, s=0)
+    bspl_y = splev(x_smooth, bspl)
+    peaks, _ = find_peaks(bspl_y,width=3,distance=25,prominence=0.5)
+
+
+
 
     # Tidily set axes limits and scale types
     for i in range(0,3):
@@ -262,7 +277,8 @@ for file in tqdm(complete_file_list):
 
     f_radial_axs[1,1].plot(averaged_infall_radial[1][1:],smoothed_infall,c = line_colour,linestyle="--",linewidth = 1)
     f_radial_axs[1,1].plot(binned_r_clump_with_nans,smoothed_infall_nans ,c = line_colour)
-    f_radial_axs[1,1].plot(averaged_infall_radial[1][1:][peaks],smoothed_infall[peaks],'+',c='red')
+    f_radial_axs[1,1].plot(x_smooth,bspl_y ,c = 'green')
+    f_radial_axs[1,1].plot(x_smooth[peaks],bspl_y[peaks],'+',c='red')
 
     f_radial_axs[2,0].plot(count[1][1:],mass_in_bin,linewidth=1)
     f_radial_axs[2,0].set_yscale('linear')
@@ -295,7 +311,7 @@ for file in tqdm(complete_file_list):
 
     # Write core information to the clump_results file for plotting later on.
     if len(peaks) == 1:
-        first_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][1:][peaks[0]]))
+        first_core_radius = float('{0:.5e}'.format(x_smooth[peaks[0]]))
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
 
@@ -306,14 +322,14 @@ for file in tqdm(complete_file_list):
 
 
     if len(peaks) >= 2:
-        first_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][1:][peaks[1]]))
+        first_core_radius = float('{0:.5e}'.format(x_smooth[peaks[1]]))
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
 
-        if smoothed_infall[peaks][1] < 0.5:
+        if bspl_y[peaks][1] < 0.5:
             weak_fc = 1
         #
-        second_core_radius = float('{0:.5e}'.format(averaged_infall_radial[1][1:][peaks[0]]))
+        second_core_radius = float('{0:.5e}'.format(x_smooth[peaks[0]]))
         second_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(second_core_radius))[0]
         second_core_mass =   float('{0:.5e}'.format(np.cumsum(second_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
 
@@ -325,6 +341,7 @@ for file in tqdm(complete_file_list):
         second_core_bin = np.digitize(second_core_radius,mean_bins_radial)-1
         L_fc = spec_mom_sum_2[first_core_bin]
         L_sc = spec_mom_sum_2[second_core_bin]
+
 
 
     clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
