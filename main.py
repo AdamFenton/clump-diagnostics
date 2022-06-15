@@ -167,7 +167,7 @@ for file in tqdm(complete_file_list):
 
     axs_ang_mom.set_xscale('log')
     axs_ang_mom.set_xlabel('R (AU)')
-    axs_ang_mom.set_ylabel('L (cm^2/s)')
+    axs_ang_mom.set_ylabel('J (cm^2/s)')
     axs_ang_mom.set_xlim(1e-4,50)
     axs_ang_mom.set_yscale('log')
     plt.legend()
@@ -302,6 +302,7 @@ for file in tqdm(complete_file_list):
     f_radial_axs[2,1].axhline(y=1,c='black',linestyle='--',linewidth=1.5)
     f_radial_axs[2,1].set_xscale('log')
     f_radial_axs[2,1].set_yscale('log')
+    f_radial_axs[2,1].set_ylim(1e-2,11)
 
     fig_radial.align_ylabels()
     fig_radial.tight_layout(pad=0.40)
