@@ -40,11 +40,11 @@ def calculate_sum(binned_quantity,summed_quantity,bins):
     return stats.binned_statistic(binned_quantity, summed_quantity, 'sum', bins=bins)
 
 def calculate_mean(binned_quantity,mean_quantity):
-    bins = np.logspace(np.log10(0.001),np.log10(50),120)
+    bins = np.logspace(np.log10(0.001),np.log10(50),75)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'mean', bins=bins)
 
 def calculate_number_in_bin(binned_quantity,mean_quantity,width):
-    bins=np.logspace(np.log10(0.001),np.log10(width),120)
+    bins=np.logspace(np.log10(0.001),np.log10(width),75)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'count', bins=bins)
 
 def calculate_thermal_energy(subSnap):
@@ -76,7 +76,7 @@ def prepare_snapshots(snapshot):
     accreted_mask = snap['smoothing_length'] > 0
     snap_active = snap[accreted_mask]
     subSnap=plonk.analysis.filters.sphere(snap=snap_active,radius = (50*au),center=clump_centre)
-    subSnap_rotvel=plonk.analysis.filters.cylinder(snap=snap_active,radius = (50*au),height=(0.025*au),center=(x,y,z) * au)
+    subSnap_rotvel=plonk.analysis.filters.cylinder(snap=snap_active,radius = (50*au),height=(0.1*au),center=(x,y,z) * au)
 
     subSnap.set_units(position='au', density='g/cm^3',smoothing_length='au',velocity='km/s')
 
@@ -121,6 +121,13 @@ def highlight_low_confidence_bins(quantity,elems):
         R_y[elem] = np.nan       # the threshold number of particles
 
     return R_x, R_y
+
+
+def find_first_non_nan(array):
+    for i in array:
+        if math.isnan(i) == False:
+            return array.index(i) - 1
+
 
 for file in tqdm(complete_file_list):
     index = complete_file_list.index(file)
@@ -236,8 +243,15 @@ for file in tqdm(complete_file_list):
 
 
 
+
     y = smoothed_infall
-    x = averaged_infall_radial[1]
+    x = averaged_infall_radial[1][1:]
+
+    # y[np.isnan(y)] = 0
+    # starting_id = np.where(smoothed_infall[np.isnan(smoothed_infall)])[0][-1] + 1
+    # y = smoothed_infall[starting_id:]
+    # x = x[starting_id:]
+
     x_smooth = np.logspace(np.log10(min(averaged_infall_radial[1])), np.log10(max(averaged_infall_radial[1])), 1000)
     bspl = splrep(x,y, s=0)
     bspl_y = splev(x_smooth, bspl)
@@ -277,7 +291,7 @@ for file in tqdm(complete_file_list):
 
     f_radial_axs[1,1].plot(averaged_infall_radial[1][1:],smoothed_infall,c = line_colour,linestyle="--",linewidth = 1)
     f_radial_axs[1,1].plot(binned_r_clump_with_nans,smoothed_infall_nans ,c = line_colour)
-    f_radial_axs[1,1].plot(x_smooth,bspl_y ,c = 'green')
+    # f_radial_axs[1,1].plot(x_smooth,bspl_y ,c = 'green')
     f_radial_axs[1,1].plot(x_smooth[peaks],bspl_y[peaks],'+',c='red')
 
     f_radial_axs[2,0].plot(count[1][1:],mass_in_bin,linewidth=1)
