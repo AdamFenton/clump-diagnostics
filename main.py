@@ -148,7 +148,7 @@ for file in tqdm(complete_file_list):
     radius_clump = np.sqrt((x)**2 + (y)**2 + (z)**2)
 
 
-    count = calculate_number_in_bin(r_clump_centred,subSnap['m'],50)
+    count = calculate_number_in_bin(r_clump_centred,subSnap['m'],100)
     mass_in_bin = np.cumsum(count[0]) * subSnap['mass'][0].to('jupiter_mass')
     mid_plane_radius = plonk.analysis.particles.mid_plane_radius(subSnap,ORIGIN,ignore_accreted=True)
     rotational_velocity_radial = plonk.analysis.particles.rotational_velocity(subSnap,vel_ORIGIN,ignore_accreted=True)
@@ -157,13 +157,14 @@ for file in tqdm(complete_file_list):
     total_L = np.sqrt(specific_angular_momentum[:,0]**2 + specific_angular_momentum[:,1]**2 +specific_angular_momentum[:,2]**2)
 
 
+
     spec_mom_binned_2 = calculate_sum(r_clump_centred,total_L,mean_bins_radial)
     spec_mom_sum_2 = np.cumsum(spec_mom_binned_2[0])
     axs_ang_mom.plot(spec_mom_binned_2[1][1:],spec_mom_sum_2,label="Total Magnitude",c=line_colour)
 
-    spec_mom_binned_1 = calculate_sum(r_clump_centred,specific_angular_momentum[:,2],mean_bins_radial)
-    spec_mom_sum_1= np.cumsum(spec_mom_binned_1[0])
-    axs_ang_mom.plot(spec_mom_binned_1[1][1:],spec_mom_sum_1,label="Z Componant",c=line_colour,linestyle='--')
+    # spec_mom_binned_1 = calculate_sum(r_clump_centred,specific_angular_momentum[:,2],mean_bins_radial)
+    # spec_mom_sum_1= np.cumsum(spec_mom_binned_1[0])
+    # axs_ang_mom.plot(spec_mom_binned_1[1][1:],spec_mom_sum_1,label="Z Componant",c=line_colour,linestyle='--')
 
     axs_ang_mom.set_xscale('log')
     axs_ang_mom.set_xlabel('R (AU)')
@@ -244,18 +245,21 @@ for file in tqdm(complete_file_list):
 
 
 
-    y = smoothed_infall
+    y = smoothed_infall.copy()
     x = averaged_infall_radial[1][1:]
 
-    # y[np.isnan(y)] = 0
+    y[np.isnan(y)] = 0
+
+
     # starting_id = np.where(smoothed_infall[np.isnan(smoothed_infall)])[0][-1] + 1
     # y = smoothed_infall[starting_id:]
     # x = x[starting_id:]
 
-    x_smooth = np.logspace(np.log10(min(averaged_infall_radial[1])), np.log10(max(averaged_infall_radial[1])), 1000)
-    bspl = splrep(x,y, s=0)
+    x_smooth = np.logspace(np.log10(min(averaged_infall_radial[1])), np.log10(max(averaged_infall_radial[1])), 2000)
+    bspl = splrep(x,y, s=0.1)
     bspl_y = splev(x_smooth, bspl)
-    peaks, _ = find_peaks(bspl_y,width=3,distance=25,prominence=0.5)
+
+    peaks, _ = find_peaks(bspl_y,height = 0.1)
 
 
 
@@ -272,7 +276,7 @@ for file in tqdm(complete_file_list):
             f_radial_axs[i,j].set_yscale('log')
 
     figure_indexes = [(0,0),(0,1),(1,0),(1,1),(2,0),(2,1)]
-    figure_ylimits = [(1E-13,1E-1),(10,8000),(0,7),(0,10),(0.1,40),(1E-5,10000)]
+    figure_ylimits = [(1E-13,1E-1),(10,8000),(0,7),(-1,10),(0.1,40),(1E-5,10000)]
     figure_ylabels = ['Density (g/cm^3)','Temperature (K)','Rotational Velocity (km/s)',
                       'Infall Velocity (km/s)','Mass [Jupiter Masses]','Energy ratio']
 
@@ -316,9 +320,15 @@ for file in tqdm(complete_file_list):
     second_core_count  = 0.0000000
     second_core_mass   = 0.0000000
     L_sc               = 0.0000000
+    egrav_sc           = 0.0000000
+    etherm_sc           = 0.0000000
+    erot_sc           = 0.0000000
     first_core_radius  = 0.0000000
     first_core_count   = 0.0000000
     L_fc               = 0.0000000
+    egrav_fc           = 0.0000000
+    etherm_fc           = 0.0000000
+    erot_fc           = 0.0000000
     first_core_mass    = 0.0000000
     weak_fc = 0.000000
     rhocritID = 1
@@ -334,7 +344,9 @@ for file in tqdm(complete_file_list):
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
         first_core_bin = np.digitize(first_core_radius,mean_bins_radial)-1
         L_fc = spec_mom_sum_2[first_core_bin]
-
+        egrav_fc = cumsum_egrav[first_core_bin]
+        etherm_fc = cumsum_etherm[first_core_bin]
+        erot_fc = cumsum_erot[first_core_bin]
 
     if len(peaks) >= 2:
         first_core_radius = float('{0:.5e}'.format(x_smooth[peaks[1]]))
@@ -356,17 +368,28 @@ for file in tqdm(complete_file_list):
         second_core_bin = np.digitize(second_core_radius,mean_bins_radial)-1
         L_fc = spec_mom_sum_2[first_core_bin]
         L_sc = spec_mom_sum_2[second_core_bin]
+        egrav_fc = cumsum_egrav[first_core_bin]
+        etherm_fc = cumsum_etherm[first_core_bin]
+        erot_fc = cumsum_erot[first_core_bin]
+        egrav_sc = cumsum_egrav[second_core_bin]
+        etherm_sc = cumsum_etherm[second_core_bin]
+        erot_sc = cumsum_erot[second_core_bin]
 
 
-
-    clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
+    clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
                        (file.split("/")[-1],\
                        clump_density,\
                        second_core_radius,\
                        L_sc,\
+                       egrav_sc,\
+                       etherm_sc,\
+                       erot_sc,\
                        second_core_mass,\
                        first_core_radius,\
                        L_fc,\
+                       egrav_fc,\
+                       etherm_fc,\
+                       erot_fc,\
                        first_core_mass,
                        radius_clump,
                        weak_fc,
@@ -374,4 +397,3 @@ for file in tqdm(complete_file_list):
 
 fig_radial.savefig("%s/clump_profiles.png" % cwd,dpi = 500)
 fig_ang_mom.savefig("%s/specific_angular_momentum.png" % cwd,dpi = 500)
-plt.show()
