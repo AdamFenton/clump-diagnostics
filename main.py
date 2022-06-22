@@ -252,10 +252,10 @@ for file in tqdm(complete_file_list):
     # y = smoothed_infall[starting_id:]
     # x = x[starting_id:]
 
-    x_smooth = np.logspace(np.log10(min(averaged_infall_radial[1])), np.log10(max(averaged_infall_radial[1])), 1000)
+    x_smooth = np.logspace(np.log10(min(averaged_infall_radial[1])), np.log10(max(averaged_infall_radial[1])), 2000)
     bspl = splrep(x,y, s=0)
     bspl_y = splev(x_smooth, bspl)
-    peaks, _ = find_peaks(bspl_y,width=3,distance=25,prominence=0.5)
+    peaks, _ = find_peaks(bspl_y,height=0.1)
 
 
 
@@ -291,7 +291,7 @@ for file in tqdm(complete_file_list):
 
     f_radial_axs[1,1].plot(averaged_infall_radial[1][1:],smoothed_infall,c = line_colour,linestyle="--",linewidth = 1)
     f_radial_axs[1,1].plot(binned_r_clump_with_nans,smoothed_infall_nans ,c = line_colour)
-    # f_radial_axs[1,1].plot(x_smooth,bspl_y ,c = 'green')
+    f_radial_axs[1,1].plot(x_smooth,bspl_y ,c = 'green')
     f_radial_axs[1,1].plot(x_smooth[peaks],bspl_y[peaks],'+',c='red')
 
     f_radial_axs[2,0].plot(count[1][1:],mass_in_bin,linewidth=1)
