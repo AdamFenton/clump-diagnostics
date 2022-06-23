@@ -36,7 +36,7 @@ def calculate_mean(binned_quantity,mean_quantity):
         by indexing this array with "averaged_density[1][:-1]"
 
     '''
-    bins=np.logspace(np.log10(0.001),np.log10(50.0), 200)
+    bins=np.logspace(np.log10(0.001),np.log10(50.0), 100)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'mean', bins=bins)
 
 def calculate_number_in_bin(binned_quantity,mean_quantity):
@@ -64,7 +64,7 @@ def calculate_sum(binned_quantity,summed_quantity,bins):
     return stats.binned_statistic(binned_quantity, summed_quantity, 'sum', bins=bins)
 
 def calculate_mean(binned_quantity,mean_quantity):
-    bins = np.logspace(np.log10(0.001),np.log10(100),75)
+    bins = np.logspace(np.log10(0.001),np.log10(50),75)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'mean', bins=bins)
 
 def calculate_number_in_bin(binned_quantity,mean_quantity,width):
@@ -100,9 +100,9 @@ def prepare_snapshots(snapshot):
     accreted_mask = snap['smoothing_length'] > 0
     snap_active = snap[accreted_mask]
     subSnap   = plonk.analysis.filters.sphere(snap=snap_active,radius = (50*au),center=clump_centre)
-    subSnap_x = plonk.analysis.filters.tube(snap=subSnap,radius = (0.5*au),length=(100*au),orientation='x',center= (x,y,z) * au)
-    subSnap_y = plonk.analysis.filters.tube(snap=subSnap,radius = (0.5*au),length=(100*au),orientation='y',center= (x,y,z) * au)
-    subSnap_z = plonk.analysis.filters.cylinder(snap=subSnap,radius = (0.5*au),height=(100*au),center= (x,y,z) * au)
+    subSnap_x = plonk.analysis.filters.tube(snap=subSnap,radius = (0.1*au),length=(10*au),orientation='x',center= (x,y,z) * au)
+    subSnap_y = plonk.analysis.filters.tube(snap=subSnap,radius = (0.1*au),length=(10*au),orientation='y',center= (x,y,z) * au)
+    subSnap_z = plonk.analysis.filters.cylinder(snap=subSnap,radius = (0.1*au),height=(10*au),center= (x,y,z) * au)
 
     subSnap.set_units(position='au', density='g/cm^3',smoothing_length='au',velocity='km/s')
 
@@ -138,8 +138,7 @@ except IndexError:
 for file in tqdm(complete_file_list):
     # fig7, f7_axs = plt.subplots(nrows=3,figsize=(8,8))
     # fig1, ax1 = plt.subplots(figsize=(12,8))
-    fig = plt.figure()
-    ax = plt.axes()
+    fig, ax = plt.subplots(nrows=3,figsize=(7,8))
     index = complete_file_list.index(file)
     line_colour = mpl_colour_defaults[index]
     prepared_snapshots = prepare_snapshots(file)
@@ -171,9 +170,9 @@ for file in tqdm(complete_file_list):
     averaged_density_radial_SSY = calculate_mean(r_clump_centred_SSY,SS_y['density'])
     averaged_density_radial_SSZ = calculate_mean(r_clump_centred_SSZ,SS_z['density'])
 
-    averaged_density_radial_SSX = calculate_mean(r_clump_centred_SSX,SS_x['my_temp'])
-    averaged_density_radial_SSY = calculate_mean(r_clump_centred_SSY,SS_y['my_temp'])
-    averaged_density_radial_SSZ = calculate_mean(r_clump_centred_SSZ,SS_z['my_temp'])
+    averaged_temperature_radial_SSX = calculate_mean(r_clump_centred_SSX,SS_x['my_temp'])
+    averaged_temperature_radial_SSY = calculate_mean(r_clump_centred_SSY,SS_y['my_temp'])
+    averaged_temperature_radial_SSZ = calculate_mean(r_clump_centred_SSZ,SS_z['my_temp'])
 
     averaged_density_radial_SSX = calculate_mean(r_clump_centred_SSX,SS_x['density'])
     averaged_density_radial_SSY = calculate_mean(r_clump_centred_SSY,SS_y['density'])
@@ -183,24 +182,32 @@ for file in tqdm(complete_file_list):
 
 
     # ax.scatter(r_clump_centred_SSX,SS_x['density'],s=5)
-    ax.plot(averaged_density_radial_SSX[1][1:],averaged_density_radial_SSX[0])
+    ax[0].plot(averaged_density_radial_SSX[1][1:],averaged_density_radial_SSX[0])
+    ax[0].plot(averaged_density_radial_SSY[1][1:],averaged_density_radial_SSY[0])
+    ax[0].plot(averaged_density_radial_SSZ[1][1:],averaged_density_radial_SSZ[0])
 
-    # ax.scatter(r_clump_centred_SSY,SS_y['density'],s=5)
-    ax.plot(averaged_density_radial_SSY[1][1:],averaged_density_radial_SSY[0])
+    ax[1].plot(averaged_temperature_radial_SSX[1][1:],averaged_temperature_radial_SSX[0])
+    ax[1].plot(averaged_temperature_radial_SSY[1][1:],averaged_temperature_radial_SSY[0])
+    ax[1].plot(averaged_temperature_radial_SSZ[1][1:],averaged_temperature_radial_SSZ[0])
+
+    ax[1].scatter(r_clump_centred_SSZ,SS_z['my_temp'],s=5)
 
     # ax.scatter(r_clump_centred_SSZ,SS_z['density'],s=5,marker='+')
-    ax.plot(averaged_density_radial_SSZ[1][1:],averaged_density_radial_SSZ[0])
 
 
-    ax.set_yscale('log')
-    ax.set_xscale('log')
+    ax[0].set_yscale('log')
+    ax[0].set_xscale('log')
+    ax[1].set_yscale('log')
+    ax[1].set_xscale('log')
+    ax[2].set_yscale('log')
+    ax[2].set_xscale('log')
 
 
     # ax.scatter(subSnap['x'],subSnap['z'],c='k',s=0.2)
     # ax.scatter(SS_x['x'],SS_x['z'])
     # ax.set_aspect('equal', 'box')
     plt.show()
-    stop    #
+
     # clump_ids = (subSnap['id'].magnitude).copy()
     #
     #
