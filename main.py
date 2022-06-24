@@ -22,12 +22,13 @@ cwd = os.getcwd()
 au = plonk.units('au')
 
 density_to_load = None #
-mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),120)
+mean_bins_radial = np.logspace(np.log10(0.001),np.log10(100),120)
 mpl_colour_defaults=plt.rcParams['axes.prop_cycle'].by_key()['color'] # MLP default colours
 
 # Initalise the figure and output file which is written to later on
 fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
 fig_ang_mom, axs_ang_mom = plt.subplots(figsize=(7,8))
+fig_test, axs_test = plt.subplots(figsize=(7,8))
 
 clump_results = open('clump-results.dat', 'w')
 
@@ -40,11 +41,11 @@ def calculate_sum(binned_quantity,summed_quantity,bins):
     return stats.binned_statistic(binned_quantity, summed_quantity, 'sum', bins=bins)
 
 def calculate_mean(binned_quantity,mean_quantity):
-    bins = np.logspace(np.log10(0.001),np.log10(50),75)
+    bins = np.logspace(np.log10(0.001),np.log10(100),120)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'mean', bins=bins)
 
 def calculate_number_in_bin(binned_quantity,mean_quantity,width):
-    bins=np.logspace(np.log10(0.001),np.log10(width),75)
+    bins=np.logspace(np.log10(0.001),np.log10(width),120)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'count', bins=bins)
 
 def calculate_thermal_energy(subSnap):
@@ -75,8 +76,8 @@ def prepare_snapshots(snapshot):
     clump_velocity = snap['velocity'][id]
     accreted_mask = snap['smoothing_length'] > 0
     snap_active = snap[accreted_mask]
-    subSnap=plonk.analysis.filters.sphere(snap=snap_active,radius = (50*au),center=clump_centre)
-    subSnap_rotvel=plonk.analysis.filters.cylinder(snap=snap_active,radius = (50*au),height=(0.1*au),center=(x,y,z) * au)
+    subSnap=plonk.analysis.filters.sphere(snap=snap_active,radius = (100*au),center=clump_centre)
+    subSnap_rotvel=plonk.analysis.filters.cylinder(snap=snap_active,radius = (100*au),height=(0.1*au),center=(x,y,z) * au)
 
     subSnap.set_units(position='au', density='g/cm^3',smoothing_length='au',velocity='km/s')
 
@@ -245,15 +246,17 @@ for file in tqdm(complete_file_list):
 
 
     y = smoothed_infall.copy()
+    y_2 = savgol_filter(averaged_infall_radial_interp ,15,3)
     x = averaged_infall_radial[1][1:]
 
-    y[np.isnan(y)] = 0
+
+
     # starting_id = np.where(smoothed_infall[np.isnan(smoothed_infall)])[0][-1] + 1
     # y = smoothed_infall[starting_id:]
     # x = x[starting_id:]
     # first_non_nan = y[np.isfinite(y)][0]
     x_smooth = np.logspace(np.log10(min(averaged_infall_radial[1])), np.log10(max(averaged_infall_radial[1])), 2000)
-    bspl = splrep(x,y)
+    bspl = splrep(x,y_2)
     bspl_y = splev(x_smooth, bspl)
     peaks, _ = find_peaks(bspl_y,height=0.1,distance=500)
 
@@ -263,7 +266,7 @@ for file in tqdm(complete_file_list):
     for i in range(0,3):
         for j in range(0,2):
             f_radial_axs[i,j].set_xscale('log')
-            f_radial_axs[i,j].set_xlim(1E-3,50)
+            f_radial_axs[i,j].set_xlim(1E-3,100)
             f_radial_axs[i,j].set_xlabel('R (AU)')
 
     for i in [0,2]:
@@ -271,7 +274,7 @@ for file in tqdm(complete_file_list):
             f_radial_axs[i,j].set_yscale('log')
 
     figure_indexes = [(0,0),(0,1),(1,0),(1,1),(2,0),(2,1)]
-    figure_ylimits = [(1E-13,1E-1),(10,8000),(0,7),(0,10),(0.1,40),(1E-5,10000)]
+    figure_ylimits = [(1E-13,1E-1),(10,8000),(0,7),(-0.5,10),(0.1,40),(1E-5,10000)]
     figure_ylabels = ['Density (g/cm^3)','Temperature (K)','Rotational Velocity (km/s)',
                       'Infall Velocity (km/s)','Mass [Jupiter Masses]','Energy ratio']
 
@@ -373,4 +376,3 @@ for file in tqdm(complete_file_list):
 
 fig_radial.savefig("%s/clump_profiles.png" % cwd,dpi = 500)
 fig_ang_mom.savefig("%s/specific_angular_momentum.png" % cwd,dpi = 500)
-plt.show()
