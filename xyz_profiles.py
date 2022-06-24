@@ -100,13 +100,12 @@ def prepare_snapshots(snapshot):
     accreted_mask = snap['smoothing_length'] > 0
     snap_active = snap[accreted_mask]
     subSnap   = plonk.analysis.filters.sphere(snap=snap_active,radius = (50*au),center=clump_centre)
-    subSnap_x = plonk.analysis.filters.tube(snap=subSnap,radius = (0.1*au),length=(10*au),orientation='x',center= (x,y,z) * au)
-    subSnap_y = plonk.analysis.filters.tube(snap=subSnap,radius = (0.1*au),length=(10*au),orientation='y',center= (x,y,z) * au)
-    subSnap_z = plonk.analysis.filters.cylinder(snap=subSnap,radius = (0.1*au),height=(10*au),center= (x,y,z) * au)
+    subSnap_xy = plonk.analysis.filters.cylinder(snap=snap_active,radius = (50*au),height=(0.1*au),center=(x,y,z) * au)
+    subSnap_z = plonk.analysis.filters.cylinder(snap=subSnap,radius = (0.01*au),height=(50*au),center= (x,y,z) * au)
 
     subSnap.set_units(position='au', density='g/cm^3',smoothing_length='au',velocity='km/s')
 
-    return subSnap,clump_centre,clump_velocity,subSnap_x,subSnap_y,subSnap_z
+    return subSnap,clump_centre,clump_velocity,subSnap_xy,subSnap_z
 
 
 # Catch case where user does not supply mode argument when running script from the command line
@@ -147,9 +146,8 @@ for file in tqdm(complete_file_list):
     vel_ORIGIN = prepared_snapshots[1][0]# The velocity of the clump centre
 
     subSnap = prepared_snapshots[0]
-    SS_x = prepared_snapshots[3]
-    SS_y = prepared_snapshots[4]
-    SS_z = prepared_snapshots[5]
+    SS_xy = prepared_snapshots[3]
+    SS_z = prepared_snapshots[4]
     # r_clump_centred_SSX = np.sqrt((SS_x['x']-x)**2 + \
     #                               (SS_x['y']-y)**2 + \
     #                               (SS_x['z']-z)**2)
@@ -161,36 +159,32 @@ for file in tqdm(complete_file_list):
     # r_clump_centred_SSZ = np.sqrt((SS_z['x']-x)**2 + \
     #                               (SS_z['y']-y)**2 + \
     #                               (SS_z['z']-z)**2)
-    r_clump_centred_SSX = np.abs(SS_x['x']-x)
-    r_clump_centred_SSY = np.abs(SS_y['y']-y)
+    r_clump_centred_SSXY = np.abs(np.sqrt((SS_xy['x']-x)**2 + (SS_xy['y']-y)**2))
     r_clump_centred_SSZ = np.abs(SS_z['z']-z)
 
 
-    averaged_density_radial_SSX = calculate_mean(r_clump_centred_SSX,SS_x['density'])
-    averaged_density_radial_SSY = calculate_mean(r_clump_centred_SSY,SS_y['density'])
+    averaged_density_radial_SSXY = calculate_mean(r_clump_centred_SSXY,SS_xy['density'])
     averaged_density_radial_SSZ = calculate_mean(r_clump_centred_SSZ,SS_z['density'])
 
-    averaged_temperature_radial_SSX = calculate_mean(r_clump_centred_SSX,SS_x['my_temp'])
-    averaged_temperature_radial_SSY = calculate_mean(r_clump_centred_SSY,SS_y['my_temp'])
+    averaged_temperature_radial_SSXY = calculate_mean(r_clump_centred_SSXY,SS_xy['my_temp'])
     averaged_temperature_radial_SSZ = calculate_mean(r_clump_centred_SSZ,SS_z['my_temp'])
 
-    averaged_density_radial_SSX = calculate_mean(r_clump_centred_SSX,SS_x['density'])
-    averaged_density_radial_SSY = calculate_mean(r_clump_centred_SSY,SS_y['density'])
+    averaged_density_radial_SSXY = calculate_mean(r_clump_centred_SSXY,SS_xy['density'])
     averaged_density_radial_SSZ = calculate_mean(r_clump_centred_SSZ,SS_z['density'])
 
 
 
 
     # ax.scatter(r_clump_centred_SSX,SS_x['density'],s=5)
-    ax[0].plot(averaged_density_radial_SSX[1][1:],averaged_density_radial_SSX[0])
-    ax[0].plot(averaged_density_radial_SSY[1][1:],averaged_density_radial_SSY[0])
+    ax[0].plot(averaged_density_radial_SSXY[1][1:],averaged_density_radial_SSXY[0])
+    ax[0].scatter(r_clump_centred_SSXY,SS_xy['density'],s=5)
+    ax[0].scatter(r_clump_centred_SSZ,SS_z['density'],s=5)
     ax[0].plot(averaged_density_radial_SSZ[1][1:],averaged_density_radial_SSZ[0])
 
-    ax[1].plot(averaged_temperature_radial_SSX[1][1:],averaged_temperature_radial_SSX[0])
-    ax[1].plot(averaged_temperature_radial_SSY[1][1:],averaged_temperature_radial_SSY[0])
+    ax[1].plot(averaged_temperature_radial_SSXY[1][1:],averaged_temperature_radial_SSXY[0])
     ax[1].plot(averaged_temperature_radial_SSZ[1][1:],averaged_temperature_radial_SSZ[0])
 
-    ax[1].scatter(r_clump_centred_SSZ,SS_z['my_temp'],s=5)
+
 
     # ax.scatter(r_clump_centred_SSZ,SS_z['density'],s=5,marker='+')
 
