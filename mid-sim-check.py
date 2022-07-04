@@ -7,6 +7,7 @@ import warnings
 import pint
 from matplotlib.gridspec import GridSpec
 from os.path import exists
+from plonk.utils.strings import time_string # Required for timestamping in plot
 
 
 if hasattr(pint, 'UnitStrippedWarning'):
@@ -40,11 +41,12 @@ def prepare_snapshots(h5_file):
 
     snap.set_units(position='au', density='g/cm^3',smoothing_length='au',velocity='km/s')
     snap['radius'] = np.sqrt(snap['x']**2 + snap['y']**2 + snap['z']**2)
+    r_out = max(snap['radius'].magnitude)
     snap['vmag'] = np.sqrt(snap['v_x']**2 + snap['v_y']**2 + snap['v_z']**2)
     snap.add_quantities('disc')
     snap.set_central_body(0)
-    prof = plonk.load_profile(snap,cmin='10 au', cmax='%s au' % 1000 ,n_bins=200)
-    prof.set_units(position='au',surface_density='g/cm^2',radius='au')
+    prof = plonk.load_profile(snap,cmin='10 au', cmax='%s au' % r_out ,n_bins=200)
+
     prof['my_sound_speed'] = np.sqrt(kb_on_mu_mh * prof['my_temp'])
     prof['toomre_Q'] = ((prof['keplerian_frequency']* prof['my_sound_speed'])/(np.pi * G * prof['surface_density'].to('g/cm^2')))
 
@@ -52,7 +54,10 @@ def prepare_snapshots(h5_file):
     accreted_mask = snap['smoothing_length'] > 0
     snap_active = snap[accreted_mask]
 
-    return snap_active, prof
+    return snap_active, prof,r_out
+
+
+
 
 try:
     file_exists = exists(sys.argv[1]+".h5")
@@ -73,8 +78,13 @@ try:
 except IndexError:
     print("File not provided...exiting")
     sys.exit(1)
+n_alive = len(snap['x'])
+n_sinks = len(snap.sinks)
+time_stamp = time_string(snap, 'year', 'yr')
+file_name = sys.argv[1]
 
-fig = plt.figure(constrained_layout=True,figsize=(14,8))
+
+fig = plt.figure(constrained_layout=True,figsize=(14.5,8))
 
 gs = GridSpec(3, 3, figure=fig)
 ax1 = fig.add_subplot(gs[0, 0])
@@ -84,27 +94,39 @@ ax4 = fig.add_subplot(gs[1, -2])
 ax5 = fig.add_subplot(gs[1:, -1])
 ax6 = fig.add_subplot(gs[-1, 0])
 ax7 = fig.add_subplot(gs[-1, -2])
+r_out = prepare_snapshots(h5_file)[2]
+extent = (-r_out, r_out, -r_out, r_out)
+
 
 
 y_labels = ['Q','Z','ρ','T','y','V','Σ']
 x_labels = ['R','R','R','R','x','R','R']
-y_limits = [(0,20),(-500,500),(1E-18,1e-7),(1e0,5E3),(-1000,1000),(0,15),(0,100)]
+y_limits = [(0,5),(-100,100),(1E-18,1e-7),(1e0,5E3),(-1000,1000),(0,15)]
 axes = [ax1,ax2,ax3,ax4,ax5,ax6,ax7]
+
 for axes,y_label,x_label,y_limit in zip(axes,y_labels,x_labels,y_limits):
     axes.set_ylabel(y_label)
     axes.set_xlabel(x_label)
     axes.set_ylim(y_limit)
-    axes.set_xlim(0,1100)
+    axes.set_xlim(0,r_out-50)
 
 ax1.plot(prof['radius'],prof['toomre_Q'],c='k')
-ax2.scatter(snap['radius'],snap['z'],s=0.5)
-ax3.scatter(snap['radius'],snap['density'],s=0.5)
-ax4.scatter(snap['radius'],snap['my_temp'],s=0.5)
-ax5.scatter(snap['x'],snap['y'],s=0.5)
-ax6.scatter(snap['radius'],snap['vmag'],s=0.5)
+ax2.scatter(snap['radius'],snap['z'],s=0.5,c='k')
+ax3.scatter(snap['radius'],snap['density'],s=0.5,c='k')
+ax4.scatter(snap['radius'],snap['my_temp'],s=0.5,c='k')
+snap.image(quantity='density', extent=extent, cmap='gist_heat', ax=ax5,norm='log',vmin=3e-3)
+
+ax6.scatter(snap['radius'],snap['vmag'],s=0.5,c='k')
+ax7.plot(prof['radius'],prof['surface_density'].to('g/cm^2'),c='k')
 ax3.set_yscale('log')
 ax4.set_yscale('log')
-ax5.set_xlim(-1000,1000)
-ax5.set_ylim(-1000,1000)
+ax5.set_xlim(-r_out,r_out)
+ax5.set_ylim(-r_out,r_out)
 ax5.set_aspect('equal', 'box')
+plt.figtext(0.79, 0.97, '%s' % file_name,fontsize=12,va="top", ha="right")
+plt.figtext(0.79, 0.94, '%s' % time_stamp,fontsize=12,va="top", ha="right")
+plt.figtext(0.79, 0.91, 'N alive = %s' % n_alive,fontsize=12,va="top", ha="right")
+plt.figtext(0.79, 0.88, 'N sinks = %s' % n_sinks,fontsize=12,va="top", ha="right")
+
+
 plt.show()

@@ -100,7 +100,7 @@ def prepare_snapshots(snapshot):
     accreted_mask = snap['smoothing_length'] > 0
     snap_active = snap[accreted_mask]
     subSnap   = plonk.analysis.filters.sphere(snap=snap_active,radius = (50*au),center=clump_centre)
-    subSnap_xy = plonk.analysis.filters.cylinder(snap=snap_active,radius = (50*au),height=(0.1*au),center=(x,y,z) * au)
+    subSnap_xy = plonk.analysis.filters.cylinder(snap=snap_active,radius = (50*au),height=(0.01*au),center=(x,y,z) * au)
     subSnap_z = plonk.analysis.filters.cylinder(snap=subSnap,radius = (0.01*au),height=(50*au),center= (x,y,z) * au)
 
     subSnap.set_units(position='au', density='g/cm^3',smoothing_length='au',velocity='km/s')
