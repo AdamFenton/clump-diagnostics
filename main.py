@@ -22,11 +22,11 @@ cwd = os.getcwd()
 au = plonk.units('au')
 kms = plonk.units('km/s')
 density_to_load = None #
-mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),75)
+mean_bins_radial = np.logspace(np.log10(0.001),np.log10(100),75)
 mpl_colour_defaults=plt.rcParams['axes.prop_cycle'].by_key()['color'] # MLP default colours
 
 # Initalise the figure and output file which is written to later on
-fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
+fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(5.125,7.375))
 fig_ang_mom, axs_ang_mom = plt.subplots(figsize=(7,8))
 fig_test, axs_test = plt.subplots(figsize=(7,8))
 
@@ -41,7 +41,7 @@ def calculate_sum(binned_quantity,summed_quantity,bins):
     return stats.binned_statistic(binned_quantity, summed_quantity, 'sum', bins=bins)
 
 def calculate_mean(binned_quantity,mean_quantity):
-    bins = np.logspace(np.log10(0.001),np.log10(50),75)
+    bins = np.logspace(np.log10(0.001),np.log10(100),75)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'mean', bins=bins)
 
 def calculate_number_in_bin(binned_quantity,mean_quantity,width):
@@ -68,6 +68,13 @@ def prepare_snapshots(snapshot,density_to_load,clump_number,clump_data_file,dens
         central_star_mass = sinks['m'][0]
     snap.set_units(position='au', density='g/cm^3',smoothing_length='au',velocity='km/s')
     h = snap['smoothing_length']
+    snapshot_file_path = os.path.dirname(os.path.abspath(snapshot))
+
+    clump_data_file_name = snapshot_file_path.split("/")[-1].split("p")[-1]+".dat"
+    clump_data_file = snapshot_file_path + "/"+clump_data_file_name
+    print(clump_data_file)
+
+
 
     ### This is where the issue is, it works for the E-3 because there is no
     ### particle in the snapshot with a higher density but when plotting lower
@@ -102,9 +109,9 @@ def prepare_snapshots(snapshot,density_to_load,clump_number,clump_data_file,dens
     # clump_velocity = snap['velocity'][id]
     accreted_mask = snap['smoothing_length'] > 0
     snap_active = snap[accreted_mask]
-    subSnap=plonk.analysis.filters.sphere(snap=snap_active,radius = (50*au),center=clump_centre *au)
+    subSnap=plonk.analysis.filters.sphere(snap=snap_active,radius = (100*au),center=clump_centre *au)
 
-    subSnap_rotvel=plonk.analysis.filters.cylinder(snap=snap_active,radius = (50*au),height=(0.1*au),center=clump_centre * au)
+    subSnap_rotvel=plonk.analysis.filters.cylinder(snap=snap_active,radius = (100*au),height=(0.75*au),center=clump_centre * au)
 
     subSnap.set_units(position='au', density='g/cm^3',smoothing_length='au',velocity='km/s')
 
@@ -119,7 +126,9 @@ try:
         print("Loading all clump files from current directory")
         check = input("This should only be used if there is one clump present, proceed? [y/n] ")
         complete_file_list = glob.glob("run*")
-        clump_data_file = complete_file_list[0].split(".")[1]+".dat"
+        clump_data_file = complete_file_list[0].split(".")[1]+".dat" # it is safe to index the complete file list here
+                                                                     # because all the files are the same clump and so
+                                                                     # have the same .dat file.
 
 
     elif sys.argv[1] == 'density' and len(sys.argv) == 2:
@@ -129,7 +138,14 @@ try:
         pattern = str(int(np.abs(np.log10(density_to_load)) * 10)).zfill(3)
         complete_file_list = glob.glob("**/*%s.h5" % pattern)
         clump_data_file = complete_file_list[0].split("/")[0]+"/"+complete_file_list[0].split("/")[0].split('p')[1]+".dat"
-        print(clump_data_file)
+
+
+
+
+
+
+
+
 
     elif sys.argv[1] == 'density'  and len(sys.argv) == 3:
         flag = 1
@@ -137,7 +153,6 @@ try:
         pattern = str(int(np.abs(np.log10(density_to_load)) * 10)).zfill(3)
         complete_file_list = glob.glob("**/*%s.h5" % pattern)
         clump_data_file = complete_file_list[0].split("/")[0]+"/"+complete_file_list[0].split("/")[0].split('p')[1]+".dat"
-        print(clump_data_file)
 
 
 except IndexError:
@@ -192,7 +207,7 @@ for file in tqdm(complete_file_list):
     radius_clump = np.sqrt((x)**2 + (y)**2 + (z)**2)
 
 
-    count = calculate_number_in_bin(r_clump_centred,subSnap['m'],50)
+    count = calculate_number_in_bin(r_clump_centred,subSnap['m'],100)
     mass_in_bin = np.cumsum(count[0]) * subSnap['mass'][0].to('jupiter_mass')
     mid_plane_radius = plonk.analysis.particles.mid_plane_radius(subSnap,ORIGIN,ignore_accreted=True)
     rotational_velocity_radial = plonk.analysis.particles.rotational_velocity(subSnap,vel_ORIGIN,ignore_accreted=True)
@@ -310,7 +325,7 @@ for file in tqdm(complete_file_list):
     for i in range(0,3):
         for j in range(0,2):
             f_radial_axs[i,j].set_xscale('log')
-            f_radial_axs[i,j].set_xlim(1E-3,50)
+            f_radial_axs[i,j].set_xlim(1E-4,30)
             f_radial_axs[i,j].set_xlabel('R (AU)',fontsize=18)
             f_radial_axs[i,j].tick_params(axis="x", labelsize=12)
             f_radial_axs[i,j].tick_params(axis="y", labelsize=12)
@@ -320,7 +335,7 @@ for file in tqdm(complete_file_list):
             f_radial_axs[i,j].set_yscale('log')
 
     figure_indexes = [(0,0),(0,1),(1,0),(1,1),(2,0),(2,1)]
-    figure_ylimits = [(1E-13,1E-1),(10,8000),(0,7),(0,7),(0.1,40),(1E-5,10000)]
+    figure_ylimits = [(1E-13,1E-2),(10,8000),(0,7),(0,7),(0.1,40),(1E-5,10000)]
     figure_ylabels = ['Density (g/cm^3)','Temperature (K)','Rotational Velocity (km/s)',
                       'Infall Velocity (km/s)','Mass [Jupiter Masses]','Energy ratio']
 
