@@ -12,21 +12,17 @@ def calculate_gravitational_energy(A,bins,particle_mass):
         done once outside the for loop. Then we count the number of particles with radii
         less than that of the particle under inspection but only down to the last bin edge.
     '''
-
     R = []
     result = []
     count = np.histogram(A,bins)
     cumulative = np.cumsum(count[0])
     bin = np.digitize(A, bins) # Which bin to elements fall into
-
     LE = count[1][bin-1]       # Create arrays for left and right edges for each particle. Doing this outside the loop cuts down comp time
     RE = count[1][bin]
     A = np.multiply(A,1.496E13)
-
     constant = 6.67E-8 * particle_mass # Define the constant, for gravitational energy this is G * particle mass
 
     array_1 = (np.true_divide(A,constant)) ** -1 # Do array division for the 'radii' array and then raise to power of -1 to flip
-
 
 
     for i in range(len(cumulative)+1):
@@ -35,13 +31,14 @@ def calculate_gravitational_energy(A,bins,particle_mass):
         else:
             R.append(cumulative[i-1])
 
-
     for i in range(len(A)):
+
         LE_i = LE[i]
         RE_i = RE[i]
 
         B = A[A>LE_i]
         C = B[B<RE_i]
+
         if bin[i] - 1 == 0:
             result.append((C < A[i]).sum())
         else:
@@ -49,6 +46,5 @@ def calculate_gravitational_energy(A,bins,particle_mass):
 
             total_upto_element = (n_upto_edge + (C < A[i]).sum()) * particle_mass
             result.append(total_upto_element)
-
 
     return np.multiply(result,array_1) # Return the resulting array (interior masses) multiplied by the array_1 we defined earlier to give E_grav

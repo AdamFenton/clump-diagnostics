@@ -14,24 +14,23 @@ from scipy.signal import savgol_filter
 from digitize import calculate_gravitational_energy
 import time
 import pandas as pd
-# Author: Adam Fenton
 
+# Author: Adam Fenton
 cwd = os.getcwd()
 
 # Load units for use later, useful for derived quantities.
 au = plonk.units('au')
 kms = plonk.units('km/s')
 density_to_load = None #
-mean_bins_radial = np.logspace(np.log10(0.001),np.log10(100),70)
+mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),70)
 mpl_colour_defaults=plt.rcParams['axes.prop_cycle'].by_key()['color'] # MLP default colours
 
 # Initalise the figure and output file which is written to later on
-fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(3.64,5.12))
+fig_radial, f_radial_axs = plt.subplots(nrows=3,ncols=2,figsize=(7,8))
 fig_ang_mom, axs_ang_mom = plt.subplots(figsize=(7,8))
 fig_test, axs_test = plt.subplots(figsize=(7,8))
 
 clump_results = open('clump-results.dat', 'w')
-
 # Ignore pesky warnings when stripping unit off of pint quantity when downcasting to array
 if hasattr(pint, 'UnitStrippedWarning'):
     warnings.simplefilter('ignore', category=pint.UnitStrippedWarning)
@@ -41,7 +40,7 @@ def calculate_sum(binned_quantity,summed_quantity,bins):
     return stats.binned_statistic(binned_quantity, summed_quantity, 'sum', bins=bins)
 
 def calculate_mean(binned_quantity,mean_quantity):
-    bins = np.logspace(np.log10(0.001),np.log10(100),70)
+    bins = np.logspace(np.log10(0.001),np.log10(50),70)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'mean', bins=bins)
 
 def calculate_number_in_bin(binned_quantity,mean_quantity,width):
@@ -69,23 +68,16 @@ def prepare_snapshots(snapshot,density_to_load,clump_number,clump_data_file,dens
     snap.set_units(position='au', density='g/cm^3',smoothing_length='au',velocity='km/s')
     h = snap['smoothing_length']
     snapshot_file_path = os.path.dirname(os.path.abspath(snapshot))
-
     clump_data_file_name = snapshot_file_path.split("/")[-1].split("p")[-1]+".dat"
     clump_data_file = snapshot_file_path + "/"+clump_data_file_name
-
 
 
     ### This is where the issue is, it works for the E-3 because there is no
     ### particle in the snapshot with a higher density but when plotting lower
     ### densities, the recentering is off
-    max_elem = np.amax(snap['density'][h>0])
-    id = np.where(snap['density']== max_elem)
-    clump_centre = snap['position'][id]
-    clump_dir = "clump"+clump_number
 
     clump_location_data = pd.read_csv(clump_data_file,names=["rho", "x", "y", "z",
                                                              "vx", "vy", "vz"])
-
 
     if flag == 1:
         index = clump_location_data['rho'].sub(density_to_load).abs().idxmin()
@@ -104,18 +96,15 @@ def prepare_snapshots(snapshot,density_to_load,clump_number,clump_data_file,dens
         clump_velocity = row_of_interest.values[0][4:] * velocity_conversion * kms
         x,y,z = clump_centre[0],clump_centre[1],clump_centre[2]
 
-
     # clump_velocity = snap['velocity'][id]
     accreted_mask = snap['smoothing_length'] > 0
     snap_active = snap[accreted_mask]
-    subSnap=plonk.analysis.filters.sphere(snap=snap_active,radius = (100*au),center=clump_centre *au)
+    subSnap=plonk.analysis.filters.sphere(snap=snap_active,radius = (50*au),center=clump_centre *au)
 
-    subSnap_rotvel=plonk.analysis.filters.cylinder(snap=snap_active,radius = (100*au),height=(0.75*au),center=clump_centre * au)
+    subSnap_rotvel=plonk.analysis.filters.cylinder(snap=snap_active,radius = (50*au),height=(0.75*au),center=clump_centre * au)
 
     subSnap.set_units(position='au', density='g/cm^3',smoothing_length='au',velocity='km/s')
-
     return subSnap,snap_active,clump_centre,clump_velocity,subSnap_rotvel
-
 # Catch case where user does not supply mode argument when running script from the command line
 try:
     print('Running script in',sys.argv[1], 'mode')
@@ -176,15 +165,12 @@ for file in tqdm(complete_file_list):
     index = complete_file_list.index(file)
     clump_number = file.split("/")[0].split("p")[-1]
 
-
     line_colour = mpl_colour_defaults[index]
 
     prepared_snapshots = prepare_snapshots(file,density_to_load,clump_number,clump_data_file,flag)
-
     ORIGIN = prepared_snapshots[2]# The position of the clump centre
     x,y,z = ORIGIN[0],ORIGIN[1],ORIGIN[2]
     vel_ORIGIN = prepared_snapshots[3]  # The velocity of the clump centre
-
     # vx,vy,vz = ORIGIN[0]*kms,ORIGIN[1]*kms,ORIGIN[2]*kms
     subSnap = prepared_snapshots[0]
     rot_vel_snap = prepared_snapshots[4]
@@ -197,7 +183,12 @@ for file in tqdm(complete_file_list):
     radius_clump = np.sqrt((x)**2 + (y)**2 + (z)**2)
 
 
-    count = calculate_number_in_bin(r_clump_centred,subSnap['m'],100)
+    count = calculate_number_in_bin(r_clump_centred,subSnap['m'],50)
+
+
+
+
+
     mass_in_bin = np.cumsum(count[0]) * subSnap['mass'][0].to('jupiter_mass')
     mid_plane_radius = plonk.analysis.particles.mid_plane_radius(subSnap,ORIGIN,ignore_accreted=True)
     rotational_velocity_radial = plonk.analysis.particles.rotational_velocity(subSnap,vel_ORIGIN,ignore_accreted=True)
@@ -207,14 +198,9 @@ for file in tqdm(complete_file_list):
     total_L = np.sqrt(specific_angular_momentum[:,0]**2 + specific_angular_momentum[:,1]**2 +specific_angular_momentum[:,2]**2)
 
 
-
     spec_mom_binned_2 = calculate_sum(r_clump_centred,total_L,mean_bins_radial)
     spec_mom_sum_2 = np.cumsum(spec_mom_binned_2[0])
     axs_ang_mom.plot(spec_mom_binned_2[1][1:],spec_mom_sum_2,label="Total Magnitude",c=line_colour)
-
-    # spec_mom_binned_1 = calculate_sum(r_clump_centred,specific_angular_momentum[:,2],mean_bins_radial)
-    # spec_mom_sum_1= np.cumsum(spec_mom_binned_1[0])
-    # axs_ang_mom.plot(spec_mom_binned_1[1][1:],spec_mom_sum_1,label="Z Componant",c=line_colour,linestyle='--')
 
     axs_ang_mom.set_xscale('log')
     axs_ang_mom.set_xlabel('R (AU)')
@@ -227,7 +213,6 @@ for file in tqdm(complete_file_list):
     averaged_rotational_velocity = calculate_mean(r_clump_centred_midplane_rotvel,rotational_velocity_radial_cyl)
     averaged_density_radial = calculate_mean(r_clump_centred,subSnap['density'])
     averaged_temperature_radial = calculate_mean(r_clump_centred,subSnap['my_temp'])
-
 
     # We can find the indexes of the bins that hold fewer than 50 partcles. We
     # use this to define an area of confidence which will show in the plots.
@@ -247,31 +232,16 @@ for file in tqdm(complete_file_list):
                                     np.arange(len(averaged_infall_radial[0]))[np.isnan(averaged_infall_radial[0]) == False],
                                     averaged_infall_radial[0][np.isnan(averaged_infall_radial[0]) == False])
 
-    averaged_rotational_velocity_interp = np.interp(np.arange(len(averaged_rotational_velocity[0])),
-                                    np.arange(len(averaged_rotational_velocity[0]))[np.isnan(averaged_rotational_velocity[0]) == False],
-                                    averaged_rotational_velocity[0][np.isnan(averaged_rotational_velocity[0]) == False])
-
-    averaged_density_radial_interp = np.interp(np.arange(len(averaged_density_radial[0])),
-                                    np.arange(len(averaged_density_radial[0]))[np.isnan(averaged_density_radial[0]) == False],
-                                    averaged_density_radial[0][np.isnan(averaged_density_radial[0]) == False])
-
-    averaged_temperature_radial_interp = np.interp(np.arange(len(averaged_temperature_radial[0])),
-                                    np.arange(len(averaged_temperature_radial[0]))[np.isnan(averaged_temperature_radial[0]) == False],
-                                    averaged_temperature_radial[0][np.isnan(averaged_temperature_radial[0]) == False])
-
     rotational_energy = 0.5 * subSnap['m'][0].to('g') * rotational_velocity_radial_cyl.to('cm/s') **2
     rotational_energy_binned = calculate_sum(r_clump_centred_midplane_rotvel,rotational_energy,mean_bins_radial)
     cumsum_erot = np.cumsum(rotational_energy_binned[0])
     grav_rad = r_clump_centred.magnitude
-
     gravitational_energy = calculate_gravitational_energy(grav_rad,mean_bins_radial,subSnap['m'][0].to('g'))
     gravitational_energy_binned = calculate_sum(r_clump_centred_midplane,gravitational_energy,mean_bins_radial)
     cumsum_egrav = np.cumsum(gravitational_energy_binned[0])
-
     thermal_energy = calculate_thermal_energy(subSnap)
     thermal_energy_binned = calculate_sum(r_clump_centred_midplane,thermal_energy,mean_bins_radial)
     cumsum_etherm = np.cumsum(thermal_energy_binned[0])
-
     with np.errstate(invalid='ignore'):
         alpha = cumsum_etherm / cumsum_egrav
 
@@ -281,9 +251,6 @@ for file in tqdm(complete_file_list):
 
 
 
-    smoothed_rotational     = savgol_filter(averaged_rotational_velocity[0],15,3)
-    smoothed_temperature    = savgol_filter(averaged_temperature_radial[0],15,3)
-    smoothed_density        = savgol_filter(averaged_density_radial[0],15,3)
     smoothed_infall         = savgol_filter(averaged_infall_radial[0],15,3)
     smoothed_infall_nans    = savgol_filter(average_infall_with_nans ,15,3)
 
@@ -293,28 +260,19 @@ for file in tqdm(complete_file_list):
 
 
 
-
     y = smoothed_infall.copy()
-<<<<<<< HEAD
     x = averaged_infall_radial[1][1:]
 
     y[np.isnan(y)] = 0
-=======
     y_2 = savgol_filter(averaged_infall_radial_interp ,15,3)
     x = averaged_infall_radial[1][1:]
 
->>>>>>> recentering
 
 
-    # starting_id = np.where(smoothed_infall[np.isnan(smoothed_infall)])[0][-1] + 1
-    # y = smoothed_infall[starting_id:]
-    # x = x[starting_id:]
-    # first_non_nan = y[np.isfinite(y)][0]
     x_smooth = np.logspace(np.log10(min(averaged_infall_radial[1])), np.log10(max(averaged_infall_radial[1])), 2000)
     bspl = splrep(x,y_2)
     bspl_y = splev(x_smooth, bspl)
     peaks, _ = find_peaks(bspl_y,height=0.1,distance=100,prominence=0.05)
-
 
 
     # Tidily set axes limits and scale types
@@ -339,44 +297,40 @@ for file in tqdm(complete_file_list):
         f_radial_axs[index].set_ylabel(label,fontsize=6.5)
         f_radial_axs[index].set_ylim(limit)
 
-    f_radial_axs[0,0].plot(averaged_density_radial[1][1:],averaged_density_radial[0],c = line_colour,linestyle="--",linewidth = 1)
-    f_radial_axs[0,0].plot(binned_r_clump_with_nans,average_density_with_nans,c = line_colour)
+    f_radial_axs[0,0].plot(averaged_density_radial[1][1:],averaged_density_radial[0],
+                           c = line_colour,linestyle="--",linewidth = 1,alpha=0.5)
+    f_radial_axs[0,0].plot(binned_r_clump_with_nans,average_density_with_nans,
+                           c = line_colour,alpha=0.5)
 
-    f_radial_axs[0,1].plot(averaged_temperature_radial[1][1:],averaged_temperature_radial[0],c = line_colour,linestyle="--",linewidth =1)
-    f_radial_axs[0,1].plot(binned_r_clump_with_nans,average_temp_with_nans,c = line_colour)
+    f_radial_axs[0,1].plot(averaged_temperature_radial[1][1:],
+                           averaged_temperature_radial[0],c = line_colour,
+                           linestyle="--",linewidth =1,alpha=0.5)
+    f_radial_axs[0,1].plot(binned_r_clump_with_nans,average_temp_with_nans,
+                           c = line_colour,alpha=0.5)
 
-    f_radial_axs[1,0].plot(averaged_rotational_velocity[1][1:],averaged_rotational_velocity[0],c = line_colour,linestyle="--",linewidth = 1)
-    f_radial_axs[1,0].plot(binned_r_clump_with_nans,average_rotational_with_nans,c = line_colour)
-    # f_radial_axs[1,0].scatter(r_clump_centred_midplane_rotvel,rotational_velocity_radial_cyl ,s=0.05)
+    f_radial_axs[1,0].plot(averaged_rotational_velocity[1][1:],
+                           averaged_rotational_velocity[0],c = line_colour,
+                           linestyle="--",linewidth = 1,alpha=0.5)
+    f_radial_axs[1,0].plot(binned_r_clump_with_nans,average_rotational_with_nans,
+                           c = line_colour,alpha=0.5)
 
-    f_radial_axs[1,1].plot(averaged_infall_radial[1][1:],smoothed_infall,c = line_colour,linestyle="--",linewidth = 1)
-    f_radial_axs[1,1].plot(binned_r_clump_with_nans,smoothed_infall_nans ,c = line_colour)
-    # f_radial_axs[1,1].scatter(r_clump_centred,infall_velocity_radial ,s=0.05)
+    f_radial_axs[1,1].plot(averaged_infall_radial[1][1:],smoothed_infall,
+                           c = line_colour,linestyle="--",linewidth = 1,alpha=0.5)
+    f_radial_axs[1,1].plot(binned_r_clump_with_nans,smoothed_infall_nans,
+                           c = line_colour,alpha=0.5)
+    f_radial_axs[1,1].plot(x_smooth[peaks],bspl_y[peaks],'+',c=line_colour)
 
-    # f_radial_axs[1,1].plot(x_smooth,bspl_y ,c = 'green',alpha=0.3)
-    f_radial_axs[1,1].plot(x_smooth[peaks],bspl_y[peaks],'+',c='red')
 
 
-    axs_test.plot(averaged_infall_radial[1][1:],smoothed_infall,c = line_colour,linestyle="--",linewidth = 2)
-    axs_test.plot(binned_r_clump_with_nans,smoothed_infall_nans ,c = line_colour,linewidth = 2)
-    # f_radial_axs[1,1].plot(x_smooth,bspl_y ,c = 'green')
-    axs_test.plot(x_smooth[peaks],bspl_y[peaks],'+',c='red')
-    axs_test.set_ylim(-0.5,7)
-    axs_test.set_xlim(1e-2,100)
-    axs_test.tick_params(axis="x", labelsize=12)
-    axs_test.tick_params(axis="y", labelsize=12)
-
-    axs_test.set_xscale('log')
-    axs_test.tick_params(axis="x", labelsize=12)
-    axs_test.set_xlabel('R (AU)',fontsize=6.5)
-    axs_test.set_ylabel('Infall Velocity (km/s)',fontsize=6.5)
 
 
     f_radial_axs[2,0].plot(count[1][1:],mass_in_bin,linewidth=1)
     f_radial_axs[2,0].set_yscale('linear')
 
-    f_radial_axs[2,1].plot(gravitational_energy_binned[1][1:],alpha,linewidth=1,c=line_colour)
-    f_radial_axs[2,1].plot(gravitational_energy_binned[1][1:],beta,linewidth=1,c=line_colour)
+    f_radial_axs[2,1].plot(gravitational_energy_binned[1][1:],alpha,linewidth=1,
+                           c=line_colour)
+    f_radial_axs[2,1].plot(gravitational_energy_binned[1][1:],beta,linewidth=1,
+                           c=line_colour)
     f_radial_axs[2,1].axhline(y=1,c='black',linestyle='--',linewidth=1.5)
     f_radial_axs[2,1].set_xscale('log')
     f_radial_axs[2,1].set_yscale('log')
@@ -384,7 +338,6 @@ for file in tqdm(complete_file_list):
 
     fig_radial.align_ylabels()
     fig_radial.tight_layout(pad=0.40)
-
     if sys.argv[1] == 'density':
         clump_density = '{0:.2e}'.format(density_to_load)
     else:
@@ -411,8 +364,11 @@ for file in tqdm(complete_file_list):
     # Write core information to the clump_results file for plotting later on.
     if len(peaks) == 1:
         first_core_radius = float('{0:.5e}'.format(x_smooth[peaks[0]]))
-        first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
-        first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))
+        first_core_count   = calculate_number_in_bin(r_clump_centred,
+                                                     subSnap['density'],
+                                                     float(first_core_radius))[0]
+        first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1]
+                                                   * subSnap['m'][0].to('jupiter_mass').magnitude))
 
         first_core_count   = calculate_number_in_bin(r_clump_centred,subSnap['density'],float(first_core_radius))[0]
         first_core_mass =   float('{0:.5e}'.format(np.cumsum(first_core_count)[-1] * subSnap['m'][0].to('jupiter_mass').magnitude))

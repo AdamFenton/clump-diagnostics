@@ -1,3 +1,20 @@
+# ================================== #
+# plot_snapshot_profiles.py
+# ================================== #
+# Produce profiles and surface density
+# render for a specific snapshot given
+# by the CLI argument. Converts the
+# snapshot to H5 format if required.
+# Generally used to check progress of
+# simulation during a run.
+
+
+# Author = Adam Fenton
+# Date = 20220706
+# =============================== #
+
+
+
 import matplotlib.pyplot as plt
 import plonk
 import sys
@@ -8,8 +25,12 @@ import pint
 from matplotlib.gridspec import GridSpec
 from os.path import exists
 from plonk.utils.strings import time_string # Required for timestamping in plot
+from pathlib import Path # Required to create plot directory
+import os
 
+Path("%s/plots/" % os.getcwd()).mkdir(parents=True, exist_ok=True )
 
+cwd = os.getcwd()
 if hasattr(pint, 'UnitStrippedWarning'):
     warnings.simplefilter('ignore', category=pint.UnitStrippedWarning)
 np.seterr(divide='ignore', invalid='ignore')
@@ -129,4 +150,4 @@ plt.figtext(0.79, 0.91, 'N alive = %s' % n_alive,fontsize=12,va="top", ha="right
 plt.figtext(0.79, 0.88, 'N sinks = %s' % n_sinks,fontsize=12,va="top", ha="right")
 
 
-plt.show()
+plt.savefig('%s/plots/snapshot_profiles_%s.png' % (os.getcwd(),file_name),dpi = 200)
