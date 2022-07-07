@@ -22,7 +22,7 @@ cwd = os.getcwd()
 au = plonk.units('au')
 kms = plonk.units('km/s')
 density_to_load = None #
-mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),70)
+mean_bins_radial = np.logspace(np.log10(0.001),np.log10(50),40)
 mpl_colour_defaults=plt.rcParams['axes.prop_cycle'].by_key()['color'] # MLP default colours
 
 # Initalise the figure and output file which is written to later on
@@ -40,11 +40,11 @@ def calculate_sum(binned_quantity,summed_quantity,bins):
     return stats.binned_statistic(binned_quantity, summed_quantity, 'sum', bins=bins)
 
 def calculate_mean(binned_quantity,mean_quantity):
-    bins = np.logspace(np.log10(0.001),np.log10(50),70)
+    bins = np.logspace(np.log10(0.001),np.log10(50),40)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'mean', bins=bins)
 
 def calculate_number_in_bin(binned_quantity,mean_quantity,width):
-    bins=np.logspace(np.log10(0.001),np.log10(width),70)
+    bins=np.logspace(np.log10(0.001),np.log10(width),40)
     return stats.binned_statistic(binned_quantity, mean_quantity, 'count', bins=bins)
 
 def calculate_thermal_energy(subSnap):
@@ -199,7 +199,13 @@ for file in tqdm(complete_file_list):
 
 
     spec_mom_binned_2 = calculate_sum(r_clump_centred,total_L,mean_bins_radial)
-    spec_mom_sum_2 = np.cumsum(spec_mom_binned_2[0])
+    spec_mom_sum_2 = (np.cumsum(spec_mom_binned_2[0]/count[0]))
+    # spec_mom_sum_2 = np.cumsum(spec_mom_binned_2[0])
+
+
+
+
+
     axs_ang_mom.plot(spec_mom_binned_2[1][1:],spec_mom_sum_2,label="Total Magnitude",c=line_colour)
 
     axs_ang_mom.set_xscale('log')
@@ -217,7 +223,6 @@ for file in tqdm(complete_file_list):
     # We can find the indexes of the bins that hold fewer than 50 partcles. We
     # use this to define an area of confidence which will show in the plots.
     low_confidence_values = [i for i, a in enumerate(count[0]) if a <= 50]
-
 
 
 
@@ -314,11 +319,17 @@ for file in tqdm(complete_file_list):
     f_radial_axs[1,0].plot(binned_r_clump_with_nans,average_rotational_with_nans,
                            c = line_colour,alpha=0.5)
 
+
+    # infall_with_nans_eq_0 = averaged_infall_radial[0].copy()
+    # infall_with_nans_eq_0[np.isnan(infall_with_nans_eq_0)] = 0
+
+
     f_radial_axs[1,1].plot(averaged_infall_radial[1][1:],smoothed_infall,
                            c = line_colour,linestyle="--",linewidth = 1,alpha=0.5)
     f_radial_axs[1,1].plot(binned_r_clump_with_nans,smoothed_infall_nans,
                            c = line_colour,alpha=0.5)
     f_radial_axs[1,1].plot(x_smooth[peaks],bspl_y[peaks],'+',c=line_colour)
+
 
 
 
@@ -396,15 +407,16 @@ for file in tqdm(complete_file_list):
 
         first_core_bin = np.digitize(first_core_radius,mean_bins_radial)-1
         second_core_bin = np.digitize(second_core_radius,mean_bins_radial)-1
-        L_fc = spec_mom_sum_2[first_core_bin]
-        L_sc = spec_mom_sum_2[second_core_bin]
+        L_fc = spec_mom_sum_2[first_core_bin] #* ((subSnap['m'][0])/(np.cumsum(first_core_count)[-1] * subSnap['m'][0]))
+        L_sc = spec_mom_sum_2[second_core_bin]#* ((subSnap['m'][0])/(np.cumsum(second_core_count)[-1] * subSnap['m'][0]))
         egrav_fc = cumsum_egrav[first_core_bin]
         etherm_fc = cumsum_etherm[first_core_bin]
         erot_fc = cumsum_erot[first_core_bin]
         egrav_sc = cumsum_egrav[second_core_bin]
         etherm_sc = cumsum_etherm[second_core_bin]
         erot_sc = cumsum_erot[second_core_bin]
-
+        axs_ang_mom.axvline(x=x_smooth[peaks[0]],c='black',linestyle='--',linewidth=1)
+        axs_ang_mom.axvline(x=x_smooth[peaks[1]],c='black',linestyle='--',linewidth=1)
 
     clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
                        (file.split("/")[-1],\
