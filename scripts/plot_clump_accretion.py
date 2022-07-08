@@ -23,11 +23,15 @@ from scipy import stats
 fig,axs = plt.subplots(figsize=(8,8))
 
 complete_file_list = glob.glob("run*") # Use glob to collect all files in direc
-def sortKeyFunc(s):
-    return int(os.path.basename(s)[-6:-4])
-complete_file_list.sort(key=sortKeyFunc,reverse=True)
 
-bins=np.logspace(np.log10(0.001),np.log10(11),75)
+def sortKeyFunc(s):
+    ''' We want to sort the filenames in reverse order by their density so we
+        use the -6th to the -4th index of the filename e.g. 030, 040 etc
+    '''
+    return int(os.path.basename(s)[-6:-4])
+
+complete_file_list.sort(key=sortKeyFunc,reverse=True)
+final_array = np.zeros((len(complete_file_list), 7))
 
 # It is safe to index the complete file list here because all the files are the
 # same clump and so have the same .dat file.
@@ -78,59 +82,72 @@ def retrieve_clump_locations(snapshot_file,clump_location_data):
     clump_velocity = clump_row_in_df.iloc[4:].values * kms
 
 
-    return clump_position, clump_velocity
+    return clump_position, clump_velocity,snapshot_density
 
 
-def define_clump_subsnap(snap,clump_position):
+def define_clump_subsnaps(snap,clump_position):
     ''' For each of the loaded full disc snapshots, take the position of the
         clump from the retrieve_clump_locations function and define a new
         subsnap centred on the clump.
     '''
-    subSnap=plonk.analysis.filters.sphere(snap=snap,radius = (10*au),center=clump_position)
+    subSnap_1AU=plonk.analysis.filters.sphere(snap=snap,radius = (1*au),center=clump_position)
+    subSnap_2AU=plonk.analysis.filters.sphere(snap=snap,radius = (2*au),center=clump_position)
+    subSnap_5AU=plonk.analysis.filters.sphere(snap=snap,radius = (5*au),center=clump_position)
+    subSnap_10AU=plonk.analysis.filters.sphere(snap=snap,radius = (10*au),center=clump_position)
 
-    return subSnap
+    return subSnap_1AU,subSnap_2AU,subSnap_5AU,subSnap_10AU
 
 
-def calculate_number_in_bin(binned_quantity,mean_quantity,bins):
-    return stats.binned_statistic(binned_quantity, mean_quantity, 'count', bins=bins)
+
 
 
 
 class Clump:
+    # Define class to store the clump information
     def __init__(self):
-        self.time  = None
-        self.M1AU  = None
-        self.M2AU  = None
-        self.M5AU  = None
-        self.M10AU = None
+        self.density = None
+        self.time    = None
+        self.M1AU    = None
+        self.M2AU    = None
+        self.M5AU    = None
+        self.M10AU   = None
 
-for file in complete_file_list:
+
+
+for file,n in zip(complete_file_list,enumerate(complete_file_list)):
+
     clump = Clump()
     snap = prepare_snapshot(file)
-    clump.time = snap.properties['time']
-
+    particle_mass = snap['m'][0].to('jupiter_mass').magnitude
     clump_position = retrieve_clump_locations(file,clump_location_data)[0]
-    clump_subsnap = define_clump_subsnap(snap,clump_position)
-    r_clump_centred = np.sqrt((clump_subsnap['x']-(clump_position[0]))**2 +
-                              (clump_subsnap['y']-(clump_position[1]))**2 +
-                              (clump_subsnap['z']-(clump_position[2]))**2)
+    clump_subsnaps = define_clump_subsnaps(snap,clump_position)
+
+    clump.density = retrieve_clump_locations(file,clump_location_data)[2]
+    clump.time = snap.properties['time'].to('year').magnitude
+    # Rather than binning one array of particles up to certain radii and relying
+    # on the bin resolution to be high enough to get the correct 'checkpoint
+    # radii', I have used 4 individual subsnaps (see define_clump_subsnaps func)
+    # and then just counted the number of particles inside each subsnap
+    clump.M1AU  = len(clump_subsnaps[0]['m']) * particle_mass
+    clump.M2AU  = len(clump_subsnaps[1]['m']) * particle_mass
+    clump.M5AU  = len(clump_subsnaps[2]['m']) * particle_mass
+    clump.M10AU = len(clump_subsnaps[3]['m']) * particle_mass
 
 
-    # Calculate the cumulative mass of the clump out to 10 AU by summing the
-    # number of particles in 75 bins between 1e-3 AU and 10 AU then multiplying
-    # by the mass of each particle in jupiter masses.
-    mass_in_clump = np.cumsum(
-                    calculate_number_in_bin(r_clump_centred,clump_subsnap['m'],bins)[0]
-                    * clump_subsnap['m'][0].to('jupiter_mass')
-                    )
-    checkpoint_1AU = np.digitize(1, bins) - 1
-    checkpoint_2AU = np.digitize(2, bins) - 1
-    checkpoint_5AU = np.digitize(5, bins) - 1
-    checkpoint_10AU = np.digitize(10, bins) - 1
-    clump.M1AU  = mass_in_clump[checkpoint_1AU]
-    clump.M2AU  = mass_in_clump[checkpoint_2AU]
-    clump.M5AU  = mass_in_clump[checkpoint_5AU]
-    clump.M10AU = mass_in_clump[checkpoint_10AU]
+    final_array[n[0]] = [clump.density,clump.time,clump.M1AU,clump.M2AU,clump.M5AU,clump.M10AU,None]
 
-    attrs = vars(clump)
-    print(', '.join("%s: %s" % item for item in attrs.items()))
+# Now calculate delta time between each of the snapshots
+for n in enumerate(complete_file_list):
+    if n[0] != 0:
+        final_array[n[0],6] = final_array[n[0],1] - final_array[n[0]-1,1]
+    else:
+        final_array[n[0],6] = final_array[n[0],1] - 0
+
+# convert to dataframe
+df = pd.DataFrame(final_array, columns = ['Density','Time (years)',
+                                          '1 AU Mass (Mj)',
+                                          '2 AU Mass (Mj)',
+                                          '5 AU Mass (Mj)',
+                                          '10 AU Mass (Mj)',
+                                          'Delta Time (years)'
+                                          ])
