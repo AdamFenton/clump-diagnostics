@@ -18,11 +18,16 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 import glob
-
+from scipy import stats
 
 fig,axs = plt.subplots(figsize=(8,8))
 
 complete_file_list = glob.glob("run*") # Use glob to collect all files in direc
+def sortKeyFunc(s):
+    return int(os.path.basename(s)[-6:-4])
+complete_file_list.sort(key=sortKeyFunc,reverse=True)
+
+bins=np.logspace(np.log10(0.001),np.log10(11),75)
 
 # It is safe to index the complete file list here because all the files are the
 # same clump and so have the same .dat file.
@@ -46,7 +51,7 @@ def prepare_snapshot(snapshot_file):
     snap.set_units(position='au', density='g/cm^3',smoothing_length='au',
                    velocity='km/s')
 
-    # There will be at least one (host star) sink in the file but likely more so
+    # There will be at least one sink (host star) in the file but likely more so
     # we have to identify which one is the host star and assign it's mass for
     # use later on.
 
@@ -85,7 +90,47 @@ def define_clump_subsnap(snap,clump_position):
 
     return subSnap
 
+
+def calculate_number_in_bin(binned_quantity,mean_quantity,bins):
+    return stats.binned_statistic(binned_quantity, mean_quantity, 'count', bins=bins)
+
+
+
+class Clump:
+    def __init__(self):
+        self.time  = None
+        self.M1AU  = None
+        self.M2AU  = None
+        self.M5AU  = None
+        self.M10AU = None
+
 for file in complete_file_list:
+    clump = Clump()
     snap = prepare_snapshot(file)
+    clump.time = snap.properties['time']
+
     clump_position = retrieve_clump_locations(file,clump_location_data)[0]
     clump_subsnap = define_clump_subsnap(snap,clump_position)
+    r_clump_centred = np.sqrt((clump_subsnap['x']-(clump_position[0]))**2 +
+                              (clump_subsnap['y']-(clump_position[1]))**2 +
+                              (clump_subsnap['z']-(clump_position[2]))**2)
+
+
+    # Calculate the cumulative mass of the clump out to 10 AU by summing the
+    # number of particles in 75 bins between 1e-3 AU and 10 AU then multiplying
+    # by the mass of each particle in jupiter masses.
+    mass_in_clump = np.cumsum(
+                    calculate_number_in_bin(r_clump_centred,clump_subsnap['m'],bins)[0]
+                    * clump_subsnap['m'][0].to('jupiter_mass')
+                    )
+    checkpoint_1AU = np.digitize(1, bins) - 1
+    checkpoint_2AU = np.digitize(2, bins) - 1
+    checkpoint_5AU = np.digitize(5, bins) - 1
+    checkpoint_10AU = np.digitize(10, bins) - 1
+    clump.M1AU  = mass_in_clump[checkpoint_1AU]
+    clump.M2AU  = mass_in_clump[checkpoint_2AU]
+    clump.M5AU  = mass_in_clump[checkpoint_5AU]
+    clump.M10AU = mass_in_clump[checkpoint_10AU]
+
+    attrs = vars(clump)
+    print(', '.join("%s: %s" % item for item in attrs.items()))
