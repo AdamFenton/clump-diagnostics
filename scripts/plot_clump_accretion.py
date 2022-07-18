@@ -31,7 +31,7 @@ def sortKeyFunc(s):
     return int(os.path.basename(s)[-6:-4])
 
 complete_file_list.sort(key=sortKeyFunc,reverse=True)
-final_array = np.zeros((len(complete_file_list), 7))
+final_array = np.zeros((len(complete_file_list), 15))
 
 # It is safe to index the complete file list here because all the files are the
 # same clump and so have the same .dat file.
@@ -134,20 +134,50 @@ for file,n in zip(complete_file_list,enumerate(complete_file_list)):
     clump.M10AU = len(clump_subsnaps[3]['m']) * particle_mass
 
 
-    final_array[n[0]] = [clump.density,clump.time,clump.M1AU,clump.M2AU,clump.M5AU,clump.M10AU,None]
+    final_array[n[0]] = [clump.density,
+                         clump.time,
+                         clump.M1AU,
+                         None,              # Change in mass from previous snap
+                         None,              # Mass accretion rate
+                         clump.M2AU,
+                         None,              # Change in mass from previous snap
+                         None,              # Mass accretion rate
+                         clump.M5AU,
+                         None,              # Change in mass from previous snap
+                         None,              # Mass accretion rate
+                         clump.M10AU,
+                         None,              # Change in mass from previous snap
+                         None,              # Mass accretion rate
+                         None]              # Change in time from previous snap
 
-# Now calculate delta time between each of the snapshots
-for n in enumerate(complete_file_list):
-    if n[0] != 0:
-        final_array[n[0],6] = final_array[n[0],1] - final_array[n[0]-1,1]
-    else:
-        final_array[n[0],6] = final_array[n[0],1] - 0
 
 # convert to dataframe
 df = pd.DataFrame(final_array, columns = ['Density','Time (years)',
                                           '1 AU Mass (Mj)',
+                                          'Delta M (1AU)',
+                                          'Mdot (1AU)',
                                           '2 AU Mass (Mj)',
+                                          'Delta M (2AU)',
+                                          'Mdot (2AU)',
                                           '5 AU Mass (Mj)',
+                                          'Delta M (5AU)',
+                                          'Mdot (5AU)',
                                           '10 AU Mass (Mj)',
+                                          'Delta M (10AU)',
+                                          'Mdot (10AU)',
                                           'Delta Time (years)'
                                           ])
+
+
+# Calculate differences and mass accretion rates for each radii at each step.
+df['Delta M (1AU)'] = df['1 AU Mass (Mj)'].diff()
+df['Delta M (2AU)'] = df['2 AU Mass (Mj)'].diff()
+df['Delta M (5AU)'] = df['5 AU Mass (Mj)'].diff()
+df['Delta M (10AU)'] = df['10 AU Mass (Mj)'].diff()
+df['Delta Time (years)'] = df['Time (years)'].diff()
+df['Mdot (1AU)'] = df['Delta M (1AU)'] / df['Delta Time (years)']
+df['Mdot (2AU)'] = df['Delta M (2AU)'] / df['Delta Time (years)']
+df['Mdot (5AU)'] = df['Delta M (5AU)'] / df['Delta Time (years)']
+df['Mdot (10AU)'] = df['Delta M (10AU)'] / df['Delta Time (years)']
+
+print(df)
