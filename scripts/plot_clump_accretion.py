@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import glob
 import os
-
+cwd = os.getcwd()
 fig, ax = plt.subplots(nrows=2,ncols=2,figsize=(7,8))
 
 complete_file_list = glob.glob('**/clump_accretion_rates.csv', recursive=True)
@@ -32,6 +32,11 @@ for file in complete_file_list:
     for i in range(0,2):
         for j in range(0,2):
             ax[i,j].set_xscale('log')
+            ax[i,j].set_xlabel('Density (g/cm^3)')
 fig.align_ylabels()
 fig.tight_layout(pad=0.40)
-plt.show()
+
+fig.suptitle('Μass accretion rates for clumps with no first cores')
+fig.subplots_adjust(top=0.95)
+
+fig.savefig("%s/clump_accretion_rates.png" % cwd,dpi = 500)
