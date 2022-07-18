@@ -19,9 +19,10 @@ import pandas as pd
 import os
 import glob
 from scipy import stats
+from os.path import exists
 
 fig,axs = plt.subplots(figsize=(8,8))
-
+cwd = os.getcwd()
 complete_file_list = glob.glob("run*") # Use glob to collect all files in direc
 
 def sortKeyFunc(s):
@@ -114,70 +115,84 @@ class Clump:
 
 
 
-for file,n in zip(complete_file_list,enumerate(complete_file_list)):
+file_exists = exists("clump_accretion_rates.csv")
+if file_exists == True:
+    print('='*65)
+    print("File containing clump accretion rates already exists")
+    print('='*65)
+    df = pd.read_csv("clump_accretion_rates.csv")
+    df = df.iloc[: , 1:]
+    print(df)
+else:
+    print('='*65)
+    print("Calculating clump accretion rates...")
+    print('='*65)
 
-    clump = Clump()
-    snap = prepare_snapshot(file)
-    particle_mass = snap['m'][0].to('jupiter_mass').magnitude
-    clump_position = retrieve_clump_locations(file,clump_location_data)[0]
-    clump_subsnaps = define_clump_subsnaps(snap,clump_position)
+    for file,n in zip(complete_file_list,enumerate(complete_file_list)):
+        print("Calculating accretion rates for %s" % str(file))
+        clump = Clump()
+        snap = prepare_snapshot(file)
+        particle_mass = snap['m'][0].to('jupiter_mass').magnitude
+        clump_position = retrieve_clump_locations(file,clump_location_data)[0]
+        clump_subsnaps = define_clump_subsnaps(snap,clump_position)
 
-    clump.density = retrieve_clump_locations(file,clump_location_data)[2]
-    clump.time = snap.properties['time'].to('year').magnitude
-    # Rather than binning one array of particles up to certain radii and relying
-    # on the bin resolution to be high enough to get the correct 'checkpoint
-    # radii', I have used 4 individual subsnaps (see define_clump_subsnaps func)
-    # and then just counted the number of particles inside each subsnap
-    clump.M1AU  = len(clump_subsnaps[0]['m']) * particle_mass
-    clump.M2AU  = len(clump_subsnaps[1]['m']) * particle_mass
-    clump.M5AU  = len(clump_subsnaps[2]['m']) * particle_mass
-    clump.M10AU = len(clump_subsnaps[3]['m']) * particle_mass
-
-
-    final_array[n[0]] = [clump.density,
-                         clump.time,
-                         clump.M1AU,
-                         None,              # Change in mass from previous snap
-                         None,              # Mass accretion rate
-                         clump.M2AU,
-                         None,              # Change in mass from previous snap
-                         None,              # Mass accretion rate
-                         clump.M5AU,
-                         None,              # Change in mass from previous snap
-                         None,              # Mass accretion rate
-                         clump.M10AU,
-                         None,              # Change in mass from previous snap
-                         None,              # Mass accretion rate
-                         None]              # Change in time from previous snap
+        clump.density = retrieve_clump_locations(file,clump_location_data)[2]
+        clump.time = snap.properties['time'].to('year').magnitude
+        # Rather than binning one array of particles up to certain radii and relying
+        # on the bin resolution to be high enough to get the correct 'checkpoint
+        # radii', I have used 4 individual subsnaps (see define_clump_subsnaps func)
+        # and then just counted the number of particles inside each subsnap
+        clump.M1AU  = len(clump_subsnaps[0]['m']) * particle_mass
+        clump.M2AU  = len(clump_subsnaps[1]['m']) * particle_mass
+        clump.M5AU  = len(clump_subsnaps[2]['m']) * particle_mass
+        clump.M10AU = len(clump_subsnaps[3]['m']) * particle_mass
 
 
-# convert to dataframe
-df = pd.DataFrame(final_array, columns = ['Density','Time (years)',
-                                          '1 AU Mass (Mj)',
-                                          'Delta M (1AU)',
-                                          'Mdot (1AU)',
-                                          '2 AU Mass (Mj)',
-                                          'Delta M (2AU)',
-                                          'Mdot (2AU)',
-                                          '5 AU Mass (Mj)',
-                                          'Delta M (5AU)',
-                                          'Mdot (5AU)',
-                                          '10 AU Mass (Mj)',
-                                          'Delta M (10AU)',
-                                          'Mdot (10AU)',
-                                          'Delta Time (years)'
-                                          ])
+        final_array[n[0]] = [clump.density,
+                             clump.time,
+                             clump.M1AU,
+                             None,              # Change in mass from previous snap
+                             None,              # Mass accretion rate
+                             clump.M2AU,
+                             None,              # Change in mass from previous snap
+                             None,              # Mass accretion rate
+                             clump.M5AU,
+                             None,              # Change in mass from previous snap
+                             None,              # Mass accretion rate
+                             clump.M10AU,
+                             None,              # Change in mass from previous snap
+                             None,              # Mass accretion rate
+                             None]              # Change in time from previous snap
 
 
-# Calculate differences and mass accretion rates for each radii at each step.
-df['Delta M (1AU)'] = df['1 AU Mass (Mj)'].diff()
-df['Delta M (2AU)'] = df['2 AU Mass (Mj)'].diff()
-df['Delta M (5AU)'] = df['5 AU Mass (Mj)'].diff()
-df['Delta M (10AU)'] = df['10 AU Mass (Mj)'].diff()
-df['Delta Time (years)'] = df['Time (years)'].diff()
-df['Mdot (1AU)'] = df['Delta M (1AU)'] / df['Delta Time (years)']
-df['Mdot (2AU)'] = df['Delta M (2AU)'] / df['Delta Time (years)']
-df['Mdot (5AU)'] = df['Delta M (5AU)'] / df['Delta Time (years)']
-df['Mdot (10AU)'] = df['Delta M (10AU)'] / df['Delta Time (years)']
+    # convert to dataframe
+    df = pd.DataFrame(final_array, columns = ['Density','Time (years)',
+                                              '1 AU Mass (Mj)',
+                                              'Delta M (1AU)',
+                                              'Mdot (1AU)',
+                                              '2 AU Mass (Mj)',
+                                              'Delta M (2AU)',
+                                              'Mdot (2AU)',
+                                              '5 AU Mass (Mj)',
+                                              'Delta M (5AU)',
+                                              'Mdot (5AU)',
+                                              '10 AU Mass (Mj)',
+                                              'Delta M (10AU)',
+                                              'Mdot (10AU)',
+                                              'Delta Time (years)'
+                                              ])
 
-print(df)
+
+    # Calculate differences and mass accretion rates for each radii at each step.
+    df['Delta M (1AU)'] = df['1 AU Mass (Mj)'].diff()
+    df['Delta M (2AU)'] = df['2 AU Mass (Mj)'].diff()
+    df['Delta M (5AU)'] = df['5 AU Mass (Mj)'].diff()
+    df['Delta M (10AU)'] = df['10 AU Mass (Mj)'].diff()
+    df['Delta Time (years)'] = df['Time (years)'].diff()
+    df['Mdot (1AU)'] = df['Delta M (1AU)'] / df['Delta Time (years)']
+    df['Mdot (2AU)'] = df['Delta M (2AU)'] / df['Delta Time (years)']
+    df['Mdot (5AU)'] = df['Delta M (5AU)'] / df['Delta Time (years)']
+    df['Mdot (10AU)'] = df['Delta M (10AU)'] / df['Delta Time (years)']
+
+    print("Saving data to clump_accretion_rates.csv")
+    df.to_csv('%s/clump_accretion_rates.csv' % cwd)
