@@ -59,12 +59,24 @@ df4 = filtered.loc[filtered['rhocritID'] == 4]
 df5 = filtered.loc[filtered['rhocritID'] == 5]
 df6 = filtered.loc[filtered['rhocritID'] == 6]
 
-df1_avgs, df1_stds = df1[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc']].mean(), \
-                     df1[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc']].std()
-df2_avgs, df2_stds = df2[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc']].mean(), \
-                     df2[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc']].std()
-df3_avgs, df3_stds = df3[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc']].mean(), \
-                     df3[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc']].std()
+df1_avgs, df1_stds = df1[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc','egrav_fc',
+                          'etherm_fc','erot_fc','egrav_sc','etherm_sc',
+                          'erot_sc']].mean(), \
+                     df1[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc','egrav_fc',
+                          'etherm_fc','erot_fc','egrav_sc','etherm_sc',
+                          'erot_sc']].std()
+df2_avgs, df2_stds = df2[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc','egrav_fc',
+                          'etherm_fc','erot_fc','egrav_sc','etherm_sc',
+                          'erot_sc']].mean(), \
+                     df2[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc','egrav_fc',
+                          'etherm_fc','erot_fc','egrav_sc','etherm_sc',
+                          'erot_sc']].std()
+df3_avgs, df3_stds = df3[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc','egrav_fc',
+                          'etherm_fc','erot_fc','egrav_sc','etherm_sc',
+                          'erot_sc']].mean(), \
+                     df3[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc','egrav_fc',
+                          'etherm_fc','erot_fc','egrav_sc','etherm_sc',
+                          'erot_sc']].std()
 
 
 df1.name = "Run 1"
@@ -100,12 +112,13 @@ for df,df_error,marker in zip(dfs_avs,dfs_std,markers):
     axs_avgs[2,0].errorbar(df['rad'],df['Lsc'],yerr=df_error['Lsc'],label='%s' % df.name,marker=marker)
     axs_avgs[2,1].errorbar(df['rad'],df['Lfc'],yerr=df_error['Lfc'],label='%s' % df.name,marker=marker)
 
-    # axs_energies[0,0].scatter(df['rad'],df['egrav_fc'],s=8,label='%s' % df.name,marker=marker)
-    # axs_energies[0,1].scatter(df['rad'],df['egrav_sc'],s=8,label='%s' % df.name,marker=marker)
-    # axs_energies[1,0].scatter(df['rad'],df['etherm_fc'],s=8,label='%s' % df.name,marker=marker)
-    # axs_energies[1,1].scatter(df['rad'],df['etherm_sc'],s=8,label='%s' % df.name,marker=marker)
-    # axs_energies[2,0].scatter(df['rad'],df['erot_fc'],s=8,label='%s' % df.name,marker=marker)
-    # axs_energies[2,1].scatter(df['rad'],df['erot_sc'],s=8,label='%s' % df.name,marker=marker)
+
+    axs_avgs_energies[0,0].errorbar(df['rad'],df['egrav_fc'],yerr=df_error['egrav_fc'],label='%s' % df.name,marker=marker)
+    axs_avgs_energies[0,1].errorbar(df['rad'],df['egrav_sc'],yerr=df_error['egrav_sc'],label='%s' % df.name,marker=marker)
+    axs_avgs_energies[1,0].errorbar(df['rad'],df['etherm_fc'],yerr=df_error['etherm_fc'],label='%s' % df.name,marker=marker)
+    axs_avgs_energies[1,1].errorbar(df['rad'],df['etherm_sc'],yerr=df_error['etherm_sc'],label='%s' % df.name,marker=marker)
+    axs_avgs_energies[2,0].errorbar(df['rad'],df['erot_fc'],yerr=df_error['erot_fc'],label='%s' % df.name,marker=marker)
+    axs_avgs_energies[2,1].errorbar(df['rad'],df['erot_sc'],yerr=df_error['erot_sc'],label='%s' % df.name,marker=marker)
 
 
 
@@ -155,6 +168,10 @@ for i in range(0,3):
         axs_avgs[i,j].set_xlim(0,500)
         axs_avgs[i,j].tick_params(axis="x", labelsize=12)
         axs_avgs[i,j].tick_params(axis="y", labelsize=12)
+        axs_avgs_energies[i,j].set_xlim(0,500)
+        axs_avgs_energies[i,j].tick_params(axis="x", labelsize=12)
+        axs_avgs_energies[i,j].tick_params(axis="y", labelsize=12)
+
 
 
 
