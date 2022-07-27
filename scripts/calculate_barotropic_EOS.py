@@ -26,7 +26,8 @@ def calculate_eos_rhocrit(rhocrit1,gamma1,gamma2):
     rhocrit2 = ((cs2/cs02) ** ((gamma1 - 1)**-1)) * rhocrit1
     cs2 = ((kb*second_turnoff_temp)/(mu * mh))
     rhocrit3 = ((cs2/cs02)/((rhocrit2)/(rhocrit1))**(gamma1 - 1)) ** ((gamma2 - 1)**-1) * rhocrit2
-    print("rhocrit1 = %s" % rhocrit1,"\n","rhocrit2 = %s"% rhocrit2,"\n","rhocrit3 = %s" % rhocrit3)
+    # print("rhocrit1 = %s" % rhocrit1,"\n","rhocrit2 = %s"% rhocrit2,"\n","rhocrit3 = %s" % rhocrit3)
+    return rhocrit1,rhocrit2, rhocrit3
 
 
-calculate_eos_rhocrit(sys.argv[1],sys.argv[2],sys.argv[3])
+# calculate_eos_rhocrit(float(sys.argv[1]),float(sys.argv[2]),float(sys.argv[3]))
