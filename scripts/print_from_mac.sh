@@ -14,6 +14,10 @@ function delete_file() {
   ssh -q afenton@stargate "rm ~/Downloads/$selectedFileBasename" 2> /dev/null
 }
 
+if [ -z "$selectedFile" ]; then
+                echo "No file selected. Printing canceled."
+                exit
+fi
 
 send_file
 echo "File sent to server..."
