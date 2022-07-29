@@ -16,6 +16,9 @@
 counter=0
 while read -r line; do
     counter=$((counter+1))
+    run_dir="run_"`printf %03d $counter`
+    cp disc_template.in $run_dir/disc.in
+    cp disc_setup_template.setup $run_dir/disc.setup
     stringarray=($line)
     new_rc1=${stringarray[0]}
     new_rc2=${stringarray[1]}
@@ -25,17 +28,18 @@ while read -r line; do
     new_g2=${stringarray[4]}
     new_g3=${stringarray[5]}
 
-
-    rhocrit1=`grep -w rhocrit1 disc_template.in | awk '{print $3}'`;sed -i '' "s|$rhocrit1|$new_rc1|g" disc_template.in;
-    rhocrit2=`grep -w rhocrit2 disc_template.in | awk '{print $3}'`;sed -i '' "s|$rhocrit2|$new_rc2|g" disc_template.in;
-    rhocrit3=`grep -w rhocrit3 disc_template.in | awk '{print $3}'`;sed -i '' "s|$rhocrit2|$new_rc3|g" disc_template.in;
+    new_HonR=${stringarray[7]}
+    echo $new_HonR
 
 
-    gamma1=`grep -w gamma1 disc_template.in | awk '{print $3}'`;sed -i '' "s|$gamma1|$new_g1|g" disc_template.in;
-    gamma2=`grep -w gamma2 disc_template.in | awk '{print $3}'`;sed -i '' "s|$gamma2|$new_g2|g" disc_template.in;
-    gamma3=`grep -w gamma3 disc_template.in | awk '{print $3}'`;sed -i '' "s|$gamma3|$new_g3|g" disc_template.in;
+    rhocrit1=`grep -w rhocrit1 $run_dir/disc.in | awk '{print $3}'`;sed -i '' "s|$rhocrit1|$new_rc1|g" $run_dir/disc.in
+    rhocrit2=`grep -w rhocrit2 $run_dir/disc.in | awk '{print $3}'`;sed -i '' "s|$rhocrit2|$new_rc2|g" $run_dir/disc.in;
+    rhocrit3=`grep -w rhocrit3 $run_dir/disc.in | awk '{print $3}'`;sed -i '' "s|$rhocrit3|$new_rc3|g" $run_dir/disc.in;
 
-    run_dir="run_"`printf %03d $counter`
-    cp disc_template.in $run_dir/disc.in
-    echo $run_dir
+    gamma1=`grep -w gamma1 $run_dir/disc.in | awk '{print $3}'`;sed -i '' "s|$gamma1|$new_g1|g" $run_dir/disc.in;
+    gamma2=`grep -w gamma2 $run_dir/disc.in | awk '{print $3}'`;sed -i '' "s|$gamma2|$new_g2|g" $run_dir/disc.in;
+    gamma3=`grep -w gamma3 $run_dir/disc.in | awk '{print $3}'`;sed -i '' "s|$gamma3|$new_g3|g" $run_dir/disc.in;
+
+    HonR=`grep -w  H_R $run_dir/disc.setup | awk '{print $3}'`;sed -i '' "s|$HonR|$new_HonR|g" $run_dir/disc.setup;
+
 done < run_parameters.dat
