@@ -1,5 +1,3 @@
-# Import pexpect module
-
 import pexpect
 import glob
 import subprocess
@@ -7,8 +5,8 @@ import subprocess
 # splash_titles_commands = 'ls -d -- *run* | sort -t. -k4 >> splash.titles'
 complete_file_list = glob.glob("run1*")
 complete_file_list = sorted(complete_file_list, key = lambda x: x.split('.')[3])
-# subprocess.check_call(splash_titles_commands, shell=True)
 
+# subprocess.check_call(splash_titles_commands, shell=True)
 def splash_interact_coodinate_plots(filename,PID,y_axis,x_axis,render,vector):
     ''' This function answers the splash command line prompts for a coodinate
         plot - specifically a coodinate plot (i.e. in x and y) because only these
@@ -33,6 +31,34 @@ def splash_interact_coodinate_plots(filename,PID,y_axis,x_axis,render,vector):
     child.expect('') # Ask for zmax
     child.sendline('1.5')
 
+    child.expect('') # Colourbar under plot
+    child.sendline('r4')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('2')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('yes')
+
+    child.expect('') # Colour of window
+    child.sendline('p8')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('2')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('no')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('7')
+
+    child.expect('') # Size of window
+    child.sendline('p3')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('3')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('no')
+
+    child.expect('') # Axes options
+    child.sendline('p2')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('-2')
+
     child.expect('') # Ask for option
     child.sendline('l5')
     child.expect('') # Ask for adaptive axes
@@ -41,7 +67,6 @@ def splash_interact_coodinate_plots(filename,PID,y_axis,x_axis,render,vector):
     child.sendline('1')
     child.expect('') # Ask for adaptive axes
     child.sendline('0')
-
 
     child.expect('') # Ask for option
     child.sendline('g2')
@@ -54,7 +79,6 @@ def splash_interact_coodinate_plots(filename,PID,y_axis,x_axis,render,vector):
     child.expect('') # Ask for titles
     child.sendline('0.5')
 
-
     child.expect('') # Ask for option
     child.sendline('l1')
     child.expect('') # Ask for adaptive axes
@@ -63,9 +87,6 @@ def splash_interact_coodinate_plots(filename,PID,y_axis,x_axis,render,vector):
     child.sendline('no')
     child.expect('') # Ask for adaptive axes
     child.sendline('no')
-
-
-
 
     child.expect('') # Ask for Y axis
     child.sendline(y_axis)
@@ -82,6 +103,7 @@ def splash_interact_coodinate_plots(filename,PID,y_axis,x_axis,render,vector):
 
     child.interact()
 for filename in complete_file_list:
+    # print(filename)
     PID = filename.split(".")[2]
     subprocess.check_call('ls %s > splash.titles' % filename, shell=True)
     splash_interact_coodinate_plots(filename,PID,'2','1','6','0')
