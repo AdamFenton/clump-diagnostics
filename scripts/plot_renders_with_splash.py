@@ -31,6 +31,20 @@ def splash_interact_coodinate_plots(filename,PID,y_axis,x_axis,render,vector):
     child.expect('') # Ask for zmax
     child.sendline('1.5')
 
+    child.expect('') # Distance key (-- 1 AU --)
+    child.sendline('g4')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('yes')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('1')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('1 AU')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('0.5')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('1.0')
+
+
     child.expect('') # Colourbar under plot
     child.sendline('r4')
     child.expect('') # Ask for adaptive axes
@@ -58,6 +72,11 @@ def splash_interact_coodinate_plots(filename,PID,y_axis,x_axis,render,vector):
     child.sendline('p2')
     child.expect('') # Ask for adaptive axes
     child.sendline('-2')
+
+    child.expect('') # Axes options
+    child.sendline('p6')
+    child.expect('') # Ask for adaptive axes
+    child.sendline('1.4')
 
     child.expect('') # Ask for option
     child.sendline('l5')
