@@ -19,7 +19,7 @@ from scipy.signal import savgol_filter
 # Define constants to convert to physical units
 au = plonk.units('au')
 kms = plonk.units('km/s')
-bins = np.logspace(np.log10(5e-4),np.log10(50),200) # change the number of bins ?
+bins = np.logspace(np.log10(5e-4),np.log10(50),100) # change the number of bins ?
 
 if hasattr(pint, 'UnitStrippedWarning'):
     warnings.simplefilter('ignore', category=pint.UnitStrippedWarning)
@@ -124,7 +124,7 @@ def calculate_SPH_mean(subsnap,clump_centre,clump_velocity,bins,orientation):
             # position is within 3 times the bin width
             if np.abs(array_to_check[part]) > bins[bin] \
             and np.abs(array_to_check[part]) < bins[bin+1]  \
-            and R[part] < 0.1: # Change this to 0.1 AU to check behav0opr
+            and R[part] < 3*(bins[bin+1] - bins[bin]): # Change this to 0.1 AU to check behav0opr
             # if all 3 checks are passed, add that particle's temperature etc to
             # the relevant array and increment the number of particles in that
             # bin by one
@@ -221,6 +221,12 @@ def prepare_snapshots(snapshot):
 
 x_comp, y_comp, z_comp, clump_centre, clump_velocity, full_clump = prepare_snapshots('run1.001.0878138.030.h5')
 print('Completed snapshot preparation')
+avg_density_y, avg_temp_y, avg_infall_y, avg_rotational_y, density_y, \
+temperature_y, rotational_y, infall_y, y = calculate_SPH_mean(y_comp,clump_centre,
+                                                             clump_velocity,bins,
+                                                             orientation = 'y')
+print('Completed Y component averages')
+
 
 avg_density_x, avg_temp_x, avg_infall_x, avg_rotational_x, density_x, \
 temperature_x, rotational_x, infall_x, x = calculate_SPH_mean(x_comp,clump_centre,
@@ -228,11 +234,6 @@ temperature_x, rotational_x, infall_x, x = calculate_SPH_mean(x_comp,clump_centr
                                                              orientation = 'x')
 
 print('Completed X component averages')
-avg_density_y, avg_temp_y, avg_infall_y, avg_rotational_y, density_y, \
-temperature_y, rotational_y, infall_y, y = calculate_SPH_mean(y_comp,clump_centre,
-                                                             clump_velocity,bins,
-                                                             orientation = 'y')
-print('Completed Y component averages')
 avg_density_z, avg_temp_z, avg_infall_z, avg_rotational_z, density_z, \
 temperature_z, rotational_z, infall_z, z = calculate_SPH_mean(z_comp,clump_centre,
                                                              clump_velocity,bins,
