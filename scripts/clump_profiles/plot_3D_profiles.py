@@ -19,7 +19,7 @@ from scipy.signal import savgol_filter
 # Define constants to convert to physical units
 au = plonk.units('au')
 kms = plonk.units('km/s')
-bins = np.logspace(np.log10(5e-4),np.log10(50),50) # change the number of bins ?
+bins = np.logspace(np.log10(5e-4),np.log10(50),200) # change the number of bins ?
 
 if hasattr(pint, 'UnitStrippedWarning'):
     warnings.simplefilter('ignore', category=pint.UnitStrippedWarning)
@@ -97,11 +97,16 @@ def calculate_SPH_mean(subsnap,clump_centre,clump_velocity,bins,orientation):
         R = np.sqrt(y**2 + z**2)
         array_to_check = x
 
+    # -------------------------------- #
+    # Are these calculations correct?
+    # -------------------------------- #
     # Calculate the rotational velocity
+    # Rotational Velocity = np.sqrt(vx**2 + vy**2)
     rotational = plonk.analysis.particles.rotational_velocity(subsnap,
                                                               clump_velocity,
                                                               ignore_accreted=True)
     # Calculate the infall velocity
+    # Infall Velocity = (((x * vx )+ (y * vy) +(z * vz)) / np.sqrt(x ** 2 + y ** 2 + z ** 2)) * -1
     infall = plonk.analysis.particles.velocity_radial_spherical_altered(subsnap,
                                                                         clump_centre,
                                                                         clump_velocity,
@@ -119,7 +124,7 @@ def calculate_SPH_mean(subsnap,clump_centre,clump_velocity,bins,orientation):
             # position is within 3 times the bin width
             if np.abs(array_to_check[part]) > bins[bin] \
             and np.abs(array_to_check[part]) < bins[bin+1]  \
-            and R[part] < (bins[bin+1] - bins[bin]): # Change this to 0.1 AU to check behav0opr
+            and R[part] < 0.1: # Change this to 0.1 AU to check behav0opr
             # if all 3 checks are passed, add that particle's temperature etc to
             # the relevant array and increment the number of particles in that
             # bin by one
