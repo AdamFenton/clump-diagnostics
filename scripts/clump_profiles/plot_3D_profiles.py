@@ -19,13 +19,14 @@ from scipy.signal import savgol_filter
 # Define constants to convert to physical units
 au = plonk.units('au')
 kms = plonk.units('km/s')
-bins = np.logspace(np.log10(1e-4),np.log10(50),75)
+bins = np.logspace(np.log10(5e-4),np.log10(50),50) # change the number of bins ?
 
 if hasattr(pint, 'UnitStrippedWarning'):
     warnings.simplefilter('ignore', category=pint.UnitStrippedWarning)
 np.seterr(divide='ignore', invalid='ignore')
 
 # Define axes
+
 figx, axx = plt.subplots(ncols=2,nrows=2,figsize=(8,8))
 figy, axy = plt.subplots(ncols=2,nrows=2,figsize=(8,8))
 figz, axz = plt.subplots(ncols=2,nrows=2,figsize=(8,8))
@@ -70,6 +71,11 @@ def calculate_SPH_mean(subsnap,clump_centre,clump_velocity,bins,orientation):
     density_in_bin =  np.zeros(len(bins))
     infall_in_bin =  np.zeros(len(bins))
     rotational_in_bin =  np.zeros(len(bins))
+    avg_temp = np.zeros(len(bins))
+    avg_density =  np.zeros(len(bins))
+    avg_infall =  np.zeros(len(bins))
+    avg_rotational =  np.zeros(len(bins))
+
     n_part = len(subsnap['m'])
     # Keep track of which particles satisfy the bin conditions
     particles_ids = []
@@ -104,15 +110,16 @@ def calculate_SPH_mean(subsnap,clump_centre,clump_velocity,bins,orientation):
 
     # Perform the bin check, if the particle is within the bin and 3 times the
     # width of the bin then include it in the average calculation
-    for part in range(0,n_part):
+    for bin in range(0,len(bins)-1):
         # The check checks bin+1 so the loop has to stop at len(bins) - 1
-        for bin in range(0,len(bins)-1):
+        n_in_bin = 0
+        for part in range(0,n_part):
             # Check if particle's position (x,y or z depending on which component
             # is being calculated) is within the two bin edges and also if it's
             # position is within 3 times the bin width
             if np.abs(array_to_check[part]) > bins[bin] \
             and np.abs(array_to_check[part]) < bins[bin+1]  \
-            and R[part] < 3*(bins[bin+1] - bins[bin]):
+            and R[part] < (bins[bin+1] - bins[bin]): # Change this to 0.1 AU to check behav0opr
             # if all 3 checks are passed, add that particle's temperature etc to
             # the relevant array and increment the number of particles in that
             # bin by one
@@ -121,16 +128,16 @@ def calculate_SPH_mean(subsnap,clump_centre,clump_velocity,bins,orientation):
                 infall_in_bin[bin] += infall[part].magnitude
                 rotational_in_bin[bin] += rotational[part].magnitude
                 particles_ids.append(part)
-                bin_counter[bin] += 1
-
-
+                n_in_bin += 1
+        avg_temp[bin] = temp_in_bin[bin] / n_in_bin
+        avg_density[bin] = density_in_bin[bin] / n_in_bin
+        avg_infall[bin] = infall_in_bin[bin] / n_in_bin
+        avg_rotational[bin] = rotational_in_bin[bin] / n_in_bin
+        bin_counter[bin] = n_in_bin
 
     # Calculate the averages by dividing the total quantity by the number of
     # particles in each bin
-    avg_temp = np.divide(temp_in_bin,bin_counter)
-    avg_density = np.divide(density_in_bin,bin_counter)
-    avg_infall = np.divide(infall_in_bin,bin_counter)
-    avg_rotational = np.divide(rotational_in_bin,bin_counter)
+
 
 
     # Return all average arrays as well as the arrays containing only the
@@ -207,15 +214,13 @@ def prepare_snapshots(snapshot):
 
     return x_comp, y_comp, z_comp, clump_centre, clump_velocity, full_clump
 
-x_comp, y_comp, z_comp, clump_centre, clump_velocity, full_clump = prepare_snapshots('run1.001.3010691.030.h5')
+x_comp, y_comp, z_comp, clump_centre, clump_velocity, full_clump = prepare_snapshots('run1.001.0878138.030.h5')
 print('Completed snapshot preparation')
 
 avg_density_x, avg_temp_x, avg_infall_x, avg_rotational_x, density_x, \
 temperature_x, rotational_x, infall_x, x = calculate_SPH_mean(x_comp,clump_centre,
                                                              clump_velocity,bins,
                                                              orientation = 'x')
-
-
 
 print('Completed X component averages')
 avg_density_y, avg_temp_y, avg_infall_y, avg_rotational_y, density_y, \
@@ -240,7 +245,7 @@ for index,label,limit in zip(figure_indexes,figure_ylabels,figure_ylimits):
 for i in range(0,2):
     for j in range(0,2):
         axx[i,j].set_xscale('log')
-        axx[i,j].set_xlim(1.21022227e+01,1.44503460e+01)
+        axx[i,j].set_xlim(5E-4,50)
         axx[i,j].set_xlabel('x (AU)',fontsize=10)
         axx[i,j].tick_params(axis="x", labelsize=8)
         axx[i,j].tick_params(axis="y", labelsize=8)
@@ -281,6 +286,12 @@ axx[1,0].scatter(x,rotational_x,s=0.1,c='black')
 axx[1,0].plot(bins,avg_rotational_x,c='red')
 axx[1,1].scatter(x,infall_x,s=0.1,c='black')
 axx[1,1].plot(bins,avg_infall_x,c='red')
+# for x_bin in bins:
+#     ax_.scatter(x,infall_x,s=5,c='black')
+#     ax_.plot(bins,avg_infall_x,c='red',alpha=0.5)
+#     ax_.axvline(x=x_bin,c='black',linestyle='-',linewidth=0.5)
+#     ax_.set_xscale('log')
+#     ax_.set_xlim(5e-4,50)
 
 axy[0,0].scatter(y,density_y,s=0.1,c='black')
 axy[0,0].plot(bins,avg_density_y,c='red')
