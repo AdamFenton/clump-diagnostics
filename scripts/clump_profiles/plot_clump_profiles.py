@@ -1,21 +1,3 @@
-Last login: Thu Dec  1 12:10:31 on ttys002
-adamfenton@Macbook-Pro ~ % cd Documents/PhD/yearThree/analysisScripts/analysisSuite/clump-diagnostics/scripts/clump_profiles
-adamfenton@Macbook-Pro clump_profiles % atom plot_clump_profiles.py
-adamfenton@Macbook-Pro clump_profiles %
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import plonk
 from scipy.signal import find_peaks
 import numpy as np
