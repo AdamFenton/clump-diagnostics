@@ -14,6 +14,7 @@ from scipy.signal import savgol_filter
 from digitize import calculate_gravitational_energy
 import time
 import pandas as pd
+import pickle
 
 # Author: Adam Fenton
 cwd = os.getcwd()
@@ -38,6 +39,10 @@ clump_results = open('clump-results.dat', 'w')
 if hasattr(pint, 'UnitStrippedWarning'):
     warnings.simplefilter('ignore', category=pint.UnitStrippedWarning)
 np.seterr(divide='ignore', invalid='ignore')
+
+
+
+
 # @profile
 def calculate_sum(binned_quantity,summed_quantity,bins):
     return stats.binned_statistic(binned_quantity, summed_quantity, 'sum', bins=bins)
@@ -179,7 +184,6 @@ def find_first_non_nan(array):
 
 
 for file in tqdm(complete_file_list):
-
     index = complete_file_list.index(file)
     clump_number = file.split("/")[0].split("p")[-1]
 
@@ -308,8 +312,10 @@ for file in tqdm(complete_file_list):
 
 
     peaks, _ = find_peaks(bspl_y,height=1,distance=300)
-    minima, _ = find_peaks(-bspl_y)
-
+    if len(peaks) == 2:
+        minima, _ = find_peaks(-bspl_y[peaks[0]:peaks[1]])
+    else:
+        minima, _ = find_peaks(-bspl_y[10:peaks[1]])
     # Tidily set axes limits and scale types
     for i in range(0,3):
         for j in range(0,2):
@@ -341,13 +347,7 @@ for file in tqdm(complete_file_list):
                            c = line_colour,linestyle="--",linewidth = 2,alpha=0.5)
     axs_test.plot(binned_r_clump_with_nans,average_density_with_nans,linewidth=2,
                            c = line_colour,alpha=0.5)
-    #
-    # axs_test.set_ylabel('Density (g/cm^3)')
-    # axs_test.set_xlabel('R (AU)')
-    # axs_test.set_yscale('log')
-    # axs_test.set_xscale('log')
-    #
-    # axs_test.set_ylim(1e-13,1e-2)
+
     f_radial_axs[0,1].plot(averaged_temperature_radial[1][1:],
                            averaged_temperature_radial[0],c = line_colour,
                            linestyle="--",linewidth =1,alpha=0.5)
@@ -361,34 +361,10 @@ for file in tqdm(complete_file_list):
                            c = line_colour)
 
 
-    # infall_with_nans_eq_0 = averaged_infall_radial[0].copy()
-    # infall_with_nans_eq_0[np.isnan(infall_with_nans_eq_0)] = 0
-    # x_smooth = averaged_infall_radial[1][1:]
-    # bspl_y = averaged_infall_radial[0]
-    # f_radial_axs[1,1].plot(averaged_infall_radial[1][1:],smoothed_infall,
-    #                        c = line_colour,linestyle="--",linewidth = 1,alpha=0.5)
-    # f_radial_axs[1,1].plot(binned_r_clump_with_nans,smoothed_infall_nans,
-    #                        c = line_colour)
-    # f_radial_axs[1,1].plot(x_smooth[peaks],bspl_y[peaks],'+',c=line_colour)
-    # f_radial_axs[1,1].plot(averaged_infall_radial[1][1:],averaged_infall_radial[0],
-    #                        c = line_colour,linestyle="--",linewidth = 1,alpha=0.5)
-    # f_radial_axs[1,1].plot(binned_r_clump_with_nans,average_infall_with_nans,
-    #                        c = line_colour)
-    # f_radial_axs[1,1].plot(x_smooth[peaks],bspl_y[peaks],'+',c=line_colour)
-
-    # f_radial_axs[1,1].plot(x_smooth[minima],bspl_y[minima],'+',c=line_colour)
     f_radial_axs[1,1].plot(averaged_infall_radial[1][1:],averaged_infall_radial[0],
                            c = line_colour,linestyle="-",linewidth = 1,alpha=0.5)
-    # f_radial_axs[1,1].plot(x_smooth,bspl_y,
-    #                        c = line_colour,linewidth = 1,alpha=1)
-
     f_radial_axs[1,1].plot(x_smooth[peaks],bspl_y[peaks],'+',c=line_colour)
 
-
-
-
-
-    # f_radial_axs[2,0].plot(count[1][1:],mass_in_bin,linewidth=1)
 
     f_radial_axs[2,0].plot(count[1][1:],mass_in_bin,linewidth=1,label = 'Fragment %s' % clump_number)
     f_radial_axs[2,0].set_yscale('linear')
@@ -411,6 +387,8 @@ for file in tqdm(complete_file_list):
     f_radial_axs[2,1].annotate("f)", xy=(0.9, 0.9), xycoords="axes fraction")
     fig_radial.align_ylabels()
     fig_radial.tight_layout(pad=0.40)
+    fig_radial.savefig("%s/clump_profiles_new.png" % cwd,dpi = 200)
+    fig_ang_mom.savefig("%s/specific_angular_momentum.png" % cwd,dpi = 200)
 
 
     # Put a legend to the right of the current axis
@@ -446,7 +424,6 @@ for file in tqdm(complete_file_list):
     rhocritID = 1
 
 
-    # Write core information to the clump_results file for plotting later on.
     if len(peaks) == 1:
         first_core_radius_outer = float('{0:.5e}'.format(x_smooth[peaks[0]]))
         first_core_radius_inner = float('{0:.5e}'.format(x_smooth[minima[0]]))
@@ -512,7 +489,7 @@ for file in tqdm(complete_file_list):
 
         second_core_bin = np.digitize(second_core_radius,mean_bins_radial)-1
         L_fco = spec_mom_sum_2[first_core_bin_outer] #* ((subSnap['m'][0])/(np.cumsum(first_core_count)[-1] * subSnap['m'][0]))
-        L_fco = spec_mom_sum_2[first_core_bin_inner] #* ((subSnap['m'][0])/(np.cumsum(first_core_count)[-1] * subSnap['m'][0]))
+        L_fci = spec_mom_sum_2[first_core_bin_inner] #* ((subSnap['m'][0])/(np.cumsum(first_core_count)[-1] * subSnap['m'][0]))
 
         L_sc = spec_mom_sum_2[second_core_bin]#* ((subSnap['m'][0])/(np.cumsum(second_core_count)[-1] * subSnap['m'][0]))
         egrav_fco = cumsum_egrav[first_core_bin_outer]
@@ -534,6 +511,7 @@ for file in tqdm(complete_file_list):
         beta_sc = erot_sc/egrav_sc
         axs_ang_mom.axvline(x=x_smooth[peaks[0]],c=line_colour,linestyle='--',linewidth=1)
         axs_ang_mom.axvline(x=x_smooth[peaks[1]],c=line_colour,linestyle='dotted',linewidth=1)
+
 
     clump_results.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % \
                        (file.split("/")[-1],\
@@ -567,6 +545,3 @@ for file in tqdm(complete_file_list):
                        radius_clump,
                        only_one_core,
                        rhocritID))
-
-fig_radial.savefig("%s/clump_profiles_new.png" % cwd,dpi = 200)
-fig_ang_mom.savefig("%s/specific_angular_momentum.png" % cwd,dpi = 200)

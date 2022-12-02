@@ -2,7 +2,7 @@ import numpy as np
 from scipy import stats
 
 
-
+#@profile
 def calculate_gravitational_energy(A,bins,particle_mass):
     ''' Our philosophy here is to reduce execution time for gravitational energy
         calculation where the number of particle interior to each particle needs

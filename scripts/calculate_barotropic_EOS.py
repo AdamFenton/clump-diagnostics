@@ -17,7 +17,18 @@ import sys
 kb = 1.38E-16
 mu = 2.381
 mh = 1.67E-24
-def calculate_eos_rhocrit(rhocrit1,gamma1,gamma2):
+unit_vel = 2.978E6
+R_ref = 300
+q = 0.25
+m_star = 0.8
+
+def calculate_H_on_R(T_1AU):
+    Tref = T_1AU*R_ref**(-2*q)
+    cs0 = (np.sqrt((Tref * kb)/(mu*mh)) / unit_vel) / R_ref **-q
+    H_on_R = (cs0 / R_ref **q) / np.sqrt((1 * m_star)/(R_ref))
+    return H_on_R
+
+def calculate_eos_params(rhocrit1,gamma1,gamma2):
     first_turnoff_temp = 100 # Kelvin
     second_turnoff_temp = 2000 # Kelvin
     T_iso = 10 # Kelvin
@@ -26,8 +37,8 @@ def calculate_eos_rhocrit(rhocrit1,gamma1,gamma2):
     rhocrit2 = ((cs2/cs02) ** ((gamma1 - 1)**-1)) * rhocrit1
     cs2 = ((kb*second_turnoff_temp)/(mu * mh))
     rhocrit3 = ((cs2/cs02)/((rhocrit2)/(rhocrit1))**(gamma1 - 1)) ** ((gamma2 - 1)**-1) * rhocrit2
-    # print("rhocrit1 = %s" % rhocrit1,"\n","rhocrit2 = %s"% rhocrit2,"\n","rhocrit3 = %s" % rhocrit3)
     return rhocrit1,rhocrit2, rhocrit3
 
-
 # calculate_eos_rhocrit(float(sys.argv[1]),float(sys.argv[2]),float(sys.argv[3]))
+print(calculate_H_on_R(200))
+# print(calculate_eos_params(1e-13,1.667,1.4))

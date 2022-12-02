@@ -26,7 +26,7 @@ if hasattr(pint, 'UnitStrippedWarning'):
 np.seterr(divide='ignore', invalid='ignore')
 
 # Define axes
-
+fig_,ax_  = plt.subplots(figsize=(8,8))
 figx, axx = plt.subplots(ncols=2,nrows=2,figsize=(8,8))
 figy, axy = plt.subplots(ncols=2,nrows=2,figsize=(8,8))
 figz, axz = plt.subplots(ncols=2,nrows=2,figsize=(8,8))
@@ -76,6 +76,7 @@ def calculate_SPH_mean(subsnap,clump_centre,clump_velocity,bins,orientation):
     avg_infall =  np.zeros(len(bins))
     avg_rotational =  np.zeros(len(bins))
 
+
     n_part = len(subsnap['m'])
     # Keep track of which particles satisfy the bin conditions
     particles_ids = []
@@ -83,7 +84,6 @@ def calculate_SPH_mean(subsnap,clump_centre,clump_velocity,bins,orientation):
     x = subsnap['x'].magnitude - clump_centre[0].magnitude
     y = subsnap['y'].magnitude - clump_centre[1].magnitude
     z = subsnap['z'].magnitude - clump_centre[2].magnitude
-
 
     # This section cleanly determines which arrays to use for the calculation
     # depending on the orientation of the tube
@@ -117,34 +117,28 @@ def calculate_SPH_mean(subsnap,clump_centre,clump_velocity,bins,orientation):
     # width of the bin then include it in the average calculation
     for bin in range(0,len(bins)-1):
         # The check checks bin+1 so the loop has to stop at len(bins) - 1
-        n_in_bin = 0
+        #n_in_bin = 0
         for part in range(0,n_part):
             # Check if particle's position (x,y or z depending on which component
             # is being calculated) is within the two bin edges and also if it's
             # position is within 3 times the bin width
-            if np.abs(array_to_check[part]) > bins[bin] \
-            and np.abs(array_to_check[part]) < bins[bin+1]  \
-            and R[part] < 3*(bins[bin+1] - bins[bin]): # Change this to 0.1 AU to check behav0opr
+            if np.abs(x[part]) < 0.05 and np.abs(y[part])<0.05 and np.abs(z[part])<0.05:
+
             # if all 3 checks are passed, add that particle's temperature etc to
             # the relevant array and increment the number of particles in that
             # bin by one
+
                 temp_in_bin[bin] += subsnap['my_temp'][part].magnitude
                 density_in_bin[bin] += subsnap['density'][part].magnitude
                 infall_in_bin[bin] += infall[part].magnitude
                 rotational_in_bin[bin] += rotational[part].magnitude
+                bin_counter[bin] += 1
                 particles_ids.append(part)
-                n_in_bin += 1
-        avg_temp[bin] = temp_in_bin[bin] / n_in_bin
-        avg_density[bin] = density_in_bin[bin] / n_in_bin
-        avg_infall[bin] = infall_in_bin[bin] / n_in_bin
-        avg_rotational[bin] = rotational_in_bin[bin] / n_in_bin
-        bin_counter[bin] = n_in_bin
 
-    # Calculate the averages by dividing the total quantity by the number of
-    # particles in each bin
-
-
-
+        avg_temp[bin] = temp_in_bin[bin] / bin_counter[bin]
+        avg_density[bin] = density_in_bin[bin] / bin_counter[bin]
+        avg_infall[bin] = infall_in_bin[bin] / bin_counter[bin]
+        avg_rotational[bin] = rotational_in_bin[bin] / bin_counter[bin]
     # Return all average arrays as well as the arrays containing only the
     # particles that passed the bin checks i.e. those stored in particle_ids
     return avg_density, avg_temp, avg_infall, avg_rotational, \
@@ -227,18 +221,17 @@ temperature_y, rotational_y, infall_y, y = calculate_SPH_mean(y_comp,clump_centr
                                                              orientation = 'y')
 print('Completed Y component averages')
 
-
 avg_density_x, avg_temp_x, avg_infall_x, avg_rotational_x, density_x, \
 temperature_x, rotational_x, infall_x, x = calculate_SPH_mean(x_comp,clump_centre,
                                                              clump_velocity,bins,
                                                              orientation = 'x')
 
-print('Completed X component averages')
+print('Completed X component averages',len(infall_x))
 avg_density_z, avg_temp_z, avg_infall_z, avg_rotational_z, density_z, \
 temperature_z, rotational_z, infall_z, z = calculate_SPH_mean(z_comp,clump_centre,
                                                              clump_velocity,bins,
                                                              orientation = 'z')
-print('Completed Z component averages')
+print('Completed Z component averages',len(infall_z))
 figure_indexes = [(0,0),(0,1),(1,0),(1,1)]
 figure_ylimits = [(1E-13,1E-2),(10,8000),(0,10),(0,10)]
 figure_ylabels = ['Density $(\\rm g\,cm^{-3})$','Temperature (K)','Rotational Velocity $(\\rm km\,s^{-1})$',
@@ -298,6 +291,8 @@ axx[1,1].plot(bins,avg_infall_x,c='red')
 #     ax_.axvline(x=x_bin,c='black',linestyle='-',linewidth=0.5)
 #     ax_.set_xscale('log')
 #     ax_.set_xlim(5e-4,50)
+#
+# plt.show()
 
 axy[0,0].scatter(y,density_y,s=0.1,c='black')
 axy[0,0].plot(bins,avg_density_y,c='red')

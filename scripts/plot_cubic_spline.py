@@ -1,9 +1,22 @@
+# ================================== #
+# plot_cublic_spline.py
+# ================================== #
+# A small script the plot the M4
+# cublic spline with its first and
+# second derivatives. I will use this
+# in the numerical methods chapter
+
+# Author = Adam Fenton
+# Date = 20220706
+# =============================== #
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.misc import derivative
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 q = np.arange(0., 3.05, 0.05)
+
 fig, ax = plt.subplots(figsize=(8,8))
 
 def cubic_spline(q):
@@ -26,6 +39,7 @@ def cubic_spline_second_deriv(q):
                 lambda q : 0*q])
 
 
+
 # x_values = np.arange(0., 3.05, 0.05)
 # for mu, sig in [(0, 1/(np.pi))]:
 #     ax.plot(x_values, gaussian(x_values, mu, sig))
@@ -41,7 +55,7 @@ ax.plot(q,cubic_spline(q),linewidth=2,c='k')
 ax.plot(q,cubic_spline_first_deriv(q),linewidth=2,c='k',linestyle="--")
 ax.plot(q,cubic_spline_second_deriv(q),linewidth=2,c='k',linestyle="-.")
 ax.set_ylabel(r'$W_{ij}$',fontsize=15)
-ax.set_xlabel('r/h',fontsize=15)
+ax.set_xlabel('q',fontsize=15)
 ax.set_xlim(0,3)
 ax.set_ylim(-1,1)
 
@@ -60,4 +74,5 @@ ax.tick_params(right=True, top=True,labelsize=15,width=2,length=10)
 plt.figtext(0.90, 0.87, r'M$_{4}$ cubic' ,fontsize=20,va="top", ha="right")
 fig.align_ylabels()
 fig.tight_layout(pad=0.40)
-plt.savefig("m4_cubic_spline.pdf")
+plt.show()
+# plt.savefig("m4_cubic_spline.pdf")

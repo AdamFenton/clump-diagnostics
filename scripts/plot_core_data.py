@@ -47,6 +47,8 @@ tmp ['Rfc'] = 0.000
 tmp ['Mfc'] = 0.000
 tmp ['Lfc'] = 0.000
 
+only_one_core =  raw_data.loc[raw_data['only_one_core'] == True]
+
 
 filtered = pd.concat([tmp, dropped], ignore_index=True, sort=False)
 # filtered = filtered.drop(filtered[filtered.Rfc == 0].index)
@@ -82,7 +84,6 @@ df3_avgs, df3_stds = df3[['Rsc','Rfc','Msc','Mfc','rad','Lfc','Lsc','egrav_fc',
 df1.name = "Run 1"
 df2.name = "Run 2"
 df3.name = "Run 3"
-
 
 dfs = [df1,df2,df3]
 dfs_avs = [df1_avgs,df2_avgs,df3_avgs]
@@ -128,14 +129,23 @@ axs[0,0].set_ylabel("First Core Mass (Mj)",fontsize=12)
 axs[0,1].set_ylabel("First Core Radius (AU)",fontsize=12)
 axs[1,0].set_ylabel("Second Core Mass (Mj)",fontsize=12)
 axs[1,1].set_ylabel("Second Core Radius (Rj)",fontsize=12)
-# axs[1,0].set_ylim(1.25,3)
-# axs[1,1].set_ylim(30,50)
 axs[2,0].set_ylabel("Second Core J (cm^2/s)",fontsize=12)
 axs[2,1].set_ylabel("First Core J (cm^2/s)",fontsize=12)
 axs[2,0].set_yscale('log')
 axs[2,1].set_yscale('log')
 axs[2,1].set_ylim(bottom=4E20)
 axs[0,0].legend()
+
+axs_avgs[0,0].set_ylabel("First Core Mass (Mj)",fontsize=12)
+axs_avgs[0,1].set_ylabel("First Core Radius (AU)",fontsize=12)
+axs_avgs[1,0].set_ylabel("Second Core Mass (Mj)",fontsize=12)
+axs_avgs[1,1].set_ylabel("Second Core Radius (Rj)",fontsize=12)
+axs_avgs[2,0].set_ylabel("Second Core J (cm^2/s)",fontsize=12)
+axs_avgs[2,1].set_ylabel("First Core J (cm^2/s)",fontsize=12)
+axs_avgs[2,0].set_yscale('log')
+axs_avgs[2,1].set_yscale('log')
+axs_avgs[2,1].set_ylim(bottom=4E20)
+axs_avgs[0,0].legend()
 # Shrink current axis by 20%
 axs_energies[0,0].set_ylabel("First Core egrav",fontsize=12)
 axs_energies[0,1].set_ylabel("Second Core egrav",fontsize=12)
@@ -143,6 +153,13 @@ axs_energies[1,0].set_ylabel("First Core etherm",fontsize=12)
 axs_energies[1,1].set_ylabel("Second Core etherm",fontsize=12)
 axs_energies[2,0].set_ylabel("First Core erot",fontsize=12)
 axs_energies[2,1].set_ylabel("Second Core erot",fontsize=12)
+
+axs_avgs_energies[0,0].set_ylabel("First Core egrav",fontsize=12)
+axs_avgs_energies[0,1].set_ylabel("Second Core egrav",fontsize=12)
+axs_avgs_energies[1,0].set_ylabel("First Core etherm",fontsize=12)
+axs_avgs_energies[1,1].set_ylabel("Second Core etherm",fontsize=12)
+axs_avgs_energies[2,0].set_ylabel("First Core erot",fontsize=12)
+axs_avgs_energies[2,1].set_ylabel("Second Core erot",fontsize=12)
 axs[0,0].set_ylim(-0.1,60)
 axs[0,1].set_ylim(-0.1,30)
 axs[1,0].set_ylim(1,6)
@@ -188,7 +205,7 @@ fig_three.tight_layout(pad=0.35)
 fig_four.align_ylabels()
 fig_four.tight_layout(pad=0.35)
 
-fig_one.savefig("%s/clump-core-info.png" % cwd, dpi = 500)
-fig_two.savefig("%s/clump-core-info_energies.png" % cwd, dpi = 500)
-fig_three.savefig("%s/clump-core-info_averages.png" % cwd, dpi = 500)
-fig_four.savefig("%s/clump-core-info_averages_energies.png" % cwd, dpi = 500)
+fig_one.savefig("%s/core_RMJ.png" % cwd, dpi = 500)
+fig_two.savefig("%s/core_energies.png" % cwd, dpi = 500)
+fig_three.savefig("%s/core_RMJ_avg.png" % cwd, dpi = 500)
+fig_four.savefig("%s/core_energies_avg.png" % cwd, dpi = 500)

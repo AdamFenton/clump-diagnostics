@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-R = np.linspace(10,300,100)
+R = np.linspace(1,300,100)
 
 
 def sigma_wo_softening(R):
