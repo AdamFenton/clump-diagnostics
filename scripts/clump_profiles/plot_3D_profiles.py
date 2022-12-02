@@ -19,17 +19,13 @@ from scipy.signal import savgol_filter
 # Define constants to convert to physical units
 au = plonk.units('au')
 kms = plonk.units('km/s')
-bins = np.logspace(np.log10(5e-4),np.log10(50),100) # change the number of bins ?
+bins = np.logspace(np.log10(5e-4),np.log10(50),75) # change the number of bins ?
 
 if hasattr(pint, 'UnitStrippedWarning'):
     warnings.simplefilter('ignore', category=pint.UnitStrippedWarning)
 np.seterr(divide='ignore', invalid='ignore')
 
 # Define axes
-fig_,ax_  = plt.subplots(figsize=(8,8))
-figx, axx = plt.subplots(ncols=2,nrows=2,figsize=(8,8))
-figy, axy = plt.subplots(ncols=2,nrows=2,figsize=(8,8))
-figz, axz = plt.subplots(ncols=2,nrows=2,figsize=(8,8))
 def flatten_list(_2d_list):
     flat_list = []
     # Iterate through the outer list
@@ -64,7 +60,8 @@ def calculate_SPH_mean(subsnap,clump_centre,clump_velocity,bins):
     particles_ids = [[] for _ in range(len(bins))]
 
     x = subsnap['x'].magnitude - clump_centre[0].magnitude
-
+    y = subsnap['y'].magnitude - clump_centre[1].magnitude
+    R = np.sqrt(x**2 + y**2)
     # This section cleanly determines which arrays to use for the calculation
     # depending on the orientation of the tube
 
@@ -78,7 +75,8 @@ def calculate_SPH_mean(subsnap,clump_centre,clump_velocity,bins):
 
     for part in range(n_part):
         for bin in range(len(bins)-1):
-            if x[part] < bins[bin+1] and x[part] > bins[bin]:
+            if x[part] < bins[bin+1] and x[part] > bins[bin] \
+            and R[part] < 10*(bins[bin+1] - bins[bin]) :
                 particles_ids[bin].append(part)
                 bin_counter[bin] += 1
                 infall_in_bin[bin] += infall[part].magnitude
@@ -130,7 +128,7 @@ x_comp,clump_centre, clump_velocity = prepare_snapshots('run1.001.0878138.030.h5
 print('Completed snapshot preparation')
 avg_infall, infall, x =calculate_SPH_mean(x_comp,clump_centre,clump_velocity,bins)
 plt.scatter(x,infall,s=0.1)
-plt.plot(bins,avg_infall)
+plt.plot(bins,avg_infall,c='red')
 plt.xscale('log')
 plt.show()
 #                                                              clump_velocity,bins)
