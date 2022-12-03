@@ -31,7 +31,7 @@ def flatten_list(_2d_list):
     # Iterate through the outer list
     for element in _2d_list:
         if type(element) is list:
-            # If the element is of type list, iterate through the sublist
+
             for item in element:
                 flat_list.append(item)
         else:
@@ -61,9 +61,10 @@ def calculate_SPH_mean(subsnap,clump_centre,clump_velocity,bins):
 
     x = subsnap['x'].magnitude - clump_centre[0].magnitude
     y = subsnap['y'].magnitude - clump_centre[1].magnitude
-    R = np.sqrt(x**2 + y**2)
-    # This section cleanly determines which arrays to use for the calculation
-    # depending on the orientation of the tube
+    z = subsnap['z'].magnitude - clump_centre[2].magnitude
+
+    R = np.sqrt(z**2 + y**2)
+
 
     rotational = plonk.analysis.particles.rotational_velocity(subsnap,
                                                               clump_velocity,
