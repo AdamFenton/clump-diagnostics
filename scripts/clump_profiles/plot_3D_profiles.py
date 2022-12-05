@@ -281,20 +281,33 @@ infall_z,rotational_z,temperature_z,density_z, z = calculate_SPH_mean_z(z_comp,
                                                                         clump_velocity,bins)
 
 
+figure_indexes = [(0,0),(0,1),(1,0),(1,1)]
+figure_ylimits = [(1E-13,1E-2),(10,8000),(0,10),(0,10)]
+figure_ylabels = ['Density $(\\rm g\,cm^{-3})$','Temperature (K)','Rotational Velocity $(\\rm km\,s^{-1})$',
+                  'Infall Velocity $(\\rm km\,s^{-1})$']
 
+for index,label,limit in zip(figure_indexes,figure_ylabels,figure_ylimits):
+    axx[index].set_ylabel(label,fontsize=10)
+    axx[index].set_ylim(limit)
+for index,label,limit in zip(figure_indexes,figure_ylabels,figure_ylimits):
+    axy[index].set_ylabel(label,fontsize=10)
+    axy[index].set_ylim(limit)
+for index,label,limit in zip(figure_indexes,figure_ylabels,figure_ylimits):
+    axz[index].set_ylabel(label,fontsize=10)
+    axz[index].set_ylim(limit)
 
 for i in range(2):
     for j in range(2):
         axx[i,j].set_xscale('log')
-        axx[i,j].set_xlabel('x (AU)')
+        axx[i,j].set_xlabel('x (AU)',fontsize=10)
 for i in range(2):
     for j in range(2):
         axy[i,j].set_xscale('log')
-        axy[i,j].set_xlabel('y (AU)')
+        axy[i,j].set_xlabel('y (AU)',fontsize=10)
 for i in range(2):
     for j in range(2):
         axz[i,j].set_xscale('log')
-        axz[i,j].set_xlabel('z (AU)')
+        axz[i,j].set_xlabel('z (AU)',fontsize=10)
 
 
 axx[0,0].scatter(x,density_x,s=0.1)
@@ -330,6 +343,6 @@ axz[1,0].plot(bins,avg_rotational_z,c='red')
 axz[1,1].scatter(z,infall_z,s=0.1)
 axz[1,1].plot(bins,avg_infall_z,c='red')
 
-axx.savefig('x_profiles.png',dpi=200)
-axy.savefig('y_profiles.png',dpi=200)
-axz.savefig('z_profiles.png',dpi=200)
+figx.savefig('x_profiles.png',dpi=200)
+figy.savefig('y_profiles.png',dpi=200)
+figz.savefig('z_profiles.png',dpi=200)
