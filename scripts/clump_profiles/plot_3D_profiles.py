@@ -15,15 +15,18 @@ import matplotlib.pyplot as plt
 from scipy import stats
 import warnings
 import pint
+import sys
 from scipy.signal import savgol_filter
 # Define figure
 figx, axx = plt.subplots(ncols=2,nrows=2,figsize=(9,9))
 figy, axy = plt.subplots(ncols=2,nrows=2,figsize=(9,9))
 figz, axz = plt.subplots(ncols=2,nrows=2,figsize=(9,9))
+fig_3, ax_3 = plt.subplots(figsize=(9,9))
+# fig_3, ax = plt.subplots(figsize=(4,4))
 # Define constants to convert to physical units
 au = plonk.units('au')
 kms = plonk.units('km/s')
-bins = np.logspace(np.log10(5e-4),np.log10(50),75) # change the number of bins ?
+bins = np.logspace(np.log10(5e-4),np.log10(50),120) # change the number of bins ?
 
 if hasattr(pint, 'UnitStrippedWarning'):
     warnings.simplefilter('ignore', category=pint.UnitStrippedWarning)
@@ -47,7 +50,20 @@ def calculate_number_in_bin(binned_quantity,mean_quantity):
 def calculate_sum(binned_quantity,summed_quantity):
     return stats.binned_statistic(binned_quantity, summed_quantity, 'sum', bins=bins)
 
-def calculate_SPH_mean_x(subsnap,clump_centre,clump_velocity,bins):
+def interpolate_across_nans(array):
+     ''' Interpolate accross NaN values in arrays - this is useful when plotting
+         the average of a binned quantity when the resolution is too low and the
+         number of particles in the bin is zero - resulting in a NaN values for
+         that bin
+     '''
+
+     interpolated= np.interp(np.arange(len(array)),
+                   np.arange(len(array))[np.isnan(array) == False],
+                   array[np.isnan(array) == False])
+
+     return interpolated
+
+def calculate_SPH_mean_x(subsnap,clump_centre,clump_velocity,bins,smoothing_factor):
     bin_counter = np.zeros(len(bins)) # Keep track of number of particles in each bin
     # Keep track of total temperature, density, rotational velocity and infall
     # velocity in each bin
@@ -61,12 +77,16 @@ def calculate_SPH_mean_x(subsnap,clump_centre,clump_velocity,bins):
     avg_rotational =  np.zeros(len(bins))
 
 
+
     n_part = len(subsnap['m'])
     particles_ids = [[] for _ in range(len(bins))]
 
     x = subsnap['x'].magnitude - clump_centre[0].magnitude
     y = subsnap['y'].magnitude - clump_centre[1].magnitude
     z = subsnap['z'].magnitude - clump_centre[2].magnitude
+
+
+
 
     R = np.sqrt(y**2 + z**2)
 
@@ -82,7 +102,7 @@ def calculate_SPH_mean_x(subsnap,clump_centre,clump_velocity,bins):
     for part in range(n_part):
         for bin in range(len(bins)-1):
             if x[part] < bins[bin+1] and x[part] > bins[bin] \
-            and R[part] < 10*(bins[bin+1] - bins[bin]) :
+            and R[part] < smoothing_factor*(bins[bin+1] - bins[bin]):
                 particles_ids[bin].append(part)
                 bin_counter[bin] += 1
                 infall_in_bin[bin] += infall[part].magnitude
@@ -98,11 +118,16 @@ def calculate_SPH_mean_x(subsnap,clump_centre,clump_velocity,bins):
     avg_temp = temp_in_bin/bin_counter
     avg_density = density_in_bin/bin_counter
 
+
+    interp_start = np.where(avg_density == (avg_density[np.isfinite(avg_density)][0]))[0][0] - 1
+    interp_end = np.where(avg_density == (avg_density[np.isfinite(avg_density)][-1]))[0][0] + 1
+
     return avg_infall,avg_rotational,avg_temp,avg_density, infall[ids], \
            rotational[ids],subsnap['my_temp'][ids],subsnap['density'][ids], \
-           x[ids]
+           x[ids],interp_start,interp_end
 
-def calculate_SPH_mean_y(subsnap,clump_centre,clump_velocity,bins):
+
+def calculate_SPH_mean_y(subsnap,clump_centre,clump_velocity,bins,smoothing_factor):
     bin_counter = np.zeros(len(bins)) # Keep track of number of particles in each bin
     # Keep track of total temperature, density, rotational velocity and infall
     # velocity in each bin
@@ -123,6 +148,7 @@ def calculate_SPH_mean_y(subsnap,clump_centre,clump_velocity,bins):
     y = subsnap['y'].magnitude - clump_centre[1].magnitude
     z = subsnap['z'].magnitude - clump_centre[2].magnitude
 
+
     R = np.sqrt(x**2 + z**2)
 
 
@@ -137,7 +163,7 @@ def calculate_SPH_mean_y(subsnap,clump_centre,clump_velocity,bins):
     for part in range(n_part):
         for bin in range(len(bins)-1):
             if y[part] < bins[bin+1] and y[part] > bins[bin] \
-            and R[part] < 10*(bins[bin+1] - bins[bin]) :
+            and R[part] < smoothing_factor*(bins[bin+1] - bins[bin]) :
                 particles_ids[bin].append(part)
                 bin_counter[bin] += 1
                 infall_in_bin[bin] += infall[part].magnitude
@@ -153,11 +179,14 @@ def calculate_SPH_mean_y(subsnap,clump_centre,clump_velocity,bins):
     avg_temp = temp_in_bin/bin_counter
     avg_density = density_in_bin/bin_counter
 
+    interp_start = np.where(avg_density == (avg_density[np.isfinite(avg_density)][0]))[0][0] - 1
+    interp_end = np.where(avg_density == (avg_density[np.isfinite(avg_density)][-1]))[0][0] + 1
+
     return avg_infall,avg_rotational,avg_temp,avg_density, infall[ids], \
            rotational[ids],subsnap['my_temp'][ids],subsnap['density'][ids], \
-           y[ids]
+           y[ids],interp_start,interp_end
 
-def calculate_SPH_mean_z(subsnap,clump_centre,clump_velocity,bins):
+def calculate_SPH_mean_z(subsnap,clump_centre,clump_velocity,bins,smoothing_factor):
     bin_counter = np.zeros(len(bins)) # Keep track of number of particles in each bin
     # Keep track of total temperature, density, rotational velocity and infall
     # velocity in each bin
@@ -192,7 +221,7 @@ def calculate_SPH_mean_z(subsnap,clump_centre,clump_velocity,bins):
     for part in range(n_part):
         for bin in range(len(bins)-1):
             if z[part] < bins[bin+1] and z[part] > bins[bin] \
-            and R[part] < 10*(bins[bin+1] - bins[bin]) :
+            and R[part] < smoothing_factor*(bins[bin+1] - bins[bin]) :
                 particles_ids[bin].append(part)
                 bin_counter[bin] += 1
                 infall_in_bin[bin] += infall[part].magnitude
@@ -208,9 +237,12 @@ def calculate_SPH_mean_z(subsnap,clump_centre,clump_velocity,bins):
     avg_temp = temp_in_bin/bin_counter
     avg_density = density_in_bin/bin_counter
 
+    interp_start = np.where(avg_density == (avg_density[np.isfinite(avg_density)][0]))[0][0] - 1
+    interp_end = np.where(avg_density == (avg_density[np.isfinite(avg_density)][-1]))[0][0] + 1
+
     return avg_infall,avg_rotational,avg_temp,avg_density, infall[ids], \
            rotational[ids],subsnap['my_temp'][ids],subsnap['density'][ids], \
-           z[ids]
+           z[ids],interp_start,interp_end
 
 def prepare_snapshots(snapshot):
     ''' Load full snapshot as plonk object and initialise subsnap centred on clump.
@@ -259,42 +291,44 @@ def prepare_snapshots(snapshot):
 
     return x_comp,y_comp,z_comp,clump_centre,clump_velocity
 
-x_comp,y_comp,z_comp,clump_centre,clump_velocity = prepare_snapshots('run1.001.0878138.030.h5')
+x_comp,y_comp,z_comp,clump_centre,clump_velocity = prepare_snapshots('%s' % sys.argv[1])
 
 print('Completed snapshot preparation')
 
-
-
-
 avg_infall_x,avg_rotational_x,avg_temp_x,avg_density_x, \
-infall_x,rotational_x,temperature_x,density_x, x = calculate_SPH_mean_x(x_comp,
+infall_x,rotational_x,temperature_x,density_x, x,interp_start_x,interp_end_x = calculate_SPH_mean_x(x_comp,
                                                                         clump_centre,
-                                                                        clump_velocity,bins)
+                                                                        clump_velocity,bins,3)
 
 avg_infall_y,avg_rotational_y,avg_temp_y,avg_density_y, \
-infall_y,rotational_y,temperature_y,density_y, y = calculate_SPH_mean_y(y_comp,
+infall_y,rotational_y,temperature_y,density_y, y,interp_start_y,interp_end_y = calculate_SPH_mean_y(y_comp,
                                                                         clump_centre,
-                                                                        clump_velocity,bins)
+                                                                        clump_velocity,bins,3)
 avg_infall_z,avg_rotational_z,avg_temp_z,avg_density_z, \
-infall_z,rotational_z,temperature_z,density_z, z = calculate_SPH_mean_z(z_comp,
+infall_z,rotational_z,temperature_z,density_z, z,interp_start_z,interp_end_z = calculate_SPH_mean_z(z_comp,
                                                                         clump_centre,
-                                                                        clump_velocity,bins)
+                                                                        clump_velocity,bins,3)
+
+
 
 
 figure_indexes = [(0,0),(0,1),(1,0),(1,1)]
-figure_ylimits = [(1E-13,1E-2),(10,8000),(0,10),(0,10)]
+figure_ylimits = [(1E-13,1E-2),(10,8000),(0,10),(-1,10)]
 figure_ylabels = ['Density $(\\rm g\,cm^{-3})$','Temperature (K)','Rotational Velocity $(\\rm km\,s^{-1})$',
                   'Infall Velocity $(\\rm km\,s^{-1})$']
 
 for index,label,limit in zip(figure_indexes,figure_ylabels,figure_ylimits):
     axx[index].set_ylabel(label,fontsize=10)
     axx[index].set_ylim(limit)
+    axx[index].set_xlim(5e-4,30)
 for index,label,limit in zip(figure_indexes,figure_ylabels,figure_ylimits):
     axy[index].set_ylabel(label,fontsize=10)
     axy[index].set_ylim(limit)
+    axy[index].set_xlim(5e-4,30)
 for index,label,limit in zip(figure_indexes,figure_ylabels,figure_ylimits):
     axz[index].set_ylabel(label,fontsize=10)
     axz[index].set_ylim(limit)
+    axz[index].set_xlim(5e-4,30)
 
 for i in range(2):
     for j in range(2):
@@ -311,37 +345,51 @@ for i in range(2):
 
 
 axx[0,0].scatter(x,density_x,s=0.1)
-axx[0,0].plot(bins,avg_density_x,c='red')
+axx[0,0].plot(bins[interp_start_x:interp_end_x],interpolate_across_nans(avg_density_x)[interp_start_x:interp_end_x],c='red',linestyle='dotted',linewidth=0.75)
+axx[0,0].plot(bins,avg_density_x,c='red',alpha=0.5)
 axx[0,0].set_yscale('log')
 axx[0,1].scatter(x,temperature_x,s=0.1)
-axx[0,1].plot(bins,avg_temp_x,c='red')
+axx[0,1].plot(bins[interp_start_x:interp_end_x],interpolate_across_nans(avg_temp_x)[interp_start_x:interp_end_x],c='red',linestyle='dotted',linewidth=0.75)
+axx[0,1].plot(bins,avg_temp_x,c='red',alpha=1)
 axx[0,1].set_yscale('log')
 axx[1,0].scatter(x,rotational_x,s=0.1)
-axx[1,0].plot(bins,avg_rotational_x,c='red')
+axx[1,0].plot(bins[interp_start_x:interp_end_x],interpolate_across_nans(avg_rotational_x)[interp_start_x:interp_end_x],c='red',linestyle='dotted',linewidth=0.75)
+axx[1,0].plot(bins,avg_rotational_x,c='red',alpha=1)
 axx[1,1].scatter(x,infall_x,s=0.1)
-axx[1,1].plot(bins,avg_infall_x,c='red')
+axx[1,1].plot(bins[interp_start_x:interp_end_x],interpolate_across_nans(avg_infall_x)[interp_start_x:interp_end_x],c='red',linestyle='dotted',linewidth=0.75)
+axx[1,1].plot(bins,avg_infall_x,c='red',alpha=1)
 
 axy[0,0].scatter(y,density_y,s=0.1)
-axy[0,0].plot(bins,avg_density_y,c='red')
+axy[0,0].plot(bins[interp_start_y:interp_end_y],interpolate_across_nans(avg_density_y)[interp_start_y:interp_end_y],c='red',linestyle='dotted',linewidth=0.75)
+axy[0,0].plot(bins,avg_density_y,c='red',alpha=1)
 axy[0,0].set_yscale('log')
 axy[0,1].scatter(y,temperature_y,s=0.1)
-axy[0,1].plot(bins,avg_temp_y,c='red')
+axy[0,1].plot(bins[interp_start_y:interp_end_y],interpolate_across_nans(avg_temp_y)[interp_start_y:interp_end_y],c='red',linestyle='dotted',linewidth=0.75)
+axy[0,1].plot(bins,avg_temp_y,c='red',alpha=1)
 axy[0,1].set_yscale('log')
 axy[1,0].scatter(y,rotational_y,s=0.1)
-axy[1,0].plot(bins,avg_rotational_y,c='red')
+axy[1,0].plot(bins[interp_start_y:interp_end_y],interpolate_across_nans(avg_rotational_y)[interp_start_y:interp_end_y],c='red',linestyle='dotted',linewidth=0.75)
+axy[1,0].plot(bins,avg_rotational_y,c='red',alpha=1)
 axy[1,1].scatter(y,infall_y,s=0.1)
-axy[1,1].plot(bins,avg_infall_y,c='red')
+axy[1,1].plot(bins[interp_start_y:interp_end_y],interpolate_across_nans(avg_infall_y)[interp_start_y:interp_end_y],c='red',linestyle='dotted',linewidth=0.75)
+axy[1,1].plot(bins,avg_infall_y,c='red',alpha=1)
 
 axz[0,0].scatter(z,density_z,s=0.1)
-axz[0,0].plot(bins,avg_density_z,c='red')
+axz[0,0].plot(bins[interp_start_z:interp_end_z],interpolate_across_nans(avg_density_z)[interp_start_z:interp_end_z],c='red',linestyle='dotted',linewidth=0.75)
+axz[0,0].plot(bins,avg_density_z,c='red',alpha=1)
 axz[0,0].set_yscale('log')
 axz[0,1].scatter(z,temperature_z,s=0.1)
-axz[0,1].plot(bins,avg_temp_z,c='red')
+axz[0,1].plot(bins[interp_start_z:interp_end_z],interpolate_across_nans(avg_temp_z)[interp_start_z:interp_end_z],c='red',linestyle='dotted',linewidth=0.75)
+axz[0,1].plot(bins,avg_temp_z,c='red',alpha=1)
 axz[0,1].set_yscale('log')
 axz[1,0].scatter(z,rotational_z,s=0.1)
-axz[1,0].plot(bins,avg_rotational_z,c='red')
+axz[1,0].plot(bins[interp_start_z:interp_end_z],interpolate_across_nans(avg_rotational_z)[interp_start_z:interp_end_z],c='red',linestyle='dotted',linewidth=0.75)
+axz[1,0].plot(bins,avg_rotational_z,c='red',alpha=1)
 axz[1,1].scatter(z,infall_z,s=0.1)
-axz[1,1].plot(bins,avg_infall_z,c='red')
+axz[1,1].plot(bins[interp_start_z:interp_end_z],interpolate_across_nans(avg_infall_z)[interp_start_z:interp_end_z],c='red',linestyle='dotted',linewidth=0.75)
+axz[1,1].plot(bins,avg_infall_z,c='red',alpha=1)
+
+
 
 figx.savefig('x_profiles.png',dpi=200)
 figy.savefig('y_profiles.png',dpi=200)
