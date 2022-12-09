@@ -1,10 +1,10 @@
 # ---------------------------- #
 # plot_3D_profiles.py
 # ---------------------------- #
-# Plot the profiles of fragments
-# in x y and z to get an
-# understanding of the 3D
-# structure of the fragments
+# Plot the 3D structure of the
+# fragments on the same plot
+# and compare with the spherical
+# average
 # ---------------------------- #
 # Author: Adam Fenton
 # Date 20221123
@@ -16,18 +16,18 @@ from scipy import stats
 import warnings
 import pint
 import sys
-from scipy.signal import savgol_filter
+from scipy.interpolate import splev, splrep
+from scipy.signal import savgol_filter, find_peaks
+
 # Define figure
-figx, axx = plt.subplots(ncols=2,nrows=2,figsize=(9,9))
-figy, axy = plt.subplots(ncols=2,nrows=2,figsize=(9,9))
-figz, axz = plt.subplots(ncols=2,nrows=2,figsize=(9,9))
-fig_3, ax_3 = plt.subplots(figsize=(9,9))
-# fig_3, ax = plt.subplots(figsize=(4,4))
+fig_main, ax_main = plt.subplots(ncols=2,nrows=2,figsize=(9,9))
+fig_test, ax_test = plt.subplots(figsize=(9,9))
+
 # Define constants to convert to physical units
 au = plonk.units('au')
 kms = plonk.units('km/s')
-bins = np.logspace(np.log10(5e-4),np.log10(50),120) # change the number of bins ?
-
+bins = np.logspace(np.log10(5e-4),np.log10(50),200) # change the number of bins ?
+x_smooth = np.logspace(np.log10(5e-4),np.log10(50),2000)
 if hasattr(pint, 'UnitStrippedWarning'):
     warnings.simplefilter('ignore', category=pint.UnitStrippedWarning)
 np.seterr(divide='ignore', invalid='ignore')
@@ -45,10 +45,6 @@ def flatten_list(_2d_list):
             flat_list.append(element)
     return flat_list
 
-def calculate_number_in_bin(binned_quantity,mean_quantity):
-    return stats.binned_statistic(binned_quantity, mean_quantity, 'count', bins=bins)
-def calculate_sum(binned_quantity,summed_quantity):
-    return stats.binned_statistic(binned_quantity, summed_quantity, 'sum', bins=bins)
 def calculate_mean(binned_quantity,mean_quantity):
     return stats.binned_statistic(binned_quantity, mean_quantity, 'mean', bins=bins)
 
@@ -261,6 +257,31 @@ def calculate_SPH_mean_z(subsnap,clump_centre,clump_velocity,bins,smoothing_fact
            rotational[ids],subsnap['my_temp'][ids],subsnap['density'][ids], \
            z[ids],interp_start,interp_end
 
+
+def spherical_average(subsnap,bins):
+    x = subsnap['x'].magnitude - clump_centre[0].magnitude
+    y = subsnap['y'].magnitude - clump_centre[1].magnitude
+    z = subsnap['z'].magnitude - clump_centre[2].magnitude
+
+    R = np.sqrt(x**2 + y**2 + z**2)
+
+    rotational = plonk.analysis.particles.rotational_velocity(subsnap,
+                                                              clump_velocity,
+                                                              ignore_accreted=True)
+    infall = plonk.analysis.particles.velocity_radial_spherical_altered(subsnap,
+                                                                        clump_centre,
+                                                                        clump_velocity,
+                                                                        ignore_accreted=True)
+
+    avg_infall = calculate_mean(R,infall)[0]
+    avg_rotational = calculate_mean(R,rotational)[0]
+    avg_density = calculate_mean(R,subsnap['density'])[0]
+    avg_temperature = calculate_mean(R,subsnap['my_temp'])[0]
+    R = calculate_mean(R,infall)[1][1:]
+
+
+    return avg_infall,avg_rotational,avg_density,avg_temperature, R
+
 def prepare_snapshots(snapshot):
     ''' Load full snapshot as plonk object and initialise subsnap centred on clump.
         Also apply filter to exclude dead and accreted particles with `accreted_mask`
@@ -288,166 +309,176 @@ def prepare_snapshots(snapshot):
     # Create subsnaps for the x, y and z componants
     x_comp = plonk.analysis.filters.tube(snap = snap_active,
                                          radius = (0.5*au),
-                                         length = (50*au),
+                                         length = (100*au),
                                          orientation = 'x',
                                          center = (clump_centre)
                                          )
     y_comp = plonk.analysis.filters.tube(snap = snap_active,
                                          radius = (0.5*au),
-                                         length = (50*au),
+                                         length = (100*au),
                                          orientation = 'y',
                                          center = (clump_centre)
                                          )
     z_comp = plonk.analysis.filters.cylinder(snap = snap_active,
                                          radius = (0.5*au),
-                                         height = (50*au),
+                                         height = (100*au),
                                          center = (clump_centre)
                                          )
 
+    full_clump = plonk.analysis.filters.sphere(snap=snap_active,
+                                               radius = (50*au),
+                                               center = (clump_centre))
 
 
-    return x_comp,y_comp,z_comp,clump_centre,clump_velocity
+    return x_comp,y_comp,z_comp,clump_centre,clump_velocity, full_clump
 
-x_comp,y_comp,z_comp,clump_centre,clump_velocity = prepare_snapshots('%s' % sys.argv[1])
+def find_infall_peaks(array,interp_start,interp_end):
+    interpolated = interpolate_across_nans(array)[interp_start:interp_end]
+    bspl = splrep(bins[interp_start:interp_end],interpolated)
+    bspl_y = splev(x_smooth, bspl)
+    peaks, _ = find_peaks(bspl_y,height=1,distance=500)
+    #
+    return bspl_y, peaks
+
+x_comp,y_comp,z_comp,clump_centre,clump_velocity,full_clump = prepare_snapshots('%s' % sys.argv[1])
+
 
 print('Completed snapshot preparation')
 
-avg_infall_x_pos,avg_rotational_x_pos,avg_temp_x_pos,avg_density_x_pos, \
+avg_infall_x_pos,avg_rotational_x_pos,avg_temperature_x_pos,avg_density_x_pos, \
 infall_x_pos,rotational_x_pos,temperature_x_pos,density_x_pos, \
 x_pos,interp_start_x_pos,interp_end_x_pos,regular_avg_infall_x,\
-regular_avg_rotational_x,regular_avg_temp_x,regular_avg_density_x = calculate_SPH_mean_x(x_comp,
+regular_avg_rotational_x,regular_avg_temperature_x,regular_avg_density_x = calculate_SPH_mean_x(x_comp,
                                                                         clump_centre,
-                                                                        clump_velocity,bins,10,False)
+                                                                        clump_velocity,bins,3,False)
 
-avg_infall_y_pos,avg_rotational_y_pos,avg_temp_y_pos,avg_density_y_pos, \
+
+avg_infall_y_pos,avg_rotational_y_pos,avg_temperature_y_pos,avg_density_y_pos, \
 infall_y_pos,rotational_y_pos,temperature_y_pos,density_y_pos,\
 y_pos,interp_start_y_pos,interp_end_y_pos = calculate_SPH_mean_y(y_comp,
                                                                         clump_centre,
-                                                                        clump_velocity,bins,10,False)
-avg_infall_z_pos,avg_rotational_z_pos,avg_temp_z_pos,avg_density_z_pos, \
+                                                                        clump_velocity,bins,3,False)
+avg_infall_z_pos,avg_rotational_z_pos,avg_temperature_z_pos,avg_density_z_pos, \
 infall_z_pos,rotational_z_pos,temperature_z_pos,density_z_pos,\
 z_pos,interp_start_z_pos,interp_end_z_pos = calculate_SPH_mean_z(z_comp,
                                                                         clump_centre,
-                                                                        clump_velocity,bins,10,False)
+                                                                        clump_velocity,bins,3,False)
 
-avg_infall_x_neg,avg_rotational_x_neg,avg_temp_x_neg,avg_density_x_neg, \
+avg_infall_x_neg,avg_rotational_x_neg,avg_temperature_x_neg,avg_density_x_neg, \
 infall_x_neg,rotational_x_neg,temperature_x_neg,density_x_neg, x_neg,interp_start_x_neg,interp_end_x_neg,regular_avg_infall_x,\
 regular_avg_rotational_x,regular_avg_temp_x,regular_avg_density_x = calculate_SPH_mean_x(x_comp,
                                                                         clump_centre,
-                                                                        clump_velocity,bins,10,True)
+                                                                        clump_velocity,bins,3,True)
 
-avg_infall_y_neg,avg_rotational_y_neg,avg_temp_y_neg,avg_density_y_neg, \
+avg_infall_y_neg,avg_rotational_y_neg,avg_temperature_y_neg,avg_density_y_neg, \
 infall_y_neg,rotational_y_neg,temperature_y_neg,density_y_neg, y_neg,interp_start_y_neg,interp_end_y_neg = calculate_SPH_mean_y(y_comp,
                                                                         clump_centre,
-                                                                        clump_velocity,bins,10,True)
-avg_infall_z_neg,avg_rotational_z_neg,avg_temp_z_neg,avg_density_z_neg, \
+                                                                        clump_velocity,bins,3,True)
+avg_infall_z_neg,avg_rotational_z_neg,avg_temperature_z_neg,avg_density_z_neg, \
 infall_z_neg,rotational_z_neg,temperature_z_neg,density_z_neg, z_neg,interp_start_z_neg,interp_end_z_neg = calculate_SPH_mean_z(z_comp,
                                                                         clump_centre,
-                                                                        clump_velocity,bins,10,True)
+                                                                        clump_velocity,bins,3,True)
 
 
-
+avg_infall_sphere, avg_rotational_sphere, avg_density_sphere, avg_temperature_sphere, \
+                                    R_sphere= spherical_average(full_clump,bins)
 
 figure_indexes = [(0,0),(0,1),(1,0),(1,1)]
-figure_ylimits = [(1E-13,1E-2),(10,8000),(0,10),(-1,10)]
+figure_ylimits = [(1E-13,1E-2),(10,12000),(0,10),(0,12)]
 figure_ylabels = ['Density $(\\rm g\,cm^{-3})$','Temperature (K)','Rotational Velocity $(\\rm km\,s^{-1})$',
                   'Infall Velocity $(\\rm km\,s^{-1})$']
 
 for index,label,limit in zip(figure_indexes,figure_ylabels,figure_ylimits):
-    axx[index].set_ylabel(label,fontsize=10)
-    axx[index].set_ylim(limit)
-    axx[index].set_xlim(5e-4,30)
-for index,label,limit in zip(figure_indexes,figure_ylabels,figure_ylimits):
-    axy[index].set_ylabel(label,fontsize=10)
-    axy[index].set_ylim(limit)
-    axy[index].set_xlim(5e-4,30)
-for index,label,limit in zip(figure_indexes,figure_ylabels,figure_ylimits):
-    axz[index].set_ylabel(label,fontsize=10)
-    axz[index].set_ylim(limit)
-    axz[index].set_xlim(5e-4,30)
-
+    ax_main[index].set_ylabel(label,fontsize=10)
+    ax_main[index].set_ylim(limit)
+    ax_main[index].set_xlim(5e-4,50)
 for i in range(2):
     for j in range(2):
-        axx[i,j].set_xscale('log')
-        axx[i,j].set_xlabel('x (AU)',fontsize=10)
-for i in range(2):
-    for j in range(2):
-        axy[i,j].set_xscale('log')
-        axy[i,j].set_xlabel('y (AU)',fontsize=10)
-for i in range(2):
-    for j in range(2):
-        axz[i,j].set_xscale('log')
-        axz[i,j].set_xlabel('z (AU)',fontsize=10)
+        ax_main[i,j].set_xscale('log')
+        ax_main[i,j].set_xlabel('x (AU)',fontsize=10)
 
-axx[0,0].plot(bins[interp_start_x_pos:interp_end_x_pos],interpolate_across_nans(avg_density_x_pos)[interp_start_x_pos:interp_end_x_pos],c='red',linestyle='dotted',linewidth=0.75)
-axx[0,0].plot(bins,avg_density_x_pos,c='red',alpha=0.5)
-axx[0,0].set_yscale('log')
-axx[0,1].plot(bins[interp_start_x_pos:interp_end_x_pos],interpolate_across_nans(avg_temp_x_pos)[interp_start_x_pos:interp_end_x_pos],c='red',linestyle='dotted',linewidth=0.75)
-axx[0,1].plot(bins,avg_temp_x_pos,c='red',alpha=1)
-axx[0,1].set_yscale('log')
-axx[1,0].plot(bins[interp_start_x_pos:interp_end_x_pos],interpolate_across_nans(avg_rotational_x_pos)[interp_start_x_pos:interp_end_x_pos],c='red',linestyle='dotted',linewidth=0.75)
-axx[1,0].plot(bins,avg_rotational_x_pos,c='red',alpha=1)
-axx[1,1].plot(bins[interp_start_x_pos:interp_end_x_pos],interpolate_across_nans(avg_infall_x_pos)[interp_start_x_pos:interp_end_x_pos],c='red',linestyle='dotted',linewidth=0.75)
-axx[1,1].plot(bins,avg_infall_x_pos,c='red',alpha=1)
+#------------------------------------------------------------------------------#
+ax_main[0,0].plot(bins[interp_start_x_pos:interp_end_x_pos],interpolate_across_nans(avg_density_x_pos)[interp_start_x_pos:interp_end_x_pos],c='red',linestyle='-',linewidth=0.75,alpha=0.5)
+ax_main[0,0].plot(bins[interp_start_y_pos:interp_end_y_pos],interpolate_across_nans(avg_density_y_pos)[interp_start_y_pos:interp_end_y_pos],c='green',linestyle='-',linewidth=0.75,alpha=0.5)
+ax_main[0,0].plot(bins[interp_start_z_pos:interp_end_z_pos],interpolate_across_nans(avg_density_z_pos)[interp_start_z_pos:interp_end_z_pos],c='blue',linestyle='-',linewidth=0.75,alpha=0.5)
 
-axx[0,0].plot(bins[interp_start_x_neg:interp_end_x_neg],interpolate_across_nans(avg_density_x_neg)[interp_start_x_neg:interp_end_x_neg],c='blue',linestyle='dotted',linewidth=0.75)
-axx[0,0].plot(bins,avg_density_x_neg,c='blue',alpha=0.5)
-axx[0,0].set_yscale('log')
-axx[0,1].plot(bins[interp_start_x_neg:interp_end_x_neg],interpolate_across_nans(avg_temp_x_neg)[interp_start_x_neg:interp_end_x_neg],c='blue',linestyle='dotted',linewidth=0.75)
-axx[0,1].plot(bins,avg_temp_x_neg,c='blue',alpha=1)
-axx[0,1].set_yscale('log')
-axx[1,0].plot(bins[interp_start_x_neg:interp_end_x_neg],interpolate_across_nans(avg_rotational_x_neg)[interp_start_x_neg:interp_end_x_neg],c='blue',linestyle='dotted',linewidth=0.75)
-axx[1,0].plot(bins,avg_rotational_x_neg,c='blue',alpha=1)
-axx[1,1].plot(bins[interp_start_x_neg:interp_end_x_neg],interpolate_across_nans(avg_infall_x_neg)[interp_start_x_neg:interp_end_x_neg],c='blue',linestyle='dotted',linewidth=0.75)
-axx[1,1].plot(bins,avg_infall_x_neg,c='blue',alpha=1)
+ax_main[0,0].plot(bins[interp_start_x_neg:interp_end_x_neg],interpolate_across_nans(avg_density_x_neg)[interp_start_x_neg:interp_end_x_neg],c='red',linestyle='--',linewidth=0.75,alpha=0.5)
+ax_main[0,0].plot(bins[interp_start_y_neg:interp_end_y_neg],interpolate_across_nans(avg_density_y_neg)[interp_start_y_neg:interp_end_y_neg],c='green',linestyle='--',linewidth=0.75,alpha=0.5)
+ax_main[0,0].plot(bins[interp_start_z_neg:interp_end_z_neg],interpolate_across_nans(avg_density_z_neg)[interp_start_z_neg:interp_end_z_neg],c='blue',linestyle='--',linewidth=0.75,alpha=0.5)
+
+ax_main[0,0].plot(bins,avg_density_x_pos,c='red')
+ax_main[0,0].plot(bins,avg_density_y_pos,c='green')
+ax_main[0,0].plot(bins,avg_density_z_pos,c='blue')
+
+ax_main[0,0].plot(bins,avg_density_x_neg,c='red',linestyle='--')
+ax_main[0,0].plot(bins,avg_density_y_neg,c='green',linestyle='--')
+ax_main[0,0].plot(bins,avg_density_z_neg,c='blue',linestyle='--')
+
+ax_main[0,0].plot(R_sphere,avg_density_sphere,c='black',linestyle='dashdot')
+# ax_main[0,0].scatter(R_cont,full_clump['density'],s=0.1)
+ax_main[0,0].set_yscale('log')
+#------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
+ax_main[0,1].plot(bins[interp_start_x_pos:interp_end_x_pos],interpolate_across_nans(avg_temperature_x_pos)[interp_start_x_pos:interp_end_x_pos],c='red',linestyle='-',linewidth=0.75,alpha=0.5)
+ax_main[0,1].plot(bins[interp_start_y_pos:interp_end_y_pos],interpolate_across_nans(avg_temperature_y_pos)[interp_start_y_pos:interp_end_y_pos],c='green',linestyle='-',linewidth=0.75,alpha=0.5)
+ax_main[0,1].plot(bins[interp_start_z_pos:interp_end_z_pos],interpolate_across_nans(avg_temperature_z_pos)[interp_start_z_pos:interp_end_z_pos],c='blue',linestyle='-',linewidth=0.75,alpha=0.5)
+
+ax_main[0,1].plot(bins[interp_start_x_neg:interp_end_x_neg],interpolate_across_nans(avg_temperature_x_neg)[interp_start_x_neg:interp_end_x_neg],c='red',linestyle='--',linewidth=0.75,alpha=0.5)
+ax_main[0,1].plot(bins[interp_start_y_neg:interp_end_y_neg],interpolate_across_nans(avg_temperature_y_neg)[interp_start_y_neg:interp_end_y_neg],c='green',linestyle='--',linewidth=0.75,alpha=0.5)
+ax_main[0,1].plot(bins[interp_start_z_neg:interp_end_z_neg],interpolate_across_nans(avg_temperature_z_neg)[interp_start_z_neg:interp_end_z_neg],c='blue',linestyle='--',linewidth=0.75,alpha=0.5)
+
+ax_main[0,1].plot(bins,avg_temperature_x_pos,c='red')
+ax_main[0,1].plot(bins,avg_temperature_y_pos,c='green')
+ax_main[0,1].plot(bins,avg_temperature_z_pos,c='blue')
+
+ax_main[0,1].plot(bins,avg_temperature_x_neg,c='red',linestyle='--')
+ax_main[0,1].plot(bins,avg_temperature_y_neg,c='green',linestyle='--')
+ax_main[0,1].plot(bins,avg_temperature_z_neg,c='blue',linestyle='--')
+
+ax_main[0,1].plot(R_sphere,avg_temperature_sphere,c='black',linestyle='dashdot')
+ax_main[0,1].set_yscale('log')
+#------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
+ax_main[1,0].plot(bins[interp_start_x_pos:interp_end_x_pos],interpolate_across_nans(avg_rotational_x_pos)[interp_start_x_pos:interp_end_x_pos],c='red',linestyle='-',linewidth=0.75,alpha=0.5)
+ax_main[1,0].plot(bins[interp_start_y_pos:interp_end_y_pos],interpolate_across_nans(avg_rotational_y_pos)[interp_start_y_pos:interp_end_y_pos],c='green',linestyle='-',linewidth=0.75,alpha=0.5)
+ax_main[1,0].plot(bins[interp_start_z_pos:interp_end_z_pos],interpolate_across_nans(avg_rotational_z_pos)[interp_start_z_pos:interp_end_z_pos],c='blue',linestyle='-',linewidth=0.75,alpha=0.5)
+
+ax_main[1,0].plot(bins[interp_start_x_neg:interp_end_x_neg],interpolate_across_nans(avg_rotational_x_neg)[interp_start_x_neg:interp_end_x_neg],c='red',linestyle='--',linewidth=0.75,alpha=0.5)
+ax_main[1,0].plot(bins[interp_start_y_neg:interp_end_y_neg],interpolate_across_nans(avg_rotational_y_neg)[interp_start_y_neg:interp_end_y_neg],c='green',linestyle='--',linewidth=0.75,alpha=0.5)
+ax_main[1,0].plot(bins[interp_start_z_neg:interp_end_z_neg],interpolate_across_nans(avg_rotational_z_neg)[interp_start_z_neg:interp_end_z_neg],c='blue',linestyle='--',linewidth=0.75,alpha=0.5)
+
+ax_main[1,0].plot(bins,avg_rotational_x_pos,c='red')
+ax_main[1,0].plot(bins,avg_rotational_y_pos,c='green')
+ax_main[1,0].plot(bins,avg_rotational_z_pos,c='blue')
+
+ax_main[1,0].plot(bins,avg_rotational_x_neg,c='red',linestyle='--')
+ax_main[1,0].plot(bins,avg_rotational_y_neg,c='green',linestyle='--')
+ax_main[1,0].plot(bins,avg_rotational_z_neg,c='blue',linestyle='--')
+
+ax_main[1,0].plot(R_sphere,avg_rotational_sphere,c='black',linestyle='dashdot')
+#------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
+ax_main[1,1].plot(bins[interp_start_x_pos:interp_end_x_pos],interpolate_across_nans(avg_infall_x_pos)[interp_start_x_pos:interp_end_x_pos],c='red',linestyle='-',linewidth=0.75,alpha=0.5)
+ax_main[1,1].plot(bins[interp_start_y_pos:interp_end_y_pos],interpolate_across_nans(avg_infall_y_pos)[interp_start_y_pos:interp_end_y_pos],c='green',linestyle='-',linewidth=0.75,alpha=0.5)
+ax_main[1,1].plot(bins[interp_start_z_pos:interp_end_z_pos],interpolate_across_nans(avg_infall_z_pos)[interp_start_z_pos:interp_end_z_pos],c='blue',linestyle='-',linewidth=0.75,alpha=0.5)
+
+ax_main[1,1].plot(bins[interp_start_x_neg:interp_end_x_neg],interpolate_across_nans(avg_infall_x_neg)[interp_start_x_neg:interp_end_x_neg],c='red',linestyle='--',linewidth=0.75,alpha=0.5)
+ax_main[1,1].plot(bins[interp_start_y_neg:interp_end_y_neg],interpolate_across_nans(avg_infall_y_neg)[interp_start_y_neg:interp_end_y_neg],c='green',linestyle='--',linewidth=0.75,alpha=0.5)
+ax_main[1,1].plot(bins[interp_start_z_neg:interp_end_z_neg],interpolate_across_nans(avg_infall_z_neg)[interp_start_z_neg:interp_end_z_neg],c='blue',linestyle='--',linewidth=0.75,alpha=0.5)
+
+ax_main[1,1].plot(bins,avg_infall_x_pos,c='red',label='Positive average - x')
+ax_main[1,1].plot(bins,avg_infall_y_pos,c='green',label='Positive average - y')
+ax_main[1,1].plot(bins,avg_infall_z_pos,c='blue',label='Positive average - z')
+
+ax_main[1,1].plot(bins,avg_infall_x_neg,c='red',linestyle='--',label='Negative average - x')
+ax_main[1,1].plot(bins,avg_infall_y_neg,c='green',linestyle='--',label='Negative average - y')
+ax_main[1,1].plot(bins,avg_infall_z_neg,c='blue',linestyle='--',label='Negative average - z')
 
 
+ax_main[1,1].plot(R_sphere,avg_infall_sphere,c='black',linestyle='dashdot',label='Spherical average')
+ax_main[1,1].legend(loc='upper center', bbox_to_anchor=(-0.1, -0.2),
+            fancybox=True, shadow=True, ncol=3)
+#------------------------------------------------------------------------------#
 
-axy[0,0].plot(bins[interp_start_y_pos:interp_end_y_pos],interpolate_across_nans(avg_density_y_pos)[interp_start_y_pos:interp_end_y_pos],c='red',linestyle='dotted',linewidth=0.75)
-axy[0,0].plot(bins,avg_density_y_pos,c='red',alpha=1)
-axy[0,0].set_yscale('log')
-axy[0,1].plot(bins[interp_start_y_pos:interp_end_y_pos],interpolate_across_nans(avg_temp_y_pos)[interp_start_y_pos:interp_end_y_pos],c='red',linestyle='dotted',linewidth=0.75)
-axy[0,1].plot(bins,avg_temp_y_pos,c='red',alpha=1)
-axy[0,1].set_yscale('log')
-axy[1,0].plot(bins[interp_start_y_pos:interp_end_y_pos],interpolate_across_nans(avg_rotational_y_pos)[interp_start_y_pos:interp_end_y_pos],c='red',linestyle='dotted',linewidth=0.75)
-axy[1,0].plot(bins,avg_rotational_y_pos,c='red',alpha=1)
-axy[1,1].plot(bins[interp_start_y_pos:interp_end_y_pos],interpolate_across_nans(avg_infall_y_pos)[interp_start_y_pos:interp_end_y_pos],c='red',linestyle='dotted',linewidth=0.75)
-axy[1,1].plot(bins,avg_infall_y_pos,c='red',alpha=1)
-
-axy[0,0].plot(bins[interp_start_y_neg:interp_end_y_neg],interpolate_across_nans(avg_density_y_neg)[interp_start_y_neg:interp_end_y_neg],c='blue',linestyle='dotted',linewidth=0.75)
-axy[0,0].plot(bins,avg_density_y_neg,c='blue',alpha=1)
-axy[0,0].set_yscale('log')
-axy[0,1].plot(bins[interp_start_y_neg:interp_end_y_neg],interpolate_across_nans(avg_temp_y_neg)[interp_start_y_neg:interp_end_y_neg],c='blue',linestyle='dotted',linewidth=0.75)
-axy[0,1].plot(bins,avg_temp_y_neg,c='blue',alpha=1)
-axy[0,1].set_yscale('log')
-axy[1,0].plot(bins[interp_start_y_neg:interp_end_y_neg],interpolate_across_nans(avg_rotational_y_neg)[interp_start_y_neg:interp_end_y_neg],c='blue',linestyle='dotted',linewidth=0.75)
-axy[1,0].plot(bins,avg_rotational_y_neg,c='blue',alpha=1)
-axy[1,1].plot(bins[interp_start_y_neg:interp_end_y_neg],interpolate_across_nans(avg_infall_y_neg)[interp_start_y_neg:interp_end_y_neg],c='blue',linestyle='dotted',linewidth=0.75)
-axy[1,1].plot(bins,avg_infall_y_neg,c='blue',alpha=1)
-
-
-axz[0,0].plot(bins[interp_start_z_pos:interp_end_z_pos],interpolate_across_nans(avg_density_z_pos)[interp_start_z_pos:interp_end_z_pos],c='red',linestyle='dotted',linewidth=0.75)
-axz[0,0].plot(bins,avg_density_z_pos,c='red',alpha=1)
-axz[0,0].set_yscale('log')
-axz[0,1].plot(bins[interp_start_z_pos:interp_end_z_pos],interpolate_across_nans(avg_temp_z_pos)[interp_start_z_pos:interp_end_z_pos],c='red',linestyle='dotted',linewidth=0.75)
-axz[0,1].plot(bins,avg_temp_z_pos,c='red',alpha=1)
-axz[0,1].set_yscale('log')
-axz[1,0].plot(bins[interp_start_z_pos:interp_end_z_pos],interpolate_across_nans(avg_rotational_z_pos)[interp_start_z_pos:interp_end_z_pos],c='red',linestyle='dotted',linewidth=0.75)
-axz[1,0].plot(bins,avg_rotational_z_pos,c='red',alpha=1)
-axz[1,1].plot(bins[interp_start_z_pos:interp_end_z_pos],interpolate_across_nans(avg_infall_z_pos)[interp_start_z_pos:interp_end_z_pos],c='red',linestyle='dotted',linewidth=0.75)
-axz[1,1].plot(bins,avg_infall_z_pos,c='red',alpha=1)
-
-axz[0,0].plot(bins[interp_start_z_neg:interp_end_z_neg],interpolate_across_nans(avg_density_z_neg)[interp_start_z_neg:interp_end_z_neg],c='blue',linestyle='dotted',linewidth=0.75)
-axz[0,0].plot(bins,avg_density_z_neg,c='blue',alpha=1)
-axz[0,0].set_yscale('log')
-axz[0,1].plot(bins[interp_start_z_neg:interp_end_z_neg],interpolate_across_nans(avg_temp_z_neg)[interp_start_z_neg:interp_end_z_neg],c='blue',linestyle='dotted',linewidth=0.75)
-axz[0,1].plot(bins,avg_temp_z_neg,c='blue',alpha=1)
-axz[0,1].set_yscale('log')
-axz[1,0].plot(bins[interp_start_z_neg:interp_end_z_neg],interpolate_across_nans(avg_rotational_z_neg)[interp_start_z_neg:interp_end_z_neg],c='blue',linestyle='dotted',linewidth=0.75)
-axz[1,0].plot(bins,avg_rotational_z_neg,c='blue',alpha=1)
-axz[1,1].plot(bins[interp_start_z_neg:interp_end_z_neg],interpolate_across_nans(avg_infall_z_neg)[interp_start_z_neg:interp_end_z_neg],c='blue',linestyle='dotted',linewidth=0.75)
-axz[1,1].plot(bins,avg_infall_z_neg,c='blue',alpha=1)
-
-figx.savefig('x_profiles_comp.png',dpi=200)
-figy.savefig('y_profiles_comp.png',dpi=200)
-figz.savefig('z_profiles_comp.png',dpi=200)
+fig_main.subplots_adjust(bottom=0.175)
+fig_main.savefig('3D_comparison.png',dpi=200)
