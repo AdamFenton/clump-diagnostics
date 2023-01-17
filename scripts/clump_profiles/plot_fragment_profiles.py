@@ -11,6 +11,7 @@
 # ---------------------------- #
 import plonk
 import numpy as np
+from numpy import inf
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
@@ -26,7 +27,8 @@ from tqdm.auto import tqdm
 import time
 from matplotlib.lines import Line2D
 from digitize import calculate_gravitational_energy
-
+from itertools import zip_longest
+import os
 start_time = time.time()
 # Define figure
 fig_main, ax_main = plt.subplots(ncols=2,nrows=3,figsize=(7,8))
@@ -45,6 +47,11 @@ x_smooth = np.logspace(np.log10(3e-4),np.log10(50),2000)
 if hasattr(pint, 'UnitStrippedWarning'):
     warnings.simplefilter('ignore', category=pint.UnitStrippedWarning)
 np.seterr(divide='ignore', invalid='ignore')
+
+
+run_set_dict = {'first':1,'second':2,'third':3,'fourth':4,'fifth':5,'sixth':6,\
+                'seventh':7,'eighth':8,'ninth':9,'tenth':10}
+
 
 def calculate_number_in_bin(binned_quantity,mean_quantity):
     return stats.binned_statistic(binned_quantity, mean_quantity, 'count', bins=bins)
@@ -186,7 +193,7 @@ def spherical_average(subsnap,bins):
     interp_end = np.where(avg_density == (avg_density[np.isfinite(avg_density)][-1]))[0][0] + 1
 
 
-    return avg_infall,avg_rotational,avg_density,avg_temperature, R,interp_start,interp_end, mass_in_bin,R_full
+    return avg_infall,avg_rotational,avg_density,avg_temperature, R, mass_in_bin,R_full
 
 def axisym_average(subsnap,clump_centre,clump_velocity,bins,smoothing_factor):
     bin_counter = np.zeros(len(bins)) # Keep track of number of particles in each bin
@@ -301,18 +308,19 @@ def find_infall_peaks(array,interp_start=None,interp_end=None):
     if np.isnan(array).any() == True:
         array = interpolate_across_nans(array)[interp_start:interp_end]
         bspl = splrep(bins[interp_start:interp_end],array)
-    # elif len(array) == 99:
-    #     bspl = splrep(bins[1:],array)
-    #
+
     bspl_y = splev(x_smooth, bspl)
     peak_search = np.where(x_smooth == x_smooth[np.abs(x_smooth-3e-3).argmin()])[0][0]
     peaks, _ = find_peaks(bspl_y[peak_search:],height=1,distance=500)
-    peaks = peaks + peak_search
-    minima_search = np.where(x_smooth == x_smooth[np.abs(x_smooth-0.1).argmin()])[0][0]
-    y_inv = (bspl_y[minima_search:peaks[1]] * -1)
-    minima, _ = find_peaks(y_inv,distance=300)
-    minima = minima + minima_search
-    #
+    if len(peaks)>1:
+        peaks = peaks + peak_search
+        minima_search = np.where(x_smooth == x_smooth[np.abs(x_smooth-0.1).argmin()])[0][0]
+        y_inv = (bspl_y[minima_search:peaks[1]] * -1)
+        minima, _ = find_peaks(y_inv,distance=300)
+        minima = minima + minima_search
+    else:
+        peaks = [None,None]
+        minima = [None]
     return bspl_y, peaks, minima
 
 def calculate_momentum(subsnap,clump_centre,clump_velocity,R_full):
@@ -340,7 +348,7 @@ with open("fragment_results.csv", "wt") as f:
                'Lfco (z)','alphasc (z)', 'alphafci (z)', \
                'alphafco (z)','betasc (z)', 'betafci (z)', \
                'betafco (z)','R','Nsc (axi)','Nfci (axi)','Nfco (axi)',\
-               'Nsc (z)','Nfci (z)','Nfco (z)']
+               'Nsc (z)','Nfci (z)','Nfco (z)','ID']
     for heading in headers:
         f.write("# %s \n" % heading)
 
@@ -349,38 +357,45 @@ f.close()
 
 fragments_to_plot = sys.argv[1:]
 for fragment in fragments_to_plot:
+    run_set = os.path.abspath(fragment).split('/')[5].split('_')[0] # Which initial particle distribution?
+    param_set = os.path.abspath(fragment).split('/')[6].split('_')[1].lstrip('0') # Which parameter set (run_001,run_002 etc)
+    fragment_number = fragment.split('.')[1].lstrip('0') # Fragment number
+    ID_code = '%s_%s_%s' % (run_set_dict[run_set],param_set,fragment_number)
+
     index = fragments_to_plot.index(fragment)
     line_colour = mpl_colour_defaults[index]
     print(colored('Preparing snapshots...','green'),end="", flush=True)
+
     axi_comp,z_comp,clump_centre,clump_velocity,full_clump = prepare_snapshots('%s' % fragment)
 
 
     print(colored('Done','green'))
 
-    print(colored('Calculating axisymmetric averages...','green'),end="", flush=True)
+
+
 
     avg_infall_axi,avg_rotational_axi,avg_temperature_axi,avg_density_axi, \
     infall_axi,rotational_axi,temperature_axi,density_axi,\
     R_axi = axisym_average(axi_comp,
-                                                               clump_centre,
-                                                                clump_velocity,bins,3)
+                           clump_centre,
+                           clump_velocity,bins,3)
 
-
-    print(colored('Done','green'))
 
     print(colored('Calculating spherical averages...','green'),end="", flush=True)
-
     avg_infall_sphere, avg_rotational_sphere, avg_density_sphere, avg_temperature_sphere, \
-                                        R_sphere,interp_start_sphere,interp_end_sphere, mass,R_full= spherical_average(full_clump,bins)
+    R_sphere, mass,R_full= spherical_average(full_clump,bins)
     print(colored('Done','green'))
 
-    print(colored('Calculating z averages...','green'),end="", flush=True)
 
+
+    print(colored('Calculating z averages...','green'),end="", flush=True)
     avg_infall_z_pos,avg_rotational_z_pos,avg_temperature_z_pos,avg_density_z_pos, \
     infall_z_pos,rotational_z_pos,temperature_z_pos,density_z_pos,\
     z_pos,interp_start_z_pos,interp_end_z_pos = calculate_SPH_mean_z(z_comp,
                                                                      clump_centre,
                                                                      clump_velocity,bins,3,False)
+
+
     print(colored('Done','green'))
 
 
@@ -406,10 +421,6 @@ for fragment in fragments_to_plot:
             ax_main[i,j].set_xscale('log')
             ax_main[i,j].set_xlabel('r (AU)',fontsize=10)
 
-    print(colored('Calculating peaks and minima...','green'),end="", flush=True)
-    infall_z_spline,z_pos_peaks,z_pos_mins = find_infall_peaks(avg_infall_z_pos,interp_start_z_pos,interp_end_z_pos)
-    infall_axi_spline,R_axi_peaks,R_axi_mins = find_infall_peaks(avg_infall_axi)
-    print(colored('Done','green'))
     print(colored('Calculating energy ratios...','green'),end="", flush=True)
 
     rotational_energy = 0.5 * axi_comp['m'][0].to('g') * rotational_axi.to('cm/s') **2
@@ -426,11 +437,13 @@ for fragment in fragments_to_plot:
     cumsum_egrav = np.cumsum(gravitational_energy_binned[0])
 
     with np.errstate(invalid='ignore'):
-        alpha = interpolate_across_nans(cumsum_etherm / cumsum_egrav)
-
+        alpha = cumsum_etherm / cumsum_egrav
+        alpha[alpha == inf] = np.nan
+        alpha = interpolate_across_nans(alpha)
     with np.errstate(invalid='ignore'):
-        beta = interpolate_across_nans(cumsum_erot / cumsum_egrav)
-
+        beta = cumsum_erot / cumsum_egrav
+        beta[beta == inf] = np.nan
+        beta = interpolate_across_nans(beta)
 
     print(colored('Done','green'))
     print(colored('Fitting B-spline to arrays to increase sampling resolution...','green'),end="", flush=True)
@@ -492,60 +505,84 @@ for fragment in fragments_to_plot:
     axs_mom.set_xlim(5E-4,50)
     axs_mom.set_yscale('log')
     print(colored('Done','green'))
-    print(colored('Writing arrays to file...','green'),end="", flush=True)
 
     position_fragment = np.sqrt(clump_centre[0]**2+clump_centre[1]**2+clump_centre[2]**2)
 
-    Nsc_axi = bsply_mass[R_axi_peaks[0]]
-    Nfci_axi = bsply_mass[R_axi_mins[0]]
-    Nfco_axi = bsply_mass[R_axi_peaks[1]]
-    Nsc_z = bsply_mass[z_pos_peaks[0]]
-    Nfci_z = bsply_mass[z_pos_mins[0]]
-    Nfco_z = bsply_mass[z_pos_peaks[1]]
 
-    with open("fragment_results.csv", "a") as f:
-        writer = csv.writer(f)
-        writer.writerow([x_smooth[R_axi_peaks[0]],x_smooth[R_axi_mins[0]],\
-                         x_smooth[R_axi_peaks[1]],\
+    print(colored('Calculating peaks and minima...','green'),end="", flush=True)
+    try:
+        infall_z_spline,z_pos_peaks,z_pos_mins = find_infall_peaks(avg_infall_z_pos,interp_start_z_pos,interp_end_z_pos)
+    except:
+        print(colored('No peaks found in z profile','green'))
+        z_pos_peaks[0] = None
+        z_pos_peaks[1] = None
+        z_pos_mins[0] = None
 
-                         bsply_mass[R_axi_peaks[0]], \
-                         bsply_mass[R_axi_mins[0]],bsply_mass[R_axi_peaks[1]],\
+    try:
+        infall_axi_spline,R_axi_peaks,R_axi_mins = find_infall_peaks(avg_infall_axi)
+    except:
+        print(colored('No peaks found in axisymmetric profile','green'))
+        R_axi_peaks[0] = None
+        R_axi_peaks[1] = None
+        R_axi_mins[0] = None
 
-                         bsply_mom[R_axi_peaks[0]], \
-                         bsply_mom[R_axi_mins[0]],bsply_mom[R_axi_peaks[1]],\
-
-                         bsply_alpha[R_axi_peaks[0]], \
-                         bsply_alpha[R_axi_mins[0]],bsply_alpha[R_axi_peaks[1]],\
-
-                         bsply_beta[R_axi_peaks[0]], \
-                         bsply_beta[R_axi_mins[0]],bsply_beta[R_axi_peaks[1]],\
-
-                         x_smooth[z_pos_peaks[0]],x_smooth[z_pos_mins[0]],\
-                         x_smooth[z_pos_peaks[1]],\
-
-                         bsply_mass[z_pos_peaks[0]], \
-                         bsply_mass[z_pos_mins[0]],bsply_mass[z_pos_peaks[1]],\
-
-                         bsply_mom[z_pos_peaks[0]], \
-                         bsply_mom[z_pos_mins[0]],bsply_mom[z_pos_peaks[1]],\
-
-                         bsply_alpha[z_pos_peaks[0]], \
-                         bsply_alpha[z_pos_mins[0]],bsply_alpha[z_pos_peaks[1]],\
-
-                         bsply_beta[z_pos_peaks[0]], \
-                         bsply_beta[z_pos_mins[0]],bsply_beta[z_pos_peaks[1]],\
-
-                         position_fragment, Nsc_axi, Nfci_axi, Nfco_axi, Nsc_z, \
-                         Nfci_z, Nfco_z])
-        f.close()
     print(colored('Done','green'))
-ax_main[0,0].annotate("a)", xy=(0.9, 0.9), xycoords="axes fraction")
-ax_main[0,1].annotate("b)", xy=(0.9, 0.9), xycoords="axes fraction")
-ax_main[1,0].annotate("c)", xy=(0.9, 0.9), xycoords="axes fraction")
-ax_main[1,1].annotate("d)", xy=(0.9, 0.9), xycoords="axes fraction")
-ax_main[2,0].annotate("e)", xy=(0.9, 0.9), xycoords="axes fraction")
-ax_main[2,1].annotate("f)", xy=(0.9, 0.9), xycoords="axes fraction")
-fig_main.align_ylabels()
-fig_main.subplots_adjust(wspace=0.45,hspace=0.3)
-fig_main.savefig('clump_profiles.png',dpi=200)
-fig_mom.savefig('angular_momentum.png',dpi=200)
+    ax_main[0,0].annotate("a)", xy=(0.9, 0.9), xycoords="axes fraction")
+    ax_main[0,1].annotate("b)", xy=(0.9, 0.9), xycoords="axes fraction")
+    ax_main[1,0].annotate("c)", xy=(0.9, 0.9), xycoords="axes fraction")
+    ax_main[1,1].annotate("d)", xy=(0.9, 0.9), xycoords="axes fraction")
+    ax_main[2,0].annotate("e)", xy=(0.9, 0.9), xycoords="axes fraction")
+    ax_main[2,1].annotate("f)", xy=(0.9, 0.9), xycoords="axes fraction")
+    fig_main.align_ylabels()
+    fig_main.subplots_adjust(wspace=0.45,hspace=0.3)
+    fig_main.savefig('clump_profiles.png',dpi=200)
+    fig_mom.savefig('angular_momentum.png',dpi=200)
+
+    if R_axi_peaks[0] is not None and R_axi_peaks[1] is not None and z_pos_peaks[0] is not None and z_pos_peaks[1] is not None:
+
+
+        Nsc_axi = bsply_mass[R_axi_peaks[0]] / full_clump['m'][0].to('jupiter_mass')
+        Nfci_axi = bsply_mass[R_axi_mins[0]] / full_clump['m'][0].to('jupiter_mass')
+        Nfco_axi = bsply_mass[R_axi_peaks[1]] / full_clump['m'][0].to('jupiter_mass')
+        Nsc_z = bsply_mass[z_pos_peaks[0]] / full_clump['m'][0].to('jupiter_mass')
+        Nfci_z = bsply_mass[z_pos_mins[0]] / full_clump['m'][0].to('jupiter_mass')
+        Nfco_z = bsply_mass[z_pos_peaks[1]] / full_clump['m'][0].to('jupiter_mass')
+
+        with open("fragment_results.csv", "a") as f:
+            writer = csv.writer(f)
+            writer.writerow([x_smooth[R_axi_peaks[0]],x_smooth[R_axi_mins[0]],\
+                             x_smooth[R_axi_peaks[1]],\
+
+                             bsply_mass[R_axi_peaks[0]], \
+                             bsply_mass[R_axi_mins[0]],bsply_mass[R_axi_peaks[1]],\
+
+                             bsply_mom[R_axi_peaks[0]], \
+                             bsply_mom[R_axi_mins[0]],bsply_mom[R_axi_peaks[1]],\
+
+                             bsply_alpha[R_axi_peaks[0]], \
+                             bsply_alpha[R_axi_mins[0]],bsply_alpha[R_axi_peaks[1]],\
+
+                             bsply_beta[R_axi_peaks[0]], \
+                             bsply_beta[R_axi_mins[0]],bsply_beta[R_axi_peaks[1]],\
+
+                             x_smooth[z_pos_peaks[0]],x_smooth[z_pos_mins[0]],\
+                             x_smooth[z_pos_peaks[1]],\
+
+                             bsply_mass[z_pos_peaks[0]], \
+                             bsply_mass[z_pos_mins[0]],bsply_mass[z_pos_peaks[1]],\
+
+                             bsply_mom[z_pos_peaks[0]], \
+                             bsply_mom[z_pos_mins[0]],bsply_mom[z_pos_peaks[1]],\
+
+                             bsply_alpha[z_pos_peaks[0]], \
+                             bsply_alpha[z_pos_mins[0]],bsply_alpha[z_pos_peaks[1]],\
+
+                             bsply_beta[z_pos_peaks[0]], \
+                             bsply_beta[z_pos_mins[0]],bsply_beta[z_pos_peaks[1]],\
+
+                             position_fragment, Nsc_axi, Nfci_axi, Nfco_axi, Nsc_z, \
+                             Nfci_z, Nfco_z,ID_code])
+            f.close()
+        print(colored('Done','green'))
+    else:
+        print(colored('No entry made for fragment %s as no peaks were found in the profiles % fragment','green'))
